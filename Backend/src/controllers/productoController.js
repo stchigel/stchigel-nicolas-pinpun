@@ -1,32 +1,24 @@
 import productoService from '../services/productoService.js';
+import { HttpStatus } from '../enums/HttpStatus.js';
 
 const getAll = (req, res) => {
-    res.status(200).json(productoService.getAll());
+    res.status(HttpStatus.OK).json(productoService.getAll());
 };
 
 const getById = (req, res) => {
-    const producto = productoService.getById(Number(req.params.id));
-    if (!producto) return res.status(404).json({ message: 'El producto no existe.' });
-
-    res.status(200).json(producto);
+    res.status(HttpStatus.OK).json(productoService.getById(Number(req.params.id)));
 };
 
 const create = (req, res) => {
-    res.status(201).json(productoService.create(req.body));
+    res.status(HttpStatus.CREATED).json(productoService.create(req.body));
 };
 
 const update = (req, res) => {
-    const producto = productoService.update(Number(req.params.id), req.body);
-    if (!producto) return res.status(404).json({ message: 'El producto no existe.' });
-
-    res.status(200).json(producto);
+    res.status(HttpStatus.OK).json(productoService.update(Number(req.params.id), req.body));
 };
 
 const remove = (req, res) => {
-    const producto = productoService.remove(Number(req.params.id));
-    if (!producto) return res.status(404).json({ message: 'El producto no existe.' });
-
-    res.status(200).json(producto);
+    res.status(HttpStatus.OK).json(productoService.remove(Number(req.params.id)));
 };
 
 export default { getAll, getById, create, update, remove };

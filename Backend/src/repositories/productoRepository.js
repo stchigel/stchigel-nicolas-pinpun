@@ -12,6 +12,9 @@ const findAll = () => [...productos];
 
 const findById = (id) => productos.find((producto) => producto.id === id) ?? null;
 
+const findByNombre = (nombre) =>
+    productos.find((producto) => producto.nombre.toLowerCase() === nombre.toLowerCase()) ?? null;
+
 const create = ({ nombre, imagen, precio, descripcion }) => {
     const producto = new Producto(nextId++, nombre, imagen, precio, descripcion);
     productos.push(producto);
@@ -35,4 +38,4 @@ const remove = (id) => {
     return producto;
 };
 
-export default { findAll, findById, create, update, remove };
+export default { findAll, findById, findByNombre, create, update, remove };
