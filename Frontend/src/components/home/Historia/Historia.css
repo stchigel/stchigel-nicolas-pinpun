@@ -2,6 +2,13 @@
     padding-block: var(--separacion-secciones);
 }
 
+.historia__encabezado {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
 .historia__titulo {
     font-size: var(--t-titulo);
     color: var(--rojo);
@@ -9,126 +16,152 @@
 
 .historia__fila {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--margen);
-    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(2.5rem, 6vw, 5.5rem);
+    align-items: center;
+    margin-top: clamp(3rem, 6vw, 5rem);
+}
+
+.historia__relato {
+    font-size: var(--t-destacado);
+    line-height: 1.55;
+}
+
+/* Letra capital, como en los menús impresos de antes */
+.historia__relato::first-letter {
+    float: left;
+    margin: 0.06em 0.05em 0 0;
+    font-family: var(--fuente-display);
+    font-size: 3.6em;
+    line-height: 0.8;
+    color: var(--rojo);
 }
 
 .historia__datos {
-    grid-column: 1 / 5;
     display: grid;
-    align-content: start;
-    gap: 1.5rem;
-    padding-right: 2rem;
+    gap: 1rem;
+    margin-top: 2.25rem;
+    padding-top: 1.75rem;
+    border-top: 3px double var(--dorado);
+}
+
+.historia__dato {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
 }
 
 .historia__dato dt {
-    font-size: var(--t-chico);
-    color: var(--tinta-suave);
+    font-family: var(--fuente-script);
+    font-size: 1.375rem;
+    line-height: 1.2;
+    color: var(--rojo);
 }
 
 .historia__dato dd {
     font-weight: 500;
-    line-height: 1.35;
+    line-height: 1.4;
 }
 
-.historia__relato {
-    grid-column: 5 / 12;
-    font-size: var(--t-destacado);
-    line-height: 1.45;
-    max-width: 44ch;
+.historia__fotos {
+    position: relative;
+    padding: 0 0 clamp(3rem, 7vw, 6rem) 0;
 }
 
-.historia__fila--registro {
-    margin-top: clamp(4rem, 9vw, 8rem);
-    align-items: start;
+.historia__foto {
+    padding: 0.5rem;
+    background: var(--hueso);
+    border: 3px solid var(--dorado);
+    outline: 2px solid var(--rojo);
+    outline-offset: -0.5rem;
+}
+
+.historia__foto .foto {
+    outline: 0;
+}
+
+.historia__foto--grande {
+    width: 84%;
+}
+
+.historia__foto--chica {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 40%;
+}
+
+.historia__cuadro {
+    max-width: 60rem;
+    margin: clamp(4rem, 8vw, 7rem) auto 0;
+    background: var(--hueso);
 }
 
 .historia__registros {
-    grid-column: 1 / 5;
     display: grid;
-    gap: 2.75rem;
-    padding: 2rem;
-    background: var(--hueso-2);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem clamp(2rem, 5vw, 4.5rem);
 }
 
 .historia__subtitulo {
+    margin-bottom: 1rem;
     font-size: var(--t-subtitulo);
     color: var(--rojo);
-    margin-bottom: 0.75rem;
+    text-align: center;
 }
 
 .historia__lista {
     display: grid;
-    gap: 0.6rem;
+    gap: 0.75rem;
 }
 
 .historia__lista li {
     display: flex;
-    justify-content: space-between;
-    gap: 1rem;
+    align-items: baseline;
+    gap: 0.5rem;
     line-height: 1.4;
 }
 
+/* Puntos guía entre el premio y el año, como en una carta */
+.historia__puntos {
+    flex: 1;
+    min-width: 1.5rem;
+    border-bottom: 2px dotted var(--hueso-3);
+    transform: translateY(-0.3em);
+}
+
 .historia__anio {
-    color: var(--tinta-suave);
+    font-family: var(--fuente-display);
+    color: var(--rojo);
     font-variant-numeric: tabular-nums;
 }
 
-.historia__collage {
-    grid-column: 5 / 13;
-    position: relative;
-    padding-bottom: clamp(3rem, 8vw, 7rem);
-}
-
-.historia__foto-grande {
-    width: 78%;
-}
-
-.historia__foto-chica {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 34%;
-    outline: clamp(0.5rem, 1vw, 0.875rem) solid var(--hueso);
+.historia__lista--salon li::before {
+    content: '';
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.35rem;
+    background: var(--dorado);
+    transform: rotate(45deg) translateY(-0.15em);
 }
 
 @media (max-width: 52rem) {
-    .historia__fila {
-        grid-template-columns: 1fr;
-        row-gap: 2.5rem;
-    }
-
-    .historia__datos,
-    .historia__relato,
-    .historia__registros,
-    .historia__collage {
-        grid-column: 1;
-    }
-
-    .historia__datos {
-        grid-row: 2;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        padding-right: 0;
-    }
-
-    .historia__dato:last-child {
-        grid-column: 1 / -1;
-    }
-
-    .historia__relato {
-        font-size: 1.1875rem;
-    }
-
+    .historia__fila,
     .historia__registros {
-        padding: 1.5rem;
+        grid-template-columns: 1fr;
     }
 
-    .historia__foto-grande {
+    .historia__dato {
+        grid-template-columns: 7rem 1fr;
+    }
+
+    .historia__foto--grande {
         width: 86%;
     }
 
-    .historia__foto-chica {
-        width: 44%;
+    .historia__foto--chica {
+        width: 46%;
     }
 }

@@ -3,8 +3,9 @@
     z-index: 20;
 }
 
-.navbar--rojo {
-    background: var(--rojo);
+.navbar--negro {
+    background: var(--negro) var(--azulejos);
+    background-size: 120px 60px;
     color: var(--hueso);
 }
 
@@ -130,8 +131,8 @@
         }
     }
 
-    .navbar--rojo .navbar__panel {
-        background: var(--rojo);
+    .navbar--negro .navbar__panel {
+        background: var(--negro);
     }
 
     .navbar--hueso .navbar__panel {
@@ -147,7 +148,6 @@
         font-family: var(--fuente-display);
         font-size: var(--t-titulo);
         font-weight: 400;
-        line-height: 1.1;
-        text-transform: uppercase;
+        line-height: 1.15;
     }
 }

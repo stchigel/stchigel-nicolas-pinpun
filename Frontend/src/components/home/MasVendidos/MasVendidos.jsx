@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Carrusel from '../../Carrusel/Carrusel.jsx';
 import TarjetaProducto from '../../TarjetaProducto/TarjetaProducto.jsx';
 import EstadoMensaje from '../../EstadoMensaje/EstadoMensaje.jsx';
+import Remate from '../../Fileteado/Remate.jsx';
 import { useApi } from '../../../hooks/useApi.js';
 import { useRevelar } from '../../../hooks/useRevelar.js';
 import { useToast } from '../../../hooks/useToast.js';
@@ -69,6 +70,7 @@ function MasVendidos() {
     return (
         <section className="mas-vendidos" ref={ref} aria-labelledby="mas-vendidos-titulo">
             <div className="mas-vendidos__encabezado contenedor">
+                <Remate />
                 <h2 id="mas-vendidos-titulo" className="mas-vendidos__titulo" data-revelar="subir">
                     Nuestros más vendidos
                 </h2>

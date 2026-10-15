@@ -22,7 +22,7 @@ function ListaEnlaces({ enlaces, className, onNavegar }) {
 /*
  * Barra principal, como en el boceto: dos enlaces a cada lado del logo
  * y el carrito a la derecha. En pantallas chicas los enlaces pasan a un panel desplegable.
- * `variante` "rojo" se usa sobre la portada; "hueso" en el resto de las páginas.
+ * `variante` "negro" se usa sobre la portada (azulejos); "hueso" en el resto de las páginas.
  */
 function Navbar({ variante = 'hueso' }) {
     const [abierto, setAbierto] = useState(false);

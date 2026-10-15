@@ -1,57 +1,49 @@
 import { Link } from 'react-router-dom';
 import Boton from '../../Boton/Boton.jsx';
-import Foto from '../../Foto/Foto.jsx';
-import TextoAjustado from '../../TextoAjustado/TextoAjustado.jsx';
+import Cinta from '../../Fileteado/Cinta.jsx';
+import LetraFileteada from '../../Fileteado/LetraFileteada.jsx';
+import MarcoFileteado from '../../Fileteado/MarcoFileteado.jsx';
+import { useRevelar } from '../../../hooks/useRevelar.js';
 import { ANIO_FUNDACION } from '../../../utils/sitio.js';
 import './Hero.css';
 
-const NOMBRE = 'PIN PUN';
-
 /*
- * Portada: el nombre como el cartel de la fachada roja de Av. Corrientes,
- * a todo el ancho y apoyado en el borde inferior. Arriba, el dato que importa
- * (desde 1927), una frase y la acción principal; a la derecha, fotos del local.
+ * Portada: un cartel fileteado colgado sobre los azulejos negros del salón,
+ * centrado como en el boceto, con la cinta del año, el nombre en letra de cartel
+ * y la acción principal.
  */
 function Hero() {
+    const ref = useRevelar();
+
     return (
-        <section className="hero" aria-labelledby="hero-titulo">
+        <section className="hero" ref={ref} aria-labelledby="hero-titulo">
             <div className="hero__cuerpo contenedor">
-                <div className="hero__texto">
-                    <p className="hero__anio" data-entrada style={{ '--i': 0 }}>
-                        Desde {ANIO_FUNDACION}
+                <MarcoFileteado className="hero__cartel">
+                    <div className="hero__cinta" data-entrada style={{ '--i': 0 }}>
+                        <Cinta>{`Desde ${ANIO_FUNDACION}`}</Cinta>
+                    </div>
+
+                    <h1 id="hero-titulo" className="hero__titulo" data-entrada style={{ '--i': 1 }}>
+                        <LetraFileteada texto="PIN PUN" etiqueta={`Pin Pun, pizzería desde ${ANIO_FUNDACION}`} />
+                    </h1>
+
+                    <p className="hero__rubro" data-entrada style={{ '--i': 2 }}>
+                        Pizzería y bodegón porteño
                     </p>
-                    <p className="hero__bajada" data-entrada style={{ '--i': 1 }}>
+
+                    <p className="hero__bajada" data-entrada style={{ '--i': 3 }}>
                         La pizzería más antigua de Buenos Aires. Muzza al molde, fainá y moscato, de Av. Corrientes
                         3954 hasta Lanús.
                     </p>
-                    <div className="hero__acciones" data-entrada style={{ '--i': 2 }}>
+
+                    <div className="hero__acciones" data-entrada style={{ '--i': 4 }}>
                         <Boton a="/menu">Ver el menú</Boton>
                         <Link to="/reservas" className="hero__enlace">
                             Reservá una mesa
                         </Link>
                     </div>
-                </div>
-
-                <div className="hero__marco" data-entrada style={{ '--i': 1 }}>
-                    <Foto
-                        className="hero__foto"
-                        nombres={['fachada', 'salon', 'pizzero']}
-                        alt="La fachada roja de Pin Pun en Av. Corrientes"
-                        relacion={null}
-                        ilustracion="pizza"
-                        prioridad
-                    />
-                </div>
+                </MarcoFileteado>
             </div>
-
-            <TextoAjustado as="h1" id="hero-titulo" className="hero__monumento contenedor">
-                <span className="visualmente-oculto">Pin Pun, pizzería desde {ANIO_FUNDACION}</span>
-                {[...NOMBRE].map((letra, indice) => (
-                    <span key={indice} className="hero__letra" style={{ '--i': indice }} aria-hidden="true">
-                        {letra === ' ' ? ' ' : letra}
-                    </span>
-                ))}
-            </TextoAjustado>
         </section>
     );
 }

@@ -1,0 +1,182 @@
+/* ---------- Remate (corona de los títulos) ---------- */
+.remate {
+    display: block;
+    width: min(100%, 22rem);
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+}
+
+/* ---------- Marco de cartel ---------- */
+.marco-fileteado {
+    --tamano-esquina: clamp(4.5rem, 9vw, 8.5rem);
+    --separacion-filete: 0.75rem;
+    position: relative;
+    padding: calc(var(--tamano-esquina) * 0.75) calc(var(--tamano-esquina) * 0.55);
+    border: 3px solid var(--filete-dorado);
+    outline: 2px solid var(--filete-rojo);
+    outline-offset: calc(var(--separacion-filete) * -1);
+}
+
+.marco-fileteado__esquina {
+    position: absolute;
+    width: var(--tamano-esquina);
+    height: var(--tamano-esquina);
+    overflow: visible;
+    pointer-events: none;
+}
+
+.esquina--arriba-izquierda {
+    top: var(--separacion-filete);
+    left: var(--separacion-filete);
+    transform-origin: top left;
+}
+
+.esquina--arriba-derecha {
+    top: var(--separacion-filete);
+    right: var(--separacion-filete);
+    transform-origin: top right;
+}
+
+.esquina--abajo-izquierda {
+    bottom: var(--separacion-filete);
+    left: var(--separacion-filete);
+    transform-origin: bottom left;
+}
+
+.esquina--abajo-derecha {
+    bottom: var(--separacion-filete);
+    right: var(--separacion-filete);
+    transform-origin: bottom right;
+}
+
+.marco-fileteado__contenido {
+    position: relative;
+}
+
+/* ---------- Cinta ---------- */
+.cinta {
+    display: block;
+    width: min(100%, 22rem);
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+}
+
+.cinta__banda {
+    fill: var(--filete-rojo);
+}
+
+.cinta__punta {
+    fill: var(--rojo-hondo);
+}
+
+.cinta__doblez {
+    fill: #5e0910;
+}
+
+.cinta__filete {
+    fill: none;
+    stroke: var(--filete-dorado-luz);
+    stroke-width: 1.6;
+}
+
+.cinta__texto {
+    font-family: var(--fuente-script);
+    font-size: 40px;
+    fill: var(--hueso);
+}
+
+/* ---------- Letras de cartel ---------- */
+.letra-fileteada {
+    --letra-arriba: #fffaf0;
+    --letra-medio: var(--hueso);
+    --letra-abajo: #e6c77a;
+    --letra-relieve: var(--rojo-hondo);
+    --letra-contorno: var(--negro);
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.letra-fileteada__texto text {
+    font-family: var(--fuente-display);
+    font-size: 200px;
+    letter-spacing: 4px;
+}
+
+.letra-fileteada__relieve {
+    fill: var(--letra-relieve);
+}
+
+.letra-fileteada__contorno {
+    fill: var(--letra-contorno);
+    stroke: var(--letra-contorno);
+    stroke-width: 14px;
+    stroke-linejoin: round;
+}
+
+.letra-fileteada__filete {
+    fill: none;
+    stroke: var(--filete-dorado);
+    stroke-width: 2.5px;
+}
+
+/* ---------- Entradas: el fileteado se "pinta" desde las esquinas y el centro ---------- */
+@media (prefers-reduced-motion: no-preference) {
+    .js .revelable:not(.esta-visible) .marco-fileteado__esquina,
+    .js .revelable:not(.esta-visible) .remate__ala,
+    .js .revelable:not(.esta-visible) .flor {
+        opacity: 0;
+    }
+
+    .js .esta-visible .marco-fileteado__esquina,
+    .js .esta-visible .remate__ala {
+        animation: filete-brota 1100ms var(--ease-out) both;
+        animation-delay: var(--retraso-filete, 150ms);
+    }
+
+    /* El centro del remate es el punto (0, 46) del viewBox: las alas brotan desde ahí */
+    .js .remate__ala {
+        transform-box: view-box;
+        transform-origin: 0 46px;
+    }
+
+    .js .esta-visible .remate__ala--izquierda {
+        animation-name: filete-brota-espejo;
+    }
+
+    .js .esta-visible .remate .flor,
+    .js .esta-visible .marco-fileteado__esquina .flor {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: filete-flor 900ms var(--ease-out) both;
+        animation-delay: calc(var(--retraso-filete, 150ms) + 250ms);
+    }
+}
+
+@keyframes filete-brota {
+    from {
+        opacity: 0;
+        transform: scale(0.55);
+    }
+}
+
+@keyframes filete-brota-espejo {
+    from {
+        opacity: 0;
+        transform: scale(-0.55, 0.55);
+    }
+
+    to {
+        transform: scale(-1, 1);
+    }
+}
+
+@keyframes filete-flor {
+    from {
+        opacity: 0;
+        transform: rotate(-90deg) scale(0.6);
+    }
+}

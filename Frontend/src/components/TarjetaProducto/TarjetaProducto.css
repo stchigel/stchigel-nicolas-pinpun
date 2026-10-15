@@ -1,38 +1,69 @@
+/* Tarjeta con doble filete (dorado afuera, rojo adentro), como un cartelito de precios */
 .tarjeta-producto {
     container-type: inline-size;
+    padding: 0.75rem;
     background: var(--hueso);
     color: var(--tinta);
+    border: 3px solid var(--dorado);
+    outline: 2px solid var(--rojo);
+    outline-offset: -0.75rem;
+}
+
+.tarjeta-producto .foto {
+    margin: 0.5rem;
 }
 
 .tarjeta-producto__pie {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr auto;
     align-items: baseline;
-    gap: 0.35rem 1.5rem;
-    padding: 1.25rem 1.5rem 1.5rem;
+    gap: 0.35rem 0.6rem;
+    padding: 0.75rem 1.25rem 1.25rem;
 }
 
 .tarjeta-producto__nombre {
     font-size: var(--t-subtitulo);
-    line-height: 1;
+    line-height: 1.1;
+    color: var(--rojo);
+}
+
+/* Puntos guía entre el nombre y el precio */
+.tarjeta-producto__pie::before {
+    content: '';
+    grid-column: 2;
+    grid-row: 1;
+    border-bottom: 2px dotted var(--hueso-3);
+    transform: translateY(-0.35em);
 }
 
 .tarjeta-producto__precio {
+    grid-column: 3;
+    grid-row: 1;
+    font-family: var(--fuente-display);
     font-size: var(--t-destacado);
-    font-weight: 700;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
 
 .tarjeta-producto__descripcion {
     grid-column: 1 / -1;
+    font-style: italic;
     color: var(--tinta-suave);
 }
 
-/* En tarjetas angostas el precio baja debajo del nombre para que este no se parta en tres líneas */
+/* En tarjetas angostas el precio baja debajo del nombre */
 @container (max-width: 26rem) {
     .tarjeta-producto__pie {
         grid-template-columns: 1fr;
-        padding-inline: 1.25rem;
+        padding-inline: 0.75rem;
+    }
+
+    .tarjeta-producto__pie::before {
+        display: none;
+    }
+
+    .tarjeta-producto__precio {
+        grid-column: 1;
+        grid-row: auto;
     }
 }

@@ -1,5 +1,7 @@
-@import '@fontsource/anton/400.css';
+@import '@fontsource/abril-fatface/400.css';
+@import '@fontsource/yesteryear/400.css';
 @import '@fontsource/bitter/400.css';
+@import '@fontsource/bitter/400-italic.css';
 @import '@fontsource/bitter/500.css';
 @import '@fontsource/bitter/700.css';
 @import './tokens.css';
@@ -79,9 +81,8 @@ h2,
 h3 {
     font-family: var(--fuente-display);
     font-weight: 400;
-    line-height: 0.95;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
+    line-height: 1.05;
+    letter-spacing: 0.005em;
     text-wrap: balance;
 }
 

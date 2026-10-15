@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import Mantel from '../Mantel/Mantel.jsx';
-import TextoAjustado from '../TextoAjustado/TextoAjustado.jsx';
+import LetraFileteada from '../Fileteado/LetraFileteada.jsx';
+import Remate from '../Fileteado/Remate.jsx';
+import { useRevelar } from '../../hooks/useRevelar.js';
 import {
     ANIO_FUNDACION,
     ENLACES_DERECHA,
@@ -10,21 +12,22 @@ import {
 } from '../../utils/sitio.js';
 import './Footer.css';
 
-/* Cierre de todas las páginas: el nombre vuelve a todo el ancho, en hueso sobre rojo. */
+/* Cierre de todas las páginas: el cartel de Pin Pun otra vez, sobre los azulejos del salón. */
 function Footer() {
+    const ref = useRevelar();
     const anioActual = new Date().getFullYear();
 
     return (
-        <footer id="contacto" className="footer">
+        <footer id="contacto" className="footer" ref={ref}>
             <Mantel />
             <div className="footer__cuerpo contenedor">
-                <div className="footer__columnas">
-                    <div className="footer__columna">
-                        <h2 className="footer__titulo">Pin Pun</h2>
-                        <p>Bodegón porteño desde {ANIO_FUNDACION}.</p>
-                        <p className="footer__suave">La pizzería más antigua de Buenos Aires.</p>
-                    </div>
+                <div className="footer__cartel">
+                    <Remate />
+                    <LetraFileteada texto="PIN PUN" etiqueta="Pin Pun" className="footer__marca" />
+                    <p className="footer__lema">Bodegón porteño desde {ANIO_FUNDACION}</p>
+                </div>
 
+                <div className="footer__columnas">
                     <nav className="footer__columna" aria-label="Secundaria">
                         <h2 className="footer__titulo">Navegá</h2>
                         <ul>
@@ -65,15 +68,13 @@ function Footer() {
                             @{INSTAGRAM_PRINCIPAL}
                             <span className="visualmente-oculto"> (se abre en otra pestaña)</span>
                         </a>
+                        <p className="footer__suave">Cada local tiene su cuenta: la vas a encontrar en Locales.</p>
                     </div>
                 </div>
 
-                <TextoAjustado className="footer__marca" aria-hidden="true">
-                    PIN PUN
-                </TextoAjustado>
-
                 <p className="footer__legal">
-                    Pin Pun © {anioActual}. Av. Corrientes 3954, Almagro, desde {ANIO_FUNDACION}.
+                    Pin Pun © {anioActual}. La pizzería más antigua de Buenos Aires, en Av. Corrientes 3954 desde{' '}
+                    {ANIO_FUNDACION}.
                 </p>
             </div>
         </footer>

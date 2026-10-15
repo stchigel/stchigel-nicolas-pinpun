@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Boton from '../../Boton/Boton.jsx';
 import Icono from '../../Icono/Icono.jsx';
 import EstadoMensaje from '../../EstadoMensaje/EstadoMensaje.jsx';
+import Remate from '../../Fileteado/Remate.jsx';
 import MapaLocal from '../../MapaLocal/MapaLocal.jsx';
 import TarjetaLocal from '../../TarjetaLocal/TarjetaLocal.jsx';
 import { useApi } from '../../../hooks/useApi.js';
@@ -87,6 +88,7 @@ function Locales() {
     return (
         <section id="locales" className="locales contenedor" ref={ref} aria-labelledby="locales-titulo">
             <div className="locales__encabezado">
+                <Remate />
                 <h2 id="locales-titulo" className="locales__titulo" data-revelar="subir">
                     Dónde encontrarnos
                 </h2>

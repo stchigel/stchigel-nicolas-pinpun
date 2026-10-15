@@ -1,16 +1,19 @@
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 /*
  * Marca un elemento como visible la primera vez que entra en pantalla.
- * El CSS decide cómo entra cada parte (ver styles/revelar.css).
- * Si el navegador no soporta IntersectionObserver, se muestra directamente.
+ * Antes de pintar le agrega .revelable (para que el CSS pueda esconder lo que va a entrar)
+ * y al entrar en pantalla, .esta-visible. El CSS decide cómo entra cada parte
+ * (ver styles/revelar.css y components/Fileteado/Fileteado.css).
  */
 export function useRevelar() {
     const ref = useRef(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const elemento = ref.current;
         if (!elemento) return;
+
+        elemento.classList.add('revelable');
 
         if (!('IntersectionObserver' in window)) {
             elemento.classList.add('esta-visible');

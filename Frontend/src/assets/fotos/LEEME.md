@@ -3,13 +3,12 @@
 Las fotos que se guarden acá aparecen solas en el sitio (no hace falta tocar código).
 Formatos: `.jpg`, `.jpeg`, `.png`, `.webp` o `.avif`. Mientras una foto no exista, se muestra un dibujo en su lugar.
 
-## Portada e historia (en esta carpeta)
+## Historia (en esta carpeta)
 
 | Archivo | Dónde aparece | Qué conviene que muestre |
 | --- | --- | --- |
-| `fachada.jpg` | Portada (primera foto) | La fachada roja de Av. Corrientes 3954, horizontal |
-| `salon.jpg` | Portada (se alterna) e Historia (foto grande) | El salón: azulejos negros, piso calcáreo, carteles |
-| `pizzero.jpg` | Portada (se alterna) e Historia (foto chica, vertical 4:5) | Un pizzero trabajando a la vista |
+| `fachada.jpg` | Historia, foto grande (4:3) | La fachada roja de Av. Corrientes 3954 |
+| `pizzero.jpg` | Historia, foto chica (vertical 4:5) | Un pizzero trabajando a la vista |
 
 ## Platos (en `productos/`)
 

@@ -22,8 +22,8 @@ function LogoDibujado({ className }) {
                 y="89"
                 textAnchor="middle"
                 fill="var(--hueso)"
-                fontFamily="Anton, sans-serif"
-                fontSize="54"
+                fontFamily="Abril Fatface, Georgia, serif"
+                fontSize="44"
                 letterSpacing="1"
             >
                 PIN PUN
