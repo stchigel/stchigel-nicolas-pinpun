@@ -1,9 +1,13 @@
 import Producto from '../models/Producto.js';
 
 const productos = [
-    new Producto(1, 'Pizza Muzzarella', 'pizza-muzzarella.jpg', 8500, 'Salsa de tomate, muzzarella y aceitunas.'),
-    new Producto(2, 'Hamburguesa Clásica', 'hamburguesa-clasica.jpg', 7200, 'Carne, lechuga, tomate y queso cheddar.'),
-    new Producto(3, 'Limonada', 'limonada.jpg', 2500, 'Limonada natural con menta y jengibre.')
+    new Producto(1, 'Muzzarella al molde', 'muzzarella.jpg', 14500, 'Masa alta, salsa de tomate, muzzarella y aceitunas verdes.'),
+    new Producto(2, 'Fugazzeta rellena', 'fugazzeta.jpg', 17800, 'Doble masa rellena de muzzarella, cubierta de cebolla y orégano.'),
+    new Producto(3, 'Napolitana', 'napolitana.jpg', 16200, 'Muzzarella, rodajas de tomate, ajo y perejil.'),
+    new Producto(4, 'Fainá', 'faina.jpg', 2900, 'La porción de harina de garbanzos para poner arriba de la muzza.'),
+    new Producto(5, 'Empanada frita de carne', 'empanada-carne.jpg', 2600, 'Carne cortada a cuchillo, cebolla, huevo y aceitunas.'),
+    new Producto(6, 'Calabresa', 'calabresa.jpg', 16900, 'Muzzarella, longaniza calabresa y morrón asado.'),
+    new Producto(7, 'Moscato', 'moscato.jpg', 6500, 'La botella que está en todas las mesas, para acompañar la pizza.')
 ];
 
 let nextId = productos.length + 1;

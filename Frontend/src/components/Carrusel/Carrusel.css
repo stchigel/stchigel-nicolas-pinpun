@@ -1,0 +1,102 @@
+.carrusel {
+    --ancho-pieza: min(36rem, 74vw);
+    --separacion: clamp(1rem, 2vw, 2rem);
+    outline: none;
+}
+
+.carrusel:focus-visible .carrusel__ventana {
+    outline: 3px solid var(--hueso);
+    outline-offset: 6px;
+}
+
+.carrusel__ventana {
+    overflow-x: clip;
+    touch-action: pan-y;
+}
+
+.carrusel__pista {
+    display: flex;
+    gap: var(--separacion);
+    padding-inline: calc(50% - var(--ancho-pieza) / 2);
+    transform: translateX(calc(var(--indice) * -1 * (var(--ancho-pieza) + var(--separacion))));
+    transition: transform 620ms var(--ease-in-out);
+}
+
+.carrusel__pieza {
+    flex: 0 0 var(--ancho-pieza);
+    transition:
+        transform 620ms var(--ease-in-out),
+        opacity 620ms var(--ease-in-out);
+}
+
+.carrusel__pieza[data-posicion='antes'],
+.carrusel__pieza[data-posicion='despues'] {
+    opacity: 0.55;
+    transform: scale(0.8);
+    cursor: pointer;
+    user-select: none;
+}
+
+.carrusel__pieza[data-posicion='antes'] {
+    transform-origin: right center;
+}
+
+.carrusel__pieza[data-posicion='despues'] {
+    transform-origin: left center;
+}
+
+.carrusel__controles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 2rem;
+}
+
+.carrusel__boton {
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    padding: 0;
+    border: 0;
+    background: var(--hueso);
+    color: var(--tinta);
+    transition:
+        transform var(--t-presion) var(--ease-out),
+        background-color var(--t-hover) ease,
+        opacity var(--t-hover) ease;
+}
+
+.carrusel__boton:active:not(:disabled) {
+    transform: scale(0.94);
+}
+
+.carrusel__boton:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.carrusel__posicion {
+    min-width: 4.5rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .carrusel__boton:hover:not(:disabled) {
+        background: var(--hueso-3);
+    }
+
+    .carrusel__pieza[data-posicion='antes']:hover,
+    .carrusel__pieza[data-posicion='despues']:hover {
+        opacity: 0.75;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .carrusel__pista,
+    .carrusel__pieza {
+        transition-duration: 0ms;
+    }
+}

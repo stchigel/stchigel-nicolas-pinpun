@@ -1,0 +1,49 @@
+/*
+ * Tokens de diseño de Pin Pun.
+ * Colores tomados del relevamiento de marca: rojo de la fachada,
+ * verde de los chips de acción y blanco hueso de papel (nunca blanco puro).
+ */
+:root {
+    /* Color */
+    --rojo: #c1121f;
+    --rojo-hondo: #9b0e18;
+    --verde: #1e4d3a;
+    --verde-hondo: #143527;
+    --hueso: #f3f1eb;
+    --hueso-2: #e9e5da;
+    --hueso-3: #ddd6c6;
+    --tinta: #1f1a17;
+    --tinta-suave: #4d4540;
+    --sobre-rojo-suave: #f6d9d3;
+    --sobre-verde-suave: #cfe0d6;
+
+    /* Tipografía: Anton para titulares, Bitter para lectura */
+    --fuente-display: 'Anton', 'Arial Narrow', sans-serif;
+    --fuente-texto: 'Bitter', Georgia, serif;
+
+    /* Escala: un paso enorme (el cartel) y el resto contenido */
+    --t-monumento: clamp(7.5rem, 27.4vw, 34rem);
+    --t-titulo: clamp(2.5rem, 5.2vw, 4.75rem);
+    --t-subtitulo: clamp(1.75rem, 2.5vw, 2.25rem);
+    --t-destacado: clamp(1.25rem, 1.75vw, 1.625rem);
+    --t-cuerpo: 1.0625rem;
+    --t-chico: 0.875rem;
+
+    /* Espacio */
+    --margen: clamp(1rem, 2.4vw, 2rem);
+    --ancho-max: 90rem;
+    --separacion-secciones: clamp(6rem, 12vw, 11rem);
+
+    /* Movimiento */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+    --ease-suave: cubic-bezier(0.33, 1, 0.68, 1);
+    --t-presion: 140ms;
+    --t-hover: 180ms;
+    --t-ui: 240ms;
+    --t-revelar: 800ms;
+
+    /* Mantel a cuadros: la firma de la marca, dibujada como patrón SVG */
+    --mantel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23f3f1eb'/%3E%3Crect width='24' height='48' fill='%23c1121f' fill-opacity='.55'/%3E%3Crect width='48' height='24' fill='%23c1121f' fill-opacity='.55'/%3E%3C/svg%3E");
+    --mantel-tamano: 48px;
+}

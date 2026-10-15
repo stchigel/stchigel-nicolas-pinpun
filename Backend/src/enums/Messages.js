@@ -1,6 +1,7 @@
 export const Messages = Object.freeze({
     PRODUCTO_NOT_FOUND: 'El producto no existe.',
     PRODUCTO_DUPLICATED: 'Ya existe un producto con ese nombre.',
+    LOCAL_NOT_FOUND: 'El local no existe.',
     INVALID_ID: 'El ID debe ser un número entero positivo.',
     INVALID_DATA: 'Los datos enviados son inválidos.',
     INVALID_JSON: 'El cuerpo de la petición no es un JSON válido.',

@@ -1,0 +1,12 @@
+.mantel {
+    height: calc(var(--mantel-tamano) * 1.5);
+    background-image: var(--mantel);
+    background-size: var(--mantel-tamano) var(--mantel-tamano);
+    background-position: 0 0;
+}
+
+@media (max-width: 40rem) {
+    .mantel {
+        height: var(--mantel-tamano);
+    }
+}

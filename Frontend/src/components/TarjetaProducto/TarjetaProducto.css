@@ -1,0 +1,38 @@
+.tarjeta-producto {
+    container-type: inline-size;
+    background: var(--hueso);
+    color: var(--tinta);
+}
+
+.tarjeta-producto__pie {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 0.35rem 1.5rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.tarjeta-producto__nombre {
+    font-size: var(--t-subtitulo);
+    line-height: 1;
+}
+
+.tarjeta-producto__precio {
+    font-size: var(--t-destacado);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.tarjeta-producto__descripcion {
+    grid-column: 1 / -1;
+    color: var(--tinta-suave);
+}
+
+/* En tarjetas angostas el precio baja debajo del nombre para que este no se parta en tres líneas */
+@container (max-width: 26rem) {
+    .tarjeta-producto__pie {
+        grid-template-columns: 1fr;
+        padding-inline: 1.25rem;
+    }
+}

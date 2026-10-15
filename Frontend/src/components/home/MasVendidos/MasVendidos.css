@@ -1,0 +1,58 @@
+.mas-vendidos {
+    padding-block: var(--separacion-secciones);
+    background: var(--verde);
+    color: var(--hueso);
+}
+
+.mas-vendidos__encabezado {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.mas-vendidos__titulo {
+    font-size: var(--t-titulo);
+}
+
+.mas-vendidos__enlace {
+    padding-block: 0.5rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: rgb(243 241 235 / 0.5);
+    transition: text-decoration-color var(--t-hover) ease;
+}
+
+.mas-vendidos__esqueleto {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(1rem, 2vw, 2rem);
+    overflow: hidden;
+}
+
+.mas-vendidos__hueco {
+    flex: 0 0 min(28.8rem, 59vw);
+    aspect-ratio: 4 / 4.2;
+    background: rgb(243 241 235 / 0.08);
+    animation: latido 1400ms ease-in-out infinite;
+}
+
+.mas-vendidos__hueco--centro {
+    flex-basis: min(36rem, 74vw);
+    background: rgb(243 241 235 / 0.14);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .mas-vendidos__enlace:hover {
+        text-decoration-color: var(--hueso);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mas-vendidos__hueco {
+        animation: none;
+    }
+}

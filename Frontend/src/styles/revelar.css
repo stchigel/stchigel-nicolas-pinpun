@@ -1,0 +1,53 @@
+/*
+ * Entradas al hacer scroll. El hook useRevelar agrega .esta-visible a la sección
+ * y cada parte entra a su manera, en orden de lectura (--i marca el orden):
+ * - "subir": títulos y textos suben 24px mientras aparecen.
+ * - "persiana": las fotos se abren de abajo hacia arriba.
+ * - "fila": los elementos de una lista llegan uno por uno.
+ * Solo se ocultan si hay JavaScript y el usuario no pidió reducir el movimiento.
+ */
+@media (prefers-reduced-motion: no-preference) {
+    .js [data-revelar='subir'] {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+            opacity 700ms var(--ease-out),
+            transform 900ms var(--ease-out);
+        transition-delay: calc(var(--i, 0) * 80ms);
+    }
+
+    .js [data-revelar='fila'] {
+        opacity: 0;
+        transform: translateY(16px);
+        transition:
+            opacity 500ms var(--ease-out),
+            transform 600ms var(--ease-out);
+        transition-delay: calc(var(--i, 0) * 60ms + 120ms);
+    }
+
+    .js [data-revelar='persiana'] {
+        clip-path: inset(0 0 100% 0);
+        transition: clip-path 1100ms var(--ease-in-out);
+        transition-delay: calc(var(--i, 0) * 90ms + 100ms);
+    }
+
+    .js [data-revelar='persiana'] > * {
+        transform: scale(1.12);
+        transition: transform 1500ms var(--ease-suave);
+        transition-delay: inherit;
+    }
+
+    .js .esta-visible [data-revelar='subir'],
+    .js .esta-visible [data-revelar='fila'] {
+        opacity: 1;
+        transform: none;
+    }
+
+    .js .esta-visible [data-revelar='persiana'] {
+        clip-path: inset(0);
+    }
+
+    .js .esta-visible [data-revelar='persiana'] > * {
+        transform: none;
+    }
+}

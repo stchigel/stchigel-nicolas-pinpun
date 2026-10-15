@@ -1,0 +1,23 @@
+.foto {
+    position: relative;
+    overflow: hidden;
+    background: var(--hueso-2);
+}
+
+.foto__imagen,
+.foto__ilustracion {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto__imagen {
+    opacity: 0;
+    transition: opacity 1600ms ease;
+}
+
+.foto__imagen--visible {
+    opacity: 1;
+}

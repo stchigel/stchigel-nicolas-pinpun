@@ -1,0 +1,134 @@
+.historia {
+    padding-block: var(--separacion-secciones);
+}
+
+.historia__titulo {
+    font-size: var(--t-titulo);
+    color: var(--rojo);
+}
+
+.historia__fila {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--margen);
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.historia__datos {
+    grid-column: 1 / 5;
+    display: grid;
+    align-content: start;
+    gap: 1.5rem;
+    padding-right: 2rem;
+}
+
+.historia__dato dt {
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
+}
+
+.historia__dato dd {
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.historia__relato {
+    grid-column: 5 / 12;
+    font-size: var(--t-destacado);
+    line-height: 1.45;
+    max-width: 44ch;
+}
+
+.historia__fila--registro {
+    margin-top: clamp(4rem, 9vw, 8rem);
+    align-items: start;
+}
+
+.historia__registros {
+    grid-column: 1 / 5;
+    display: grid;
+    gap: 2.75rem;
+    padding: 2rem;
+    background: var(--hueso-2);
+}
+
+.historia__subtitulo {
+    font-size: var(--t-subtitulo);
+    color: var(--rojo);
+    margin-bottom: 0.75rem;
+}
+
+.historia__lista {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.historia__lista li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    line-height: 1.4;
+}
+
+.historia__anio {
+    color: var(--tinta-suave);
+    font-variant-numeric: tabular-nums;
+}
+
+.historia__collage {
+    grid-column: 5 / 13;
+    position: relative;
+    padding-bottom: clamp(3rem, 8vw, 7rem);
+}
+
+.historia__foto-grande {
+    width: 78%;
+}
+
+.historia__foto-chica {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 34%;
+    outline: clamp(0.5rem, 1vw, 0.875rem) solid var(--hueso);
+}
+
+@media (max-width: 52rem) {
+    .historia__fila {
+        grid-template-columns: 1fr;
+        row-gap: 2.5rem;
+    }
+
+    .historia__datos,
+    .historia__relato,
+    .historia__registros,
+    .historia__collage {
+        grid-column: 1;
+    }
+
+    .historia__datos {
+        grid-row: 2;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding-right: 0;
+    }
+
+    .historia__dato:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .historia__relato {
+        font-size: 1.1875rem;
+    }
+
+    .historia__registros {
+        padding: 1.5rem;
+    }
+
+    .historia__foto-grande {
+        width: 86%;
+    }
+
+    .historia__foto-chica {
+        width: 44%;
+    }
+}

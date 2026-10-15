@@ -1,0 +1,77 @@
+.boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3.25rem;
+    padding: 0.75rem 1.5rem;
+    border: 0;
+    border-radius: 0;
+    font-family: var(--fuente-texto);
+    font-size: var(--t-cuerpo);
+    font-weight: 500;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    user-select: none;
+    transition:
+        transform var(--t-presion) var(--ease-out),
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease;
+}
+
+.boton:active {
+    transform: scale(0.97);
+}
+
+.boton__contenido {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition:
+        filter var(--t-ui) ease,
+        opacity var(--t-ui) ease;
+}
+
+.boton--verde {
+    background: var(--verde);
+    color: var(--hueso);
+}
+
+.boton--hueso {
+    background: var(--hueso);
+    color: var(--tinta);
+}
+
+.boton--rojo {
+    background: var(--rojo);
+    color: var(--hueso);
+}
+
+.boton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.boton--cargando {
+    cursor: progress;
+}
+
+.boton--cargando .boton__contenido {
+    filter: blur(1px);
+    opacity: 0.7;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .boton--verde:hover {
+        background: var(--verde-hondo);
+    }
+
+    .boton--hueso:hover {
+        background: var(--hueso-3);
+    }
+
+    .boton--rojo:hover {
+        background: var(--rojo-hondo);
+    }
+}

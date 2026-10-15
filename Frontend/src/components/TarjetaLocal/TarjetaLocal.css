@@ -1,0 +1,44 @@
+.tarjeta-local {
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1.5rem, 2.4vw, 2rem);
+    background: var(--hueso);
+    color: var(--tinta);
+}
+
+.tarjeta-local__nombre {
+    font-size: var(--t-subtitulo);
+    color: var(--rojo);
+}
+
+.tarjeta-local__datos {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.tarjeta-local__datos li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.75rem;
+    line-height: 1.4;
+}
+
+.tarjeta-local__datos svg {
+    color: var(--rojo);
+}
+
+.tarjeta-local__datos a {
+    text-decoration-color: rgb(31 26 23 / 0.35);
+    transition: text-decoration-color var(--t-hover) ease;
+}
+
+.tarjeta-local__accion {
+    justify-self: start;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .tarjeta-local__datos a:hover {
+        text-decoration-color: currentColor;
+    }
+}

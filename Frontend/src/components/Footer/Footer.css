@@ -1,0 +1,84 @@
+.footer {
+    background: var(--rojo);
+    color: var(--hueso);
+}
+
+.footer__cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto auto;
+    min-height: min(100svh, 56rem);
+    padding-top: clamp(3rem, 6vw, 5rem);
+    padding-bottom: 1.25rem;
+}
+
+.footer__columnas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem var(--margen);
+}
+
+.footer__columna {
+    display: grid;
+    align-content: start;
+    gap: 0.4rem;
+}
+
+.footer__columna ul {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.footer__titulo {
+    margin-bottom: 0.5rem;
+    font-family: var(--fuente-texto);
+    font-size: var(--t-cuerpo);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.3;
+    text-transform: none;
+}
+
+.footer__suave {
+    color: var(--sobre-rojo-suave);
+}
+
+.footer__enlace {
+    display: inline-block;
+    padding-block: 0.2rem;
+    color: var(--hueso);
+    text-decoration: underline;
+    text-decoration-color: rgb(243 241 235 / 0.4);
+    transition: text-decoration-color var(--t-hover) ease;
+}
+
+.footer__marca {
+    grid-row: 3;
+    margin-top: 4rem;
+    color: var(--hueso);
+}
+
+.footer__legal {
+    grid-row: 4;
+    margin-top: 1.25rem;
+    font-size: var(--t-chico);
+    color: var(--sobre-rojo-suave);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .footer__enlace:hover {
+        text-decoration-color: var(--hueso);
+    }
+}
+
+@media (max-width: 52rem) {
+    .footer__columnas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 26rem) {
+    .footer__columnas {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,155 @@
+.hero {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - 6rem);
+    background: var(--rojo);
+    color: var(--hueso);
+}
+
+.hero__cuerpo {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--margen);
+    align-items: end;
+    padding-top: clamp(1rem, 2vw, 1.5rem);
+}
+
+.hero__texto {
+    position: relative;
+    z-index: 1;
+    grid-column: 1 / 6;
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+}
+
+.hero__anio {
+    font-family: var(--fuente-display);
+    font-size: var(--t-titulo);
+    line-height: 0.95;
+    text-transform: uppercase;
+}
+
+.hero__bajada {
+    max-width: 30rem;
+    font-size: var(--t-destacado);
+    line-height: 1.4;
+}
+
+.hero__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+    margin-top: 0.5rem;
+}
+
+.hero__enlace {
+    padding-block: 0.5rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: rgb(243 241 235 / 0.5);
+    transition: text-decoration-color var(--t-hover) ease;
+}
+
+.hero__marco {
+    grid-column: 7 / 13;
+    overflow: hidden;
+}
+
+/* Franja ancha, como la fachada vista desde la vereda de enfrente */
+.hero__foto {
+    aspect-ratio: 5 / 2;
+    animation: hero-deriva 14s var(--ease-suave) both;
+}
+
+.hero__monumento {
+    padding-top: clamp(1.25rem, 2.5vw, 2rem);
+    padding-bottom: clamp(0.75rem, 1.6vw, 1.5rem);
+}
+
+/* La máscara corta apenas debajo de la línea de base, para que las letras suban desde ahí */
+.hero__monumento .texto-ajustado__linea {
+    clip-path: inset(-40% -5% -0.05em -5%);
+}
+
+.hero__letra {
+    display: inline-block;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .hero__enlace:hover {
+        text-decoration-color: var(--hueso);
+    }
+}
+
+@media (max-width: 52rem) {
+    .hero {
+        min-height: auto;
+    }
+
+    .hero__cuerpo {
+        grid-template-columns: 1fr;
+        row-gap: 2rem;
+        padding-top: 1.5rem;
+    }
+
+    .hero__texto,
+    .hero__marco {
+        grid-column: 1;
+    }
+
+    .hero__marco {
+        grid-row: 2;
+    }
+
+    .hero__foto {
+        aspect-ratio: 4 / 3;
+    }
+}
+
+/* Entrada de la portada: el cartel sube letra por letra desde su línea de base */
+@media (prefers-reduced-motion: no-preference) {
+    .js .hero__letra {
+        transform: translateY(105%);
+        animation: hero-letra 900ms var(--ease-out) forwards;
+        animation-delay: calc(var(--i) * 55ms + 150ms);
+    }
+
+    .js .hero [data-entrada] {
+        opacity: 0;
+        transform: translateY(18px);
+        animation: hero-subir 800ms var(--ease-out) forwards;
+        animation-delay: calc(var(--i) * 90ms + 450ms);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero__foto {
+        animation: none;
+    }
+}
+
+@keyframes hero-letra {
+    to {
+        transform: none;
+    }
+}
+
+@keyframes hero-subir {
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes hero-deriva {
+    from {
+        transform: scale(1.08);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
