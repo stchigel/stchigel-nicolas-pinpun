@@ -18,7 +18,7 @@ function App() {
             <a href="#contenido" className="saltar-al-contenido">
                 Saltar al contenido
             </a>
-            <Navbar variante={pathname === '/' ? 'negro' : 'hueso'} />
+            <Navbar variante={pathname === '/' ? 'rojo' : 'hueso'} />
             <main id="contenido">
                 <Routes>
                     <Route path="/" element={<Home />} />

@@ -1,15 +1,11 @@
+import { obtenerImagenMarca } from '../../utils/imagenesMarca.js';
 import './Logo.css';
 
 /*
- * Logo de Pin Pun. Usa la imagen que haya en src/assets/logo/ (logo.png, logo.svg, logo.webp…).
+ * Logo de Pin Pun. Usa src/assets/logo/logo.png (o .svg, .webp…).
  * Mientras no exista, dibuja el óvalo rojo con filete y "PIN PUN" en blanco.
  */
-const archivos = import.meta.glob('../../assets/logo/*.{png,svg,webp,jpg,jpeg,avif}', {
-    eager: true,
-    import: 'default'
-});
-
-const urlLogo = Object.values(archivos)[0] ?? null;
+const urlLogo = obtenerImagenMarca('logo');
 
 function LogoDibujado({ className }) {
     return (
@@ -22,8 +18,8 @@ function LogoDibujado({ className }) {
                 y="89"
                 textAnchor="middle"
                 fill="var(--hueso)"
-                fontFamily="Abril Fatface, Georgia, serif"
-                fontSize="44"
+                fontFamily="Anton, sans-serif"
+                fontSize="54"
                 letterSpacing="1"
             >
                 PIN PUN

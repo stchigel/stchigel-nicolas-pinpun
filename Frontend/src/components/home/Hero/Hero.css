@@ -1,45 +1,36 @@
 .hero {
-    background: var(--negro) var(--azulejos);
-    background-size: 120px 60px;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - 6rem);
+    background: var(--rojo);
     color: var(--hueso);
 }
 
 .hero__cuerpo {
+    flex: 1;
     display: grid;
-    place-items: center;
-    min-height: calc(100svh - 6rem);
-    padding-block: clamp(1rem, 2vw, 1.5rem) clamp(2rem, 4vw, 3rem);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--margen);
+    align-items: end;
+    padding-top: clamp(1rem, 2vw, 1.5rem);
 }
 
-/* El contenido va centrado y no choca con las esquinas: el marco puede ser más bajo */
-.hero__cartel {
-    padding-block: calc(var(--tamano-esquina) * 0.45);
-    width: min(100%, 64rem);
-    background: var(--negro-2);
-    text-align: center;
+.hero__texto {
+    position: relative;
+    z-index: 1;
+    grid-column: 1 / 6;
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
 }
 
 .hero__cinta {
-    width: min(78%, 20rem);
-    margin-inline: auto;
-}
-
-.hero__titulo {
-    width: min(100%, 42rem);
-    margin: 0 auto -0.5rem;
-}
-
-.hero__rubro {
-    margin-top: 0.75rem;
-    font-family: var(--fuente-script);
-    font-size: var(--t-subtitulo);
-    line-height: 1.2;
-    color: var(--dorado-claro);
+    width: min(100%, 19rem);
+    margin-left: -0.5rem;
 }
 
 .hero__bajada {
-    max-width: 36rem;
-    margin: 1rem auto 0;
+    max-width: 30rem;
     font-size: var(--t-destacado);
     line-height: 1.45;
 }
@@ -47,52 +38,83 @@
 .hero__acciones {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
     gap: 1rem 1.75rem;
-    margin-top: 1.75rem;
+    margin-top: 0.25rem;
 }
 
 .hero__enlace {
     padding-block: 0.5rem;
     font-weight: 500;
     text-decoration: underline;
-    text-decoration-color: rgb(240 201 90 / 0.6);
+    text-decoration-color: rgb(243 241 235 / 0.5);
     transition: text-decoration-color var(--t-hover) ease;
+}
+
+/* Foto enmarcada con doble filete (dorado afuera, hueso adentro) */
+.hero__marco {
+    grid-column: 7 / 13;
+    padding: 0.5rem;
+    background: var(--rojo-hondo);
+    border: 3px solid var(--dorado-claro);
+    outline: 2px solid var(--hueso);
+    outline-offset: -0.5rem;
+    overflow: hidden;
+}
+
+.hero__foto {
+    aspect-ratio: 5 / 2;
+}
+
+.hero__nombre {
+    padding-top: clamp(1.25rem, 2.5vw, 2rem);
+    padding-bottom: clamp(0.75rem, 1.6vw, 1.5rem);
+    color: var(--hueso);
 }
 
 @media (hover: hover) and (pointer: fine) {
     .hero__enlace:hover {
-        text-decoration-color: var(--dorado-claro);
+        text-decoration-color: var(--hueso);
     }
 }
 
-@media (max-width: 40rem) {
-    .hero__cuerpo {
+@media (max-width: 52rem) {
+    .hero {
         min-height: auto;
     }
 
-    .hero__cartel {
-        --tamano-esquina: 4rem;
-        padding-inline: 1.25rem;
+    .hero__cuerpo {
+        grid-template-columns: 1fr;
+        row-gap: 2rem;
+        padding-top: 1.5rem;
+    }
+
+    .hero__texto,
+    .hero__marco {
+        grid-column: 1;
+    }
+
+    .hero__marco {
+        grid-row: 2;
+    }
+
+    .hero__foto {
+        aspect-ratio: 4 / 3;
     }
 }
 
-/* Entrada de la portada: el cartel se arma de arriba hacia abajo */
+/* Entrada de la portada: cinta, texto, foto y por último el nombre */
 @media (prefers-reduced-motion: no-preference) {
     .js .hero [data-entrada] {
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(18px);
         animation: hero-subir 800ms var(--ease-out) forwards;
-        animation-delay: calc(var(--i) * 110ms + 350ms);
-    }
-
-    .js .hero__cinta {
-        transform-origin: center;
+        animation-delay: calc(var(--i) * 110ms + 250ms);
     }
 
     .js .hero .hero__cinta {
         transform: scaleX(0.4);
+        transform-origin: left center;
         animation-name: hero-cinta;
         animation-duration: 900ms;
     }

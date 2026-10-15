@@ -54,8 +54,8 @@ function Sello() {
                 y="356"
                 textAnchor="middle"
                 fill="#f3f1eb"
-                fontFamily="Abril Fatface, Georgia, serif"
-                fontSize="80"
+                fontFamily="Anton, sans-serif"
+                fontSize="100"
             >
                 PIN PUN
             </text>

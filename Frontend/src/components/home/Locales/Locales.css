@@ -64,7 +64,8 @@
 .fila-local__nombre {
     font-family: var(--fuente-display);
     font-size: var(--t-subtitulo);
-    line-height: 1.05;
+    line-height: 1;
+    text-transform: uppercase;
 }
 
 .fila-local__estado {

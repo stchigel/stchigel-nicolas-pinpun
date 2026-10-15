@@ -1,0 +1,10 @@
+.logo-texto {
+    display: block;
+    width: 100%;
+}
+
+.logo-texto__imagen {
+    display: block;
+    width: 100%;
+    height: auto;
+}

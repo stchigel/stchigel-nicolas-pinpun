@@ -16,57 +16,44 @@
 
 .historia__fila {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    gap: clamp(2.5rem, 6vw, 5.5rem);
-    align-items: center;
-    margin-top: clamp(3rem, 6vw, 5rem);
-}
-
-.historia__relato {
-    font-size: var(--t-destacado);
-    line-height: 1.55;
-}
-
-/* Letra capital, como en los menús impresos de antes */
-.historia__relato::first-letter {
-    float: left;
-    margin: 0.06em 0.05em 0 0;
-    font-family: var(--fuente-display);
-    font-size: 3.6em;
-    line-height: 0.8;
-    color: var(--rojo);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--margen);
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
 }
 
 .historia__datos {
+    grid-column: 2 / 5;
     display: grid;
-    gap: 1rem;
-    margin-top: 2.25rem;
-    padding-top: 1.75rem;
-    border-top: 3px double var(--dorado);
-}
-
-.historia__dato {
-    display: grid;
-    grid-template-columns: 8.5rem 1fr;
-    gap: 1rem;
-    align-items: baseline;
+    align-content: start;
+    gap: 1.5rem;
 }
 
 .historia__dato dt {
-    font-family: var(--fuente-script);
-    font-size: 1.375rem;
-    line-height: 1.2;
-    color: var(--rojo);
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
 }
 
 .historia__dato dd {
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.35;
+}
+
+.historia__relato {
+    grid-column: 5 / 12;
+    max-width: 44ch;
+    font-size: var(--t-destacado);
+    line-height: 1.5;
+}
+
+.historia__fila--registro {
+    align-items: center;
+    margin-top: clamp(4rem, 8vw, 7rem);
 }
 
 .historia__fotos {
+    grid-column: 1 / 7;
     position: relative;
-    padding: 0 0 clamp(3rem, 7vw, 6rem) 0;
+    padding-bottom: clamp(3rem, 7vw, 6rem);
 }
 
 .historia__foto {
@@ -75,10 +62,6 @@
     border: 3px solid var(--dorado);
     outline: 2px solid var(--rojo);
     outline-offset: -0.5rem;
-}
-
-.historia__foto .foto {
-    outline: 0;
 }
 
 .historia__foto--grande {
@@ -93,15 +76,13 @@
 }
 
 .historia__cuadro {
-    max-width: 60rem;
-    margin: clamp(4rem, 8vw, 7rem) auto 0;
+    grid-column: 7 / 13;
     background: var(--hueso);
 }
 
 .historia__registros {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2rem clamp(2rem, 5vw, 4.5rem);
+    gap: 2rem;
 }
 
 .historia__subtitulo {
@@ -132,7 +113,7 @@
 }
 
 .historia__anio {
-    font-family: var(--fuente-display);
+    font-weight: 700;
     color: var(--rojo);
     font-variant-numeric: tabular-nums;
 }
@@ -147,14 +128,40 @@
     transform: rotate(45deg) translateY(-0.15em);
 }
 
-@media (max-width: 52rem) {
-    .historia__fila,
-    .historia__registros {
-        grid-template-columns: 1fr;
+@media (max-width: 64rem) {
+    .historia__datos {
+        grid-column: 1 / 5;
     }
 
-    .historia__dato {
-        grid-template-columns: 7rem 1fr;
+    .historia__relato {
+        grid-column: 5 / 13;
+    }
+}
+
+@media (max-width: 52rem) {
+    .historia__fila {
+        grid-template-columns: 1fr;
+        row-gap: 2.5rem;
+    }
+
+    .historia__datos,
+    .historia__relato,
+    .historia__fotos,
+    .historia__cuadro {
+        grid-column: 1;
+    }
+
+    .historia__datos {
+        grid-row: 2;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .historia__dato:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .historia__relato {
+        font-size: 1.1875rem;
     }
 
     .historia__foto--grande {

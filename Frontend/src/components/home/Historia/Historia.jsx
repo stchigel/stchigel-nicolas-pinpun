@@ -24,7 +24,7 @@ const EN_EL_SALON = [
     'Fotos de visitantes, de Gardel a Palito Ortega'
 ];
 
-/* "Un lugar, muchas palabras" del boceto: el relato, los datos y fotos del local. */
+/* "Un lugar, muchas palabras" del boceto: el relato, los datos, fotos del local y los premios. */
 function Historia() {
     const ref = useRevelar();
 
@@ -38,27 +38,27 @@ function Historia() {
             </header>
 
             <div className="historia__fila">
-                <div className="historia__texto">
-                    <p className="historia__relato" data-revelar="subir" style={{ '--i': 1 }}>
-                        Pin Pun abrió en {ANIO_FUNDACION} en una casona afrancesada de Almagro. Adentro es una pizzería de
-                        barrio de las de siempre: azulejos negros, piso calcáreo, carteles de neón y la muzza saliendo
-                        del horno a la vista de todos. Casi cien años después, sigue siendo la pizzería más antigua de
-                        la Ciudad.
-                    </p>
+                <dl className="historia__datos">
+                    {DATOS.map(({ etiqueta, valor }, indice) => (
+                        <div key={etiqueta} className="historia__dato" data-revelar="fila" style={{ '--i': indice }}>
+                            <dt>{etiqueta}</dt>
+                            <dd>{valor}</dd>
+                        </div>
+                    ))}
+                </dl>
 
-                    <dl className="historia__datos">
-                        {DATOS.map(({ etiqueta, valor }, indice) => (
-                            <div key={etiqueta} className="historia__dato" data-revelar="fila" style={{ '--i': indice + 2 }}>
-                                <dt>{etiqueta}</dt>
-                                <dd>{valor}</dd>
-                            </div>
-                        ))}
-                    </dl>
-                </div>
+                <p className="historia__relato" data-revelar="subir" style={{ '--i': 1 }}>
+                    Pin Pun abrió en {ANIO_FUNDACION} en una casona afrancesada de Almagro. Adentro es una pizzería de
+                    barrio de las de siempre: azulejos negros, piso calcáreo, carteles de neón y la muzza saliendo del
+                    horno a la vista de todos. Casi cien años después, sigue siendo la pizzería más antigua de la
+                    Ciudad.
+                </p>
+            </div>
 
+            <div className="historia__fila historia__fila--registro">
                 <div className="historia__fotos">
                     <figure className="historia__foto historia__foto--grande" data-revelar="persiana">
-                        <Foto nombres="fachada" alt="La fachada roja de Pin Pun en Av. Corrientes" relacion="4 / 3" />
+                        <Foto nombres="salon" alt="El salón de Pin Pun en Almagro" relacion="4 / 3" />
                     </figure>
                     <figure className="historia__foto historia__foto--chica" data-revelar="persiana" style={{ '--i': 2 }}>
                         <Foto
@@ -69,33 +69,37 @@ function Historia() {
                         />
                     </figure>
                 </div>
+
+                <MarcoFileteado
+                    className="historia__cuadro"
+                    data-revelar="subir"
+                    style={{ '--i': 1, '--retraso-filete': '300ms' }}
+                >
+                    <div className="historia__registros">
+                        <div>
+                            <h3 className="historia__subtitulo">Premios</h3>
+                            <ul className="historia__lista">
+                                {PREMIOS.map(({ nombre, anio }) => (
+                                    <li key={nombre}>
+                                        <span>{nombre}</span>
+                                        <span className="historia__puntos" aria-hidden="true" />
+                                        <span className="historia__anio">{anio}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 className="historia__subtitulo">En el salón</h3>
+                            <ul className="historia__lista historia__lista--salon">
+                                {EN_EL_SALON.map((detalle) => (
+                                    <li key={detalle}>{detalle}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </MarcoFileteado>
             </div>
-
-            <MarcoFileteado className="historia__cuadro" data-revelar="subir" style={{ '--retraso-filete': '300ms' }}>
-                <div className="historia__registros">
-                    <div>
-                        <h3 className="historia__subtitulo">Premios</h3>
-                        <ul className="historia__lista">
-                            {PREMIOS.map(({ nombre, anio }) => (
-                                <li key={nombre}>
-                                    <span>{nombre}</span>
-                                    <span className="historia__puntos" aria-hidden="true" />
-                                    <span className="historia__anio">{anio}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 className="historia__subtitulo">En el salón</h3>
-                        <ul className="historia__lista historia__lista--salon">
-                            {EN_EL_SALON.map((detalle) => (
-                                <li key={detalle}>{detalle}</li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            </MarcoFileteado>
         </section>
     );
 }

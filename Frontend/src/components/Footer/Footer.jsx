@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import Mantel from '../Mantel/Mantel.jsx';
-import LetraFileteada from '../Fileteado/LetraFileteada.jsx';
 import Remate from '../Fileteado/Remate.jsx';
+import LogoTexto from '../LogoTexto/LogoTexto.jsx';
 import { useRevelar } from '../../hooks/useRevelar.js';
 import {
     ANIO_FUNDACION,
@@ -23,7 +23,7 @@ function Footer() {
             <div className="footer__cuerpo contenedor">
                 <div className="footer__cartel">
                     <Remate />
-                    <LetraFileteada texto="PIN PUN" etiqueta="Pin Pun" className="footer__marca" />
+                    <LogoTexto className="footer__marca" />
                     <p className="footer__lema">Bodegón porteño desde {ANIO_FUNDACION}</p>
                 </div>
 

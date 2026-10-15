@@ -75,6 +75,18 @@
     fill: #5e0910;
 }
 
+.cinta--verde .cinta__banda {
+    fill: var(--verde);
+}
+
+.cinta--verde .cinta__punta {
+    fill: var(--verde-hondo);
+}
+
+.cinta--verde .cinta__doblez {
+    fill: #0b2219;
+}
+
 .cinta__filete {
     fill: none;
     stroke: var(--filete-dorado-luz);
@@ -85,42 +97,6 @@
     font-family: var(--fuente-script);
     font-size: 40px;
     fill: var(--hueso);
-}
-
-/* ---------- Letras de cartel ---------- */
-.letra-fileteada {
-    --letra-arriba: #fffaf0;
-    --letra-medio: var(--hueso);
-    --letra-abajo: #e6c77a;
-    --letra-relieve: var(--rojo-hondo);
-    --letra-contorno: var(--negro);
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: visible;
-}
-
-.letra-fileteada__texto text {
-    font-family: var(--fuente-display);
-    font-size: 200px;
-    letter-spacing: 4px;
-}
-
-.letra-fileteada__relieve {
-    fill: var(--letra-relieve);
-}
-
-.letra-fileteada__contorno {
-    fill: var(--letra-contorno);
-    stroke: var(--letra-contorno);
-    stroke-width: 14px;
-    stroke-linejoin: round;
-}
-
-.letra-fileteada__filete {
-    fill: none;
-    stroke: var(--filete-dorado);
-    stroke-width: 2.5px;
 }
 
 /* ---------- Entradas: el fileteado se "pinta" desde las esquinas y el centro ---------- */

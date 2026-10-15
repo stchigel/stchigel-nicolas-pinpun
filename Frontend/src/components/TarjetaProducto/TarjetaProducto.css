@@ -48,7 +48,7 @@
 .tarjeta-producto__descripcion {
     grid-column: 1 / -1;
     font-style: italic;
-    color: var(--tinta-suave);
+    color: var(--tinta);
 }
 
 /* En tarjetas angostas el precio baja debajo del nombre */

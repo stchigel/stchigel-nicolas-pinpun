@@ -1,12 +1,12 @@
 import { useId } from 'react';
 import './Fileteado.css';
 
-/* Cinta de cartel con las puntas dobladas y el texto en letra cursiva. */
-function Cinta({ children, className = '' }) {
+/* Cinta de cartel con las puntas dobladas y el texto en letra cursiva. Variantes: "roja" y "verde". */
+function Cinta({ children, variante = 'roja', className = '' }) {
     const idCurva = `cinta-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 
     return (
-        <svg className={`cinta ${className}`} viewBox="0 0 420 110" role="img" aria-label={children}>
+        <svg className={`cinta cinta--${variante} ${className}`} viewBox="0 0 420 110" role="img" aria-label={children}>
             <path className="cinta__punta" d="M60 34 L6 34 L24 58 L6 82 L66 82 Z" />
             <path className="cinta__punta" d="M360 34 L414 34 L396 58 L414 82 L354 82 Z" />
             <path className="cinta__doblez" d="M60 34 L66 82 L80 70 Z" />
