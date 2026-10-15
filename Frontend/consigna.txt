@@ -1,0 +1,160 @@
+Objetivo
+Desarrollar la interfaz visual del sistema utilizando React, conectarla con la API realizada en la Entrega 2 y aplicar criterios de reutilización, accesibilidad, experiencia de usuario y coherencia visual.
+
+El frontend deberá respetar el boceto presentado al comienzo del proyecto. Se podrán realizar mejoras justificadas, pero no reemplazar completamente el diseño original por una interfaz genérica.
+
+
+Parte 1 — Creación y organización del frontend
+Todo el desarrollo deberá realizarse dentro de la carpeta: frontend/src
+
+
+
+
+El repositorio deberá mantener la siguiente estructura general:
+
+
+apellido-nombre-negocio/
+
+├── backend/
+
+└── frontend/
+
+
+
+Dentro de frontend/src, el proyecto deberá organizarse por responsabilidades.
+
+Estructura sugerida:
+
+frontend/
+
+├── public/
+
+├── src/
+
+    ├── assets/
+
+    ├── components/
+
+    ├── pages/
+
+    ├── services/
+
+    ├── utils/
+
+    ├── styles/
+
+    ├── App.jsx
+
+    └── main.jsx
+
+Responsabilidad de cada carpeta
+assets: imágenes, íconos y recursos visuales.
+components: componentes reutilizables.
+pages: pantallas principales de la aplicación.
+services: comunicación con la API.
+utils: funciones auxiliares.
+styles: archivos CSS generales o compartidos.
+App.jsx: organización general de la aplicación y navegación entre pantallas.
+main.jsx: punto de entrada del proyecto.
+No deberán escribir toda la aplicación dentro de App.jsx.
+
+
+
+
+Cada archivo deberá tener una responsabilidad clara y estar ubicado dentro de la carpeta correspondiente.
+
+
+
+El frontend deberá ejecutarse correctamente de manera independiente y comunicarse con el backend desarrollado en la entrega anterior.
+
+
+Parte 2 — Diseño, componentes reutilizables y accesibilidad
+Componentes reutilizables
+La interfaz deberá construirse utilizando componentes reutilizables. Se deberá evitar duplicar código visual y reutilizar los mismos componentes en distintas pantallas cuando sea posible.
+
+Experiencia de usuario
+La aplicación deberá brindar una respuesta visual ante cada acción del usuario. Como mínimo deberá contemplar:
+
+Estados de carga.
+Operaciones exitosas.
+Mensajes de error.
+Validaciones de formularios.
+Confirmación antes de eliminar un registro.
+Los errores y las operaciones exitosas deberán mostrarse mediante un mismo sistema de notificaciones (por ejemplo, notificaciones laterales), evitando el uso de alert() como mecanismo principal.
+
+Accesibilidad
+La aplicación deberá cumplir aspectos básicos de accesibilidad, utilizando correctamente etiquetas HTML, asociando los label con sus respectivos input, empleando botones semánticos, textos alternativos en imágenes y una navegación clara para el usuario. La interfaz deberá ser comprensible y fácil de utilizar para cualquier persona.
+
+
+Parte 3 — Consumo de la API y funcionalidades
+
+El frontend deberá comunicarse con el backend desarrollado en la Entrega 2.
+
+
+
+La información no deberá estar escrita manualmente dentro de los componentes.
+
+
+
+Las peticiones no deberán escribirse directamente dentro de todas las pantallas o componentes.
+
+
+
+Deberán centralizarse dentro de la carpeta: src/services
+
+
+
+
+const API_URL = "http://localhost:3000/products";
+
+export async function getProducts() {
+
+  const response = await fetch(API_URL);
+
+  if (!response.ok) {
+
+    const error = await response.json();
+
+    throw new Error(error.message);
+
+  }
+
+  return response.json();
+
+}
+
+
+
+Los componentes y las páginas deberán utilizar estas funciones, sin repetir la lógica de fetch en distintos lugares.
+
+
+
+Cada recurso principal podrá tener su propio archivo de servicio.
+
+Los servicios serán responsables de:
+
+realizar las peticiones HTTP;
+configurar la URL correspondiente;
+procesar la respuesta;
+detectar respuestas incorrectas;
+devolver la información al componente;
+lanzar errores cuando la operación falle.
+
+Criterios de evaluación
+
+Se evaluará:
+
+correcta creación y organización de la carpeta frontend;
+separación por responsabilidades;
+uso de componentes reutilizables;
+respeto por el boceto original;
+calidad visual y coherencia del diseño;
+accesibilidad básica;
+funcionamiento de formularios;
+consumo correcto de la API;
+centralización de peticiones en services;
+manejo de estados de carga;
+manejo consistente de errores y operaciones exitosas;
+confirmación antes de eliminar;
+integración completa con el backend;
+código claro, ordenado e indentado.
