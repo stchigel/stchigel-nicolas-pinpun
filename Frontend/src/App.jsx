@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import ScrollAlHash from './components/ScrollAlHash/ScrollAlHash.jsx';
@@ -10,15 +10,13 @@ const EN_CONSTRUCCION = 'Estamos terminando esta parte del sitio. Mientras tanto
 
 /* Estructura general: barra, contenido según la ruta, pie y notificaciones. */
 function App() {
-    const { pathname } = useLocation();
-
     return (
         <ToastProvider>
             <ScrollAlHash />
             <a href="#contenido" className="saltar-al-contenido">
                 Saltar al contenido
             </a>
-            <Navbar variante={pathname === '/' ? 'rojo' : 'hueso'} />
+            <Navbar />
             <main id="contenido">
                 <Routes>
                     <Route path="/" element={<Home />} />

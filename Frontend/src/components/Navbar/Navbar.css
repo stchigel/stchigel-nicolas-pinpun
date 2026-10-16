@@ -1,23 +1,29 @@
+/*
+ * Barra verde fija arriba, cerrada abajo con un filete dorado como el de los botones.
+ * El logo es más alto que la barra y sobresale por debajo, como el cartel ovalado
+ * que asoma sobre la vereda; al bajar la página se acomoda adentro de la barra.
+ */
 .navbar {
-    position: relative;
+    --filete-navbar: inset 0 -0.25rem 0 var(--dorado-claro);
+    position: sticky;
+    top: 0;
     z-index: 20;
-}
-
-.navbar--rojo {
-    background: var(--rojo);
+    background: var(--verde);
     color: var(--hueso);
+    box-shadow: var(--filete-navbar);
 }
 
-.navbar--hueso {
-    background: var(--hueso);
-    color: var(--tinta);
+.navbar :focus-visible {
+    outline-color: var(--dorado-claro);
 }
 
+/* La fila mide lo mismo que la barra: el logo la desborda sin correr los enlaces hacia abajo */
 .navbar__barra {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: 100%;
     align-items: center;
-    min-height: 6rem;
+    height: var(--alto-navbar);
 }
 
 .navbar__grupo {
@@ -32,14 +38,30 @@
     font-weight: 500;
     text-decoration: underline;
     text-decoration-color: transparent;
-    transition: text-decoration-color var(--t-hover) ease;
+    transition:
+        color var(--t-hover) ease,
+        text-decoration-color var(--t-hover) ease;
 }
 
+/*
+ * El logo arranca cerca del borde de arriba y baja más allá de la barra.
+ * `--logo-escala` y `--logo-subida` lo dejan entero adentro de la barra al scrollear.
+ */
 .navbar__logo {
+    --logo-escala: 0.734;
+    --logo-subida: -0.425rem;
+    position: relative;
+    z-index: 2;
+    align-self: start;
     display: block;
-    width: 8.5rem;
-    margin-block: 0.75rem;
+    width: 13.5rem;
+    margin-top: 0.8rem;
     transition: transform var(--t-presion) var(--ease-out);
+}
+
+.navbar__logo .logo {
+    transform-origin: 50% 0;
+    filter: drop-shadow(0 5px 8px rgb(21 16 14 / 0.3));
 }
 
 .navbar__logo:active {
@@ -64,7 +86,9 @@
     border: 0;
     background: transparent;
     color: inherit;
-    transition: transform var(--t-presion) var(--ease-out);
+    transition:
+        color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
 }
 
 .navbar__carrito:active,
@@ -82,14 +106,53 @@
 
 @media (hover: hover) and (pointer: fine) {
     .navbar__enlace:hover {
+        color: var(--dorado-claro);
         text-decoration-color: currentColor;
+    }
+
+    .navbar__carrito:hover {
+        color: var(--dorado-claro);
+    }
+}
+
+/*
+ * Al bajar, la barra se despega del contenido con una sombra y el logo sube y se achica
+ * hasta quedar adentro de la barra. Los dos cambios siguen al scroll, sin saltos.
+ */
+@supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+        .navbar {
+            animation: navbar-despegar linear both;
+            animation-timeline: scroll(root);
+            animation-range: 0 6rem;
+        }
+
+        .navbar__logo .logo {
+            animation: logo-acomodar linear both;
+            animation-timeline: scroll(root);
+            animation-range: 0 8rem;
+        }
+    }
+}
+
+@keyframes navbar-despegar {
+    to {
+        box-shadow:
+            var(--filete-navbar),
+            0 8px 20px -10px rgb(21 16 14 / 0.4);
+    }
+}
+
+@keyframes logo-acomodar {
+    to {
+        transform: translateY(var(--logo-subida)) scale(var(--logo-escala));
+        filter: drop-shadow(0 2px 3px rgb(21 16 14 / 0.3));
     }
 }
 
 @media (max-width: 52rem) {
     .navbar__barra {
         grid-template-columns: auto 1fr;
-        min-height: 4.5rem;
     }
 
     .navbar__barra > .navbar__grupo,
@@ -98,9 +161,15 @@
     }
 
     .navbar__logo {
+        --logo-escala: 0.743;
+        --logo-subida: -0.275rem;
         grid-row: 1;
-        width: 6.25rem;
-        margin-block: 0.5rem;
+        width: 10rem;
+        margin-top: 0.65rem;
+    }
+
+    .navbar__logo .logo {
+        transform-origin: 0 0;
     }
 
     .navbar__derecha {
@@ -111,12 +180,24 @@
         display: grid;
     }
 
+    /* Con el panel abierto, el filete pasa al borde de abajo del panel */
+    .navbar:has(.navbar__panel[data-abierto]) {
+        animation: none;
+        box-shadow: none;
+    }
+
+    /* Panel desplegable: deja lugar arriba para la parte del logo que sobresale */
     .navbar__panel[data-abierto] {
         display: block;
         position: absolute;
+        z-index: 1;
         inset: 100% 0 auto;
-        background: inherit;
+        padding-top: calc(var(--sobresale-logo) + 0.75rem);
         padding-bottom: 1.5rem;
+        background: var(--verde);
+        box-shadow:
+            var(--filete-navbar),
+            0 12px 24px -14px rgb(21 16 14 / 0.45);
         transform-origin: top;
         transition:
             opacity var(--t-ui) var(--ease-out),
@@ -128,14 +209,6 @@
             opacity: 0;
             transform: translateY(-0.5rem);
         }
-    }
-
-    .navbar--rojo .navbar__panel {
-        background: var(--rojo);
-    }
-
-    .navbar--hueso .navbar__panel {
-        background: var(--hueso);
     }
 
     .navbar__panel-lista {
