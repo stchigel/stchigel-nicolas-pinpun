@@ -64,6 +64,11 @@
     --mantel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23f3f1eb'/%3E%3Crect width='24' height='48' fill='%23c1121f' fill-opacity='.55'/%3E%3Crect width='48' height='24' fill='%23c1121f' fill-opacity='.55'/%3E%3C/svg%3E");
     --mantel-tamano: 48px;
 
+    /* Piso calcáreo de bodegón, en línea fina y casi del mismo tono que el fondo (una versión por fondo) */
+    --calcareo-hueso: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' fill='none' stroke='%23e2dac6' stroke-width='1.25'%3E%3Cpath d='M36 14L58 36L36 58L14 36Z'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3Ccircle r='12'/%3E%3Ccircle cx='72' r='12'/%3E%3Ccircle cy='72' r='12'/%3E%3Ccircle cx='72' cy='72' r='12'/%3E%3C/svg%3E");
+    --calcareo-verde: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' fill='none' stroke='%231a4433' stroke-width='1.25'%3E%3Cpath d='M36 14L58 36L36 58L14 36Z'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3Ccircle r='12'/%3E%3Ccircle cx='72' r='12'/%3E%3Ccircle cy='72' r='12'/%3E%3Ccircle cx='72' cy='72' r='12'/%3E%3C/svg%3E");
+    --calcareo-tamano: 72px;
+
     /* Azulejos negros del salón: ladrillitos con su junta */
     --azulejos: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Crect width='120' height='60' fill='%2315100e'/%3E%3Cpath d='M0 0.5H120M0 30.5H120M0.5 0V30M60.5 30V60' stroke='%232a211d' stroke-width='1.5'/%3E%3C/svg%3E");
 }

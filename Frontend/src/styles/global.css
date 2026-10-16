@@ -22,7 +22,8 @@ html {
 body {
     margin: 0;
     min-height: 100svh;
-    background: var(--hueso);
+    background: var(--hueso) var(--calcareo-hueso);
+    background-size: var(--calcareo-tamano);
     color: var(--tinta);
     font-family: var(--fuente-texto);
     font-size: var(--t-cuerpo);

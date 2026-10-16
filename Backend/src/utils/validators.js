@@ -7,6 +7,9 @@ export const isNonEmptyString = (value) =>
 export const isOptionalString = (value) =>
     value === undefined || typeof value === 'string';
 
+export const isOptionalBoolean = (value) =>
+    value === undefined || typeof value === 'boolean';
+
 export const isPositiveNumber = (value) =>
     typeof value === 'number' && Number.isFinite(value) && value > 0;
 

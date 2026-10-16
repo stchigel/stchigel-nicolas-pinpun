@@ -1,0 +1,148 @@
+/* Con el índice fijo, los saltos a cada sección dejan lugar para la barra y el índice */
+html:has(.menu) {
+    scroll-padding-top: calc(var(--alto-navbar) + 4.5rem);
+}
+
+.menu {
+    padding-bottom: var(--separacion-secciones);
+}
+
+.menu__encabezado {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding-block: calc(var(--sobresale-logo) + clamp(2.5rem, 6vw, 4.5rem)) clamp(2rem, 4vw, 3rem);
+    text-align: center;
+}
+
+.menu__titulo {
+    font-size: var(--t-titulo);
+    color: var(--rojo);
+}
+
+.menu__bajada {
+    max-width: 38rem;
+    font-size: var(--t-destacado);
+    line-height: 1.45;
+}
+
+.menu__cuerpo {
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* La hoja de la carta: papel liso con el doble filete de los cuadros del sitio */
+.menu__hoja {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    padding: clamp(1.25rem, 3.5vw, 3rem);
+    background: var(--hueso);
+    border: 3px solid var(--dorado);
+    outline: 2px solid var(--rojo);
+    outline-offset: -0.6rem;
+}
+
+/* Sección: dos columnas separadas por un filete ondulado, como en el boceto */
+.menu__seccion {
+    --onda-vertical: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='12'%3E%3Cpath d='M3 0q-3 3 0 6t0 6' fill='none' stroke='%23c9971f' stroke-width='1.25'/%3E%3C/svg%3E");
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: start;
+}
+
+.menu__seccion[data-ancho='izquierda'] {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+
+.menu__seccion[data-ancho='derecha'] {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+
+.menu__columna {
+    position: relative;
+}
+
+.menu__columna + .menu__columna::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(clamp(2rem, 4vw, 3.5rem) / -2 - 3px);
+    width: 6px;
+    background: var(--onda-vertical) repeat-y center top;
+    background-size: 6px 12px;
+}
+
+.menu__estado {
+    margin-inline: auto;
+    background: var(--hueso-2);
+}
+
+/* Esqueleto mientras carga: bandas y renglones que laten despacio */
+.menu__esqueleto {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+}
+
+.menu__esqueleto-columna {
+    display: grid;
+    align-content: start;
+    gap: 0.9rem;
+}
+
+.menu__esqueleto-banda,
+.menu__esqueleto-renglon {
+    background: var(--hueso-2);
+    animation: menu-latido 1.4s var(--ease-in-out) infinite alternate;
+}
+
+.menu__esqueleto-banda {
+    height: 3.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.menu__esqueleto-renglon {
+    height: 1.25rem;
+}
+
+.menu__esqueleto-renglon:nth-child(odd) {
+    width: 82%;
+}
+
+@keyframes menu-latido {
+    to {
+        opacity: 0.45;
+    }
+}
+
+@media (max-width: 52rem) {
+    .menu__seccion,
+    .menu__seccion[data-ancho] {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: clamp(2rem, 4vw, 3rem);
+    }
+
+    .menu__columna + .menu__columna::before {
+        display: none;
+    }
+
+    .menu__esqueleto {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 40rem) {
+    .menu__hoja {
+        margin-inline: calc(var(--margen) * -0.5);
+        padding: 1.25rem 1rem;
+        outline-offset: -0.45rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .menu__esqueleto-banda,
+    .menu__esqueleto-renglon {
+        animation: none;
+    }
+}

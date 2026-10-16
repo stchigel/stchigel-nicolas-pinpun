@@ -96,6 +96,41 @@
     transform: scale(0.92);
 }
 
+.navbar__carrito {
+    position: relative;
+}
+
+/* Cantidad del pedido sobre el carrito; salta cada vez que se suma algo */
+.navbar__cantidad {
+    position: absolute;
+    top: 0.1rem;
+    right: -0.1rem;
+    display: grid;
+    place-items: center;
+    min-width: 1.3rem;
+    height: 1.3rem;
+    padding-inline: 0.3rem;
+    border-radius: 0.65rem;
+    background: var(--dorado-claro);
+    color: var(--verde-hondo);
+    font-family: var(--fuente-display);
+    font-size: 0.8125rem;
+    line-height: 1;
+    animation: navbar-cantidad 420ms var(--ease-out);
+}
+
+@keyframes navbar-cantidad {
+    from {
+        transform: scale(1.5);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navbar__cantidad {
+        animation: none;
+    }
+}
+
 .navbar__alternar {
     display: none;
 }

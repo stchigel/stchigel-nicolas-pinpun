@@ -37,6 +37,12 @@ const TRAZOS = {
     flechaDerecha: <path d="m9.5 6 6 6-6 6" />,
     flechaDiagonal: <path d="M7 17 17 7M9 7h8v8" />,
     menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+    mas: (
+        <>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 8v8M8 12h8" />
+        </>
+    ),
     cerrar: <path d="m6 6 12 12M18 6 6 18" />,
     exito: (
         <>

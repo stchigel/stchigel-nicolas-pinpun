@@ -1,9 +1,23 @@
 import productoService from '../services/productoService.js';
 import ApiResponse from '../responses/ApiResponse.js';
 import { HttpStatus } from '../enums/HttpStatus.js';
+import { BadRequestError } from '../exceptions/AppError.js';
+import { Messages } from '../enums/Messages.js';
+
+/* Filtros opcionales: ?categoria=Pizzas y ?destacado=true|false */
+const leerFiltros = ({ categoria, destacado }) => {
+    if (destacado !== undefined && destacado !== 'true' && destacado !== 'false') {
+        throw new BadRequestError(Messages.INVALID_FILTRO_DESTACADO);
+    }
+
+    return {
+        categoria: typeof categoria === 'string' && categoria.trim() ? categoria.trim() : undefined,
+        destacado: destacado === undefined ? undefined : destacado === 'true'
+    };
+};
 
 const getAll = (req, res) => {
-    ApiResponse.success(res, productoService.getAll());
+    ApiResponse.success(res, productoService.getAll(leerFiltros(req.query)));
 };
 
 const getById = (req, res) => {

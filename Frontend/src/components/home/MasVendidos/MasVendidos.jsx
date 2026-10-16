@@ -7,7 +7,7 @@ import Remate from '../../Fileteado/Remate.jsx';
 import { useApi } from '../../../hooks/useApi.js';
 import { useRevelar } from '../../../hooks/useRevelar.js';
 import { useToast } from '../../../hooks/useToast.js';
-import { getProductos } from '../../../services/productoService.js';
+import { getProductosDestacados } from '../../../services/productoService.js';
 import './MasVendidos.css';
 
 function Esqueleto() {
@@ -22,7 +22,7 @@ function Esqueleto() {
 
 /* "Nuestros más vendidos": los platos vienen de la API y se muestran en el carrusel del boceto. */
 function MasVendidos() {
-    const { datos: productos, cargando, error, reintentar } = useApi(getProductos);
+    const { datos: productos, cargando, error, reintentar } = useApi(getProductosDestacados);
     const notificar = useToast();
     const ref = useRevelar();
 

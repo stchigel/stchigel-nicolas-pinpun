@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Mantel from '../Mantel/Mantel.jsx';
 import LogoTexto from '../LogoTexto/LogoTexto.jsx';
+import Logo from '../Logo/Logo.jsx';
 import { useRevelar } from '../../hooks/useRevelar.js';
 import {
     ANIO_FUNDACION,
@@ -20,10 +21,7 @@ function Footer() {
         <footer id="contacto" className="footer" ref={ref}>
             <Mantel />
             <div className="footer__cuerpo contenedor">
-                <div className="footer__cartel">
-                    <LogoTexto className="footer__marca" />
-                </div>
-
+               
                 <div className="footer__columnas">
                     <nav className="footer__columna" aria-label="Secundaria">
                         <h2 className="footer__titulo">Navegá</h2>

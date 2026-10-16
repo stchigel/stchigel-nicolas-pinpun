@@ -45,6 +45,20 @@
     white-space: nowrap;
 }
 
+.tarjeta-producto__variante {
+    margin-right: 0.2rem;
+    font-family: var(--fuente-texto);
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
+}
+
+.tarjeta-producto__seccion {
+    grid-column: 1 / -1;
+    font-size: var(--t-chico);
+    font-weight: 500;
+    color: var(--tinta-suave);
+}
+
 .tarjeta-producto__descripcion {
     grid-column: 1 / -1;
     font-style: italic;

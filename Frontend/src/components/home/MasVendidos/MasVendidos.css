@@ -4,7 +4,8 @@
     --filete-verde-luz: var(--dorado-claro);
     --filete-verde-brillo: #fff3c4;
     padding-block: var(--separacion-secciones);
-    background: var(--verde);
+    background: var(--verde) var(--calcareo-verde);
+    background-size: var(--calcareo-tamano);
     color: var(--hueso);
 }
 

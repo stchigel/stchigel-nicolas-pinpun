@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../Logo/Logo.jsx';
 import Icono from '../Icono/Icono.jsx';
+import { usePedido } from '../../hooks/usePedido.js';
 import { ENLACES_DERECHA, ENLACES_IZQUIERDA } from '../../utils/sitio.js';
 import './Navbar.css';
 
@@ -40,6 +41,12 @@ function Navbar() {
 
     const cerrar = () => setAbierto(false);
 
+    const { cantidadTotal } = usePedido();
+    const etiquetaCarrito =
+        cantidadTotal > 0
+            ? `Ver carrito (${cantidadTotal} ${cantidadTotal === 1 ? 'producto' : 'productos'})`
+            : 'Ver carrito';
+
     return (
         <header className="navbar">
             <nav className="navbar__barra contenedor" aria-label="Principal">
@@ -51,8 +58,13 @@ function Navbar() {
 
                 <div className="navbar__derecha">
                     <ListaEnlaces enlaces={ENLACES_DERECHA} className="navbar__grupo" />
-                    <Link to="/carrito" className="navbar__carrito" aria-label="Ver carrito">
+                    <Link to="/carrito" className="navbar__carrito" aria-label={etiquetaCarrito}>
                         <Icono nombre="carrito" tamano={26} />
+                        {cantidadTotal > 0 && (
+                            <span key={cantidadTotal} className="navbar__cantidad" aria-hidden="true">
+                                {cantidadTotal > 99 ? '99+' : cantidadTotal}
+                            </span>
+                        )}
                     </Link>
                     <button
                         type="button"
