@@ -23,13 +23,6 @@
     width: 100%;
 }
 
-.footer__lema {
-    margin-top: 0.5rem;
-    font-size: var(--t-destacado);
-    font-style: italic;
-    color: var(--dorado-claro);
-}
-
 .footer__columnas {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

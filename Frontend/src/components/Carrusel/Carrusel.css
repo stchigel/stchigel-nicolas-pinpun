@@ -22,8 +22,14 @@
     transition: transform 620ms var(--ease-in-out);
 }
 
+/*
+ * Todas las piezas escalan desde el centro; las vecinas se arriman a la activa con
+ * translateX (10% = la mitad de lo que encogen). Si el origen cambiara entre estados,
+ * la pieza saltaría de lugar antes de empezar la transición.
+ */
 .carrusel__pieza {
     flex: 0 0 var(--ancho-pieza);
+    transform: translateX(0) scale(1);
     transition:
         transform 620ms var(--ease-in-out),
         opacity 620ms var(--ease-in-out);
@@ -32,17 +38,16 @@
 .carrusel__pieza[data-posicion='antes'],
 .carrusel__pieza[data-posicion='despues'] {
     opacity: 0.55;
-    transform: scale(0.8);
     cursor: pointer;
     user-select: none;
 }
 
 .carrusel__pieza[data-posicion='antes'] {
-    transform-origin: right center;
+    transform: translateX(10%) scale(0.8);
 }
 
 .carrusel__pieza[data-posicion='despues'] {
-    transform-origin: left center;
+    transform: translateX(-10%) scale(0.8);
 }
 
 .carrusel__controles {

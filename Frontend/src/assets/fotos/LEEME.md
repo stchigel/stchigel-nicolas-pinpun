@@ -5,11 +5,11 @@ Formatos: `.jpg`, `.jpeg`, `.png`, `.webp` o `.avif`. Mientras una foto no exist
 
 ## Portada e historia (en esta carpeta)
 
-| Archivo | Dónde aparece | Qué conviene que muestre |
-| --- | --- | --- |
-| `fachada.jpg` | Portada (primera foto, franja ancha 5:2) | La fachada roja de Av. Corrientes 3954, horizontal |
-| `salon.jpg` | Portada (se alterna) e Historia, foto grande (4:3) | El salón: azulejos negros, piso calcáreo, carteles |
-| `pizzero.jpg` | Portada (se alterna) e Historia, foto chica (vertical 4:5) | Un pizzero trabajando a la vista |
+| Archivo         | Dónde aparece                                             | Qué conviene que muestre                            |
+| --------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
+| `fachada.jpg` | Portada (primera foto, franja ancha 5:2)                   | La fachada roja de Av. Corrientes 3954, horizontal   |
+| `salon.jpg`   | Portada (se alterna) e Historia, foto grande (4:3)         | El salón: azulejos negros, piso calcáreo, carteles |
+| `pizzero.jpg` | Portada (se alterna) e Historia, foto chica (vertical 4:5) | Un pizzero trabajando a la vista                     |
 
 ## Platos (en `productos/`)
 
