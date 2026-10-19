@@ -1,0 +1,206 @@
+/* Mitad y mitad: rompe el partido de la carta con una franja verde a todo el ancho */
+.mitad {
+    padding-block: var(--separacion-secciones);
+    background: var(--verde) var(--calcareo-verde);
+    background-size: var(--calcareo-tamano);
+    color: var(--hueso);
+}
+
+.mitad__interior {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: center;
+    gap: clamp(2rem, 6vw, 6rem);
+}
+
+/* La pizza al molde partida al medio, con el nombre de cada mitad debajo */
+.mitad__plato {
+    display: grid;
+    gap: 1.25rem;
+    margin: 0;
+}
+
+.pizza-mitades {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Al cambiar una mitad, la nueva aparece con un fundido corto */
+.pizza-mitades__mitad {
+    animation: mitad-aparece var(--t-ui) ease-out;
+}
+
+@keyframes mitad-aparece {
+    from {
+        opacity: 0;
+    }
+}
+
+.mitad__etiquetas {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.mitad__etiqueta {
+    justify-self: center;
+    max-width: 100%;
+    padding: 0.45rem 0.7rem 0.4rem;
+    background: var(--hueso);
+    color: var(--tinta);
+    font-family: var(--fuente-display);
+    font-size: clamp(1rem, 1.6vw, 1.375rem);
+    line-height: 1.05;
+    text-align: center;
+    text-transform: uppercase;
+    transition:
+        background-color var(--t-ui) ease,
+        color var(--t-ui) ease;
+}
+
+.mitad__etiqueta[data-cobra] {
+    background: var(--rojo);
+    color: var(--hueso);
+}
+
+.mitad__panel {
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+    max-width: 34rem;
+}
+
+.mitad__titulo {
+    font-size: var(--t-titulo);
+}
+
+.mitad__bajada {
+    max-width: 34ch;
+    font-size: var(--t-destacado);
+    line-height: 1.45;
+}
+
+/* Tamaño: dos opciones pegadas, la elegida llena */
+.mitad__tamanos {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.mitad__tamano {
+    position: relative;
+}
+
+.mitad__tamano input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.mitad__tamano span {
+    display: block;
+    min-width: 7rem;
+    padding: 0.7rem 1.25rem;
+    border: 2px solid var(--hueso);
+    font-weight: 500;
+    text-align: center;
+    transition:
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease;
+}
+
+.mitad__tamano + .mitad__tamano span {
+    border-left: 0;
+}
+
+.mitad__tamano input:checked + span {
+    background: var(--hueso);
+    color: var(--verde);
+}
+
+.mitad__tamano input:focus-visible + span {
+    outline: 3px solid var(--dorado-claro);
+    outline-offset: 3px;
+}
+
+.mitad__mitades {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+.mitad__campo {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.mitad__campo-nombre {
+    font-weight: 500;
+}
+
+.mitad__campo select {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.6rem 0.8rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hueso);
+    color: var(--tinta);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+}
+
+.mitad__campo select:focus-visible {
+    outline: 3px solid var(--dorado-claro);
+    outline-offset: 3px;
+}
+
+.mitad__total {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 1rem;
+}
+
+.mitad__precio {
+    font-family: var(--fuente-display);
+    font-size: var(--t-titulo);
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+}
+
+.mitad__explicacion {
+    max-width: 38ch;
+    color: var(--hueso-3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .mitad__tamano input:not(:checked):hover + span {
+        background: var(--verde-hondo);
+    }
+}
+
+@media (max-width: 52rem) {
+    .mitad__interior {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .mitad__plato {
+        max-width: 28rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pizza-mitades__mitad {
+        animation: none;
+    }
+}
+
+@media (max-width: 30rem) {
+    .mitad__mitades {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

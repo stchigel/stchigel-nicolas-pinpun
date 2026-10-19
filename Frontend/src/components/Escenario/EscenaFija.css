@@ -1,0 +1,83 @@
+/* Mitad fija: queda pegada debajo de la barra mientras se lee la carta */
+.escena {
+    position: sticky;
+    top: var(--alto-navbar);
+    align-self: start;
+    height: calc(100svh - var(--alto-navbar));
+    overflow: hidden;
+    background: var(--negro);
+}
+
+.escena__foto {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(var(--escala, 1));
+    transform-origin: var(--origen, 50% 50%);
+    transition:
+        opacity 900ms var(--ease-suave),
+        transform 1400ms var(--ease-in-out),
+        transform-origin 1400ms var(--ease-in-out);
+}
+
+.escena__foto[data-visible] {
+    opacity: 1;
+}
+
+/* Rótulo: un cartelito de papel abajo a la izquierda que nombra lo que se está leyendo */
+.escena__rotulo {
+    position: absolute;
+    left: clamp(1rem, 2.5vw, 2rem);
+    bottom: clamp(1rem, 2.5vw, 2rem);
+    display: grid;
+    gap: 0.2rem;
+    max-width: calc(100% - 2rem);
+    padding: 0.85rem 1.1rem 0.8rem;
+    background: var(--hueso);
+    color: var(--tinta);
+}
+
+.escena__titulo {
+    font-family: var(--fuente-display);
+    font-size: var(--t-destacado);
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.escena__dato {
+    font-size: var(--t-chico);
+    font-variant-numeric: tabular-nums;
+    color: var(--tinta-suave);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .escena__rotulo {
+        animation: escena-rotulo 420ms var(--ease-out) both;
+    }
+}
+
+@keyframes escena-rotulo {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+}
+
+@media (max-width: 52rem) {
+    .escena {
+        position: relative;
+        top: auto;
+        order: -1;
+        height: 48svh;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .escena__foto {
+        transform: none;
+        transition: opacity 200ms ease;
+    }
+}

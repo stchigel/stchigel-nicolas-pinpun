@@ -6,6 +6,7 @@ import ToastProvider from './components/Toast/ToastProvider.jsx';
 import PedidoProvider from './components/Pedido/PedidoProvider.jsx';
 import Home from './pages/Home/Home.jsx';
 import Menu from './pages/Menu/Menu.jsx';
+import CartaEscenario from './pages/CartaEscenario/CartaEscenario.jsx';
 import Pendiente from './pages/Pendiente/Pendiente.jsx';
 
 const EN_CONSTRUCCION = 'Estamos terminando esta parte del sitio. Mientras tanto, te esperamos en cualquiera de los locales.';
@@ -24,6 +25,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/menu" element={<Menu />} />
+                        <Route path="/carta" element={<CartaEscenario />} />
                         <Route path="/reservas" element={<Pendiente titulo="Reservas, muy pronto" descripcion={EN_CONSTRUCCION} />} />
                         <Route path="/carrito" element={<Pendiente titulo="Tu carrito, muy pronto" descripcion={EN_CONSTRUCCION} />} />
                         <Route path="*" element={<Pendiente />} />

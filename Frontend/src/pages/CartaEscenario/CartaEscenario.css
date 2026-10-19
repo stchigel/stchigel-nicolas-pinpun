@@ -1,0 +1,216 @@
+/*
+ * Carta en escenario: mitad de lectura sobre el papel del sitio y mitad fija con la foto.
+ * Solo dos letras (Anton para nombrar, Bitter para leer) y un solo acento, el rojo, para lo que se toca.
+ */
+.escenario {
+    --borde-lectura: max(var(--margen), calc((100vw - var(--ancho-max)) / 2 + var(--margen)));
+    interpolate-size: allow-keywords;
+}
+
+html:has(.escenario) {
+    scroll-padding-top: calc(var(--alto-navbar) + 1.5rem);
+}
+
+.escenario__partido {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.escenario__lectura {
+    min-width: 0;
+    padding: calc(var(--sobresale-logo) + clamp(2.5rem, 5vw, 4rem)) clamp(1.5rem, 4vw, 4rem) var(--separacion-secciones)
+        var(--borde-lectura);
+}
+
+/* Portada: tarjeta con la franja de rayas rojas de la carta impresa */
+.escenario__portada {
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+    max-width: 38rem;
+    padding: 0 clamp(1.25rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2.25rem);
+    background: var(--hueso-2);
+}
+
+.escenario__rayas {
+    justify-self: stretch;
+    height: 0.625rem;
+    margin: 0 calc(clamp(1.25rem, 3vw, 2.25rem) * -1) clamp(0.75rem, 2vw, 1.25rem);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Crect width='18' height='10' fill='%23c1121f'/%3E%3C/svg%3E") repeat-x left center;
+    background-size: 28px 10px;
+}
+
+.escenario__titular {
+    max-width: 15ch;
+    font-size: clamp(2.25rem, 5vw, 4.5rem);
+    color: var(--tinta);
+}
+
+.escenario__bajada {
+    max-width: 34ch;
+    font-size: var(--t-destacado);
+    line-height: 1.45;
+}
+
+.escenario__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+    margin-top: 0.5rem;
+}
+
+.escenario__atajos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+}
+
+.escenario__atajos a {
+    display: inline-block;
+    padding-block: 0.6rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--rojo);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition: color var(--t-hover) ease;
+}
+
+/* Entrada de la portada: cada parte llega un poco después de la anterior */
+@media (prefers-reduced-motion: no-preference) {
+    .escenario__portada > * {
+        animation: escenario-entrar 520ms var(--ease-out) both;
+        animation-delay: calc(var(--orden, 0) * 70ms);
+    }
+
+    .escenario__titular {
+        --orden: 1;
+    }
+
+    .escenario__bajada {
+        --orden: 2;
+    }
+
+    .escenario__acciones {
+        --orden: 3;
+    }
+}
+
+@keyframes escenario-entrar {
+    from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+    }
+}
+
+/* Palabra gigante sobre las barras */
+.escenario__carta {
+    margin-top: clamp(3.5rem, 7vw, 6rem);
+}
+
+.escenario__palabra {
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(5.5rem, 13vw, 12rem);
+    line-height: 0.8;
+    color: var(--verde);
+}
+
+.escenario__barras {
+    display: grid;
+    gap: 0.5rem;
+}
+
+/* Botones planos: en esta versión no va el filete dorado de los carteles */
+.escenario .boton--rojo,
+.escenario .boton--verde {
+    box-shadow: none;
+}
+
+.escenario__estado {
+    background: var(--hueso-2);
+}
+
+.escenario__esqueleto {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.escenario__esqueleto-barra {
+    height: 5rem;
+    background: var(--hueso-2);
+    animation: latido 1.4s var(--ease-in-out) infinite;
+}
+
+/* Cierre: la última foto a sangre con el texto al lado */
+.cierre {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    background: var(--hueso-2);
+}
+
+.cierre__foto {
+    width: 100%;
+    height: 100%;
+    min-height: min(46rem, 80svh);
+    object-fit: cover;
+    object-position: 50% 60%;
+}
+
+.cierre__texto {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 1.25rem;
+    padding: clamp(2.5rem, 6vw, 5rem) var(--borde-lectura) clamp(2.5rem, 6vw, 5rem) clamp(2rem, 5vw, 5rem);
+}
+
+.cierre__titulo {
+    max-width: 18ch;
+    font-size: var(--t-titulo);
+}
+
+.cierre__bajada {
+    max-width: 34ch;
+    font-size: var(--t-destacado);
+    line-height: 1.45;
+}
+
+.cierre__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .escenario__atajos a:hover {
+        color: var(--rojo);
+    }
+}
+
+/* Teléfono: la foto va primero, en una franja, y después se lee la carta */
+@media (max-width: 52rem) {
+    .escenario__partido,
+    .cierre {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .escenario__lectura {
+        padding: clamp(2rem, 6vw, 3rem) var(--margen) var(--separacion-secciones);
+    }
+
+    .cierre__foto {
+        min-height: 0;
+        aspect-ratio: 4 / 3;
+    }
+
+    .cierre__texto {
+        padding: 2.5rem var(--margen) 3.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .escenario__esqueleto-barra {
+        animation: none;
+    }
+}
