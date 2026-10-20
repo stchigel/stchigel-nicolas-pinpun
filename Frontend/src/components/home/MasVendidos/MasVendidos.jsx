@@ -74,7 +74,7 @@ function MasVendidos() {
                 <h2 id="mas-vendidos-titulo" className="mas-vendidos__titulo" data-revelar="subir">
                     Nuestros más vendidos
                 </h2>
-                <Link to="/menu" className="mas-vendidos__enlace" data-revelar="subir" style={{ '--i': 1 }}>
+                <Link to="/carta" className="mas-vendidos__enlace" data-revelar="subir" style={{ '--i': 1 }}>
                     Ver el menú completo
                 </Link>
             </div>

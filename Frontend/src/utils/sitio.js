@@ -1,6 +1,6 @@
 /* Configuración fija del sitio (navegación y enlaces externos). Los datos del negocio vienen de la API. */
 export const ENLACES_IZQUIERDA = [
-    { etiqueta: 'Menú', destino: '/menu' },
+    { etiqueta: 'Menú', destino: '/carta' },
     { etiqueta: 'Contacto', destino: '/#contacto' }
 ];
 

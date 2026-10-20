@@ -40,7 +40,7 @@ function Footer() {
                         <h2 className="footer__titulo">Pedí o reservá</h2>
                         <ul>
                             <li>
-                                <Link to="/menu" className="footer__enlace">
+                                <Link to="/carta" className="footer__enlace">
                                     Pedí delivery o retiro
                                 </Link>
                             </li>

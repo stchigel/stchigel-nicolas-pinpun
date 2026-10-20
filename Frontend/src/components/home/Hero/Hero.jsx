@@ -24,7 +24,7 @@ function Hero() {
                         3954 hasta Lanús.
                     </p>
                     <div className="hero__acciones" data-entrada style={{ '--i': 2 }}>
-                        <Boton a="/menu">Ver el menú</Boton>
+                        <Boton a="/carta">Ver el menú</Boton>
                         <Link to="/reservas" className="hero__enlace">
                             Reservá una mesa
                         </Link>
