@@ -15,10 +15,14 @@ export const INSTAGRAM_PRINCIPAL = 'pinpuncorrientes';
 
 export const urlInstagram = (usuario) => `https://www.instagram.com/${usuario}/`;
 
-export const urlComoLlegar = ({ latitud, longitud }) =>
-    `https://www.google.com/maps/dir/?api=1&destination=${latitud},${longitud}`;
+/*
+ * Los mapas buscan el local por nombre y dirección, no por coordenadas:
+ * así Google abre la ficha de Pin Pun en lugar del negocio que quede más cerca del punto.
+ */
+const busquedaLocal = ({ direccion }) => encodeURIComponent(`Pin Pun, ${direccion}`);
 
-export const urlMapaEmbebido = ({ latitud, longitud }) =>
-    `https://maps.google.com/maps?q=${latitud},${longitud}&z=16&output=embed`;
+export const urlComoLlegar = (local) => `https://www.google.com/maps/dir/?api=1&destination=${busquedaLocal(local)}`;
+
+export const urlMapaEmbebido = (local) => `https://maps.google.com/maps?q=${busquedaLocal(local)}&z=16&output=embed`;
 
 export const urlTelefono = (numero) => `tel:${numero.replace(/[^\d+]/g, '')}`;

@@ -26,7 +26,8 @@ export function useRevelar() {
                 elemento.classList.add('esta-visible');
                 observador.disconnect();
             },
-            { rootMargin: '0px 0px -12% 0px', threshold: 0.1 }
+            /* Sin umbral proporcional: un elemento más alto que varias pantallas nunca llega a mostrar un porcentaje fijo */
+            { rootMargin: '0px 0px -12% 0px', threshold: 0 }
         );
 
         observador.observe(elemento);

@@ -166,7 +166,9 @@
     vertical-align: top;
 }
 
-.tramo__tabla tbody tr:nth-child(even) {
+/* Renglones alternados en toda la carta, sean tabla o lista */
+.tramo__tabla tbody tr:nth-child(even),
+.tramo__lista .renglon:nth-child(even) {
     background: rgb(0 0 0 / 0.025);
 }
 
