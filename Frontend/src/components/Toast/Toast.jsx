@@ -8,7 +8,7 @@ const ICONO = { exito: 'exito', info: 'brujula', error: 'error' };
  * Una notificación. Se cierra sola; el tiempo se pausa mientras
  * el puntero o el foco están encima, o mientras la pestaña está oculta.
  */
-function Toast({ tipo, mensaje, saliendo, onCerrar }) {
+function Toast({ tipo, mensaje, accion, saliendo, onCerrar }) {
     const [pausado, setPausado] = useState(false);
     const restante = useRef(DURACION_MS[tipo]);
     const onCerrarRef = useRef(onCerrar);
@@ -46,7 +46,21 @@ function Toast({ tipo, mensaje, saliendo, onCerrar }) {
             onBlur={() => setPausado(false)}
         >
             <Icono nombre={ICONO[tipo]} className="toast__icono" />
-            <p className="toast__mensaje">{mensaje}</p>
+            <div className="toast__texto">
+                <p className="toast__mensaje">{mensaje}</p>
+                {accion && (
+                    <button
+                        type="button"
+                        className="toast__accion"
+                        onClick={() => {
+                            accion.onClick();
+                            onCerrar();
+                        }}
+                    >
+                        {accion.etiqueta}
+                    </button>
+                )}
+            </div>
             <button type="button" className="toast__cerrar" onClick={onCerrar} aria-label="Cerrar notificación">
                 <Icono nombre="cerrar" tamano={18} />
             </button>

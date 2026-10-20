@@ -1,0 +1,43 @@
+/* Cantidad de un renglón: dos botones planos de papel y el número en el medio */
+.cantidad {
+    display: inline-flex;
+    align-items: center;
+}
+
+.cantidad__boton {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: var(--hueso-2);
+    color: var(--tinta);
+    transition:
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
+}
+
+.cantidad__boton:active:not(:disabled) {
+    transform: scale(0.94);
+}
+
+.cantidad__boton:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.cantidad__valor {
+    min-width: 2.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cantidad__boton:hover:not(:disabled) {
+        background: var(--rojo);
+        color: var(--hueso);
+    }
+}

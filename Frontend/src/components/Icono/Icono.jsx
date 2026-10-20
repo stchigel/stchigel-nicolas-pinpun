@@ -44,6 +44,9 @@ const TRAZOS = {
         </>
     ),
     cerrar: <path d="m6 6 12 12M18 6 6 18" />,
+    sumar: <path d="M12 5v14M5 12h14" />,
+    restar: <path d="M5 12h14" />,
+    basura: <path d="M4.5 7h15M9.5 7V4.8h5V7M6.8 7l.8 12.2h8.8L17.2 7M10.2 11v5.2M13.8 11v5.2" />,
     exito: (
         <>
             <circle cx="12" cy="12" r="9" />

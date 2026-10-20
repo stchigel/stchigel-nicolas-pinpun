@@ -93,3 +93,9 @@ export const nombreEnPedido = (producto, variante) => {
     const detalle = [producto.subcategoria, variante?.nombre].filter(Boolean).join(', ');
     return detalle ? `${producto.nombre} (${detalle})` : producto.nombre;
 };
+
+/* Lo que distingue a un renglón del pedido dentro de su categoría: "Fugazzeta · Grande" */
+export const detalleItem = (item) => [item.subcategoria, item.variante].filter(Boolean).join(' · ');
+
+/* El mismo nombre que ve el visitante al sumar el plato ("Muzzarella (Grande)"), para avisos y etiquetas */
+export const nombreItem = (item) => nombreEnPedido(item, item.variante ? { nombre: item.variante } : null);

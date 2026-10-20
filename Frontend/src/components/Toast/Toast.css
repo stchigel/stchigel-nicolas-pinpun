@@ -64,6 +64,28 @@
     line-height: 1.45;
 }
 
+.toast__accion {
+    min-height: 2.25rem;
+    margin: 0.15rem 0 -0.5rem -0.5rem;
+    padding: 0 0.5rem;
+    border: 0;
+    background: transparent;
+    color: var(--dorado-claro);
+    font-size: var(--t-chico);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    transition: transform var(--t-presion) var(--ease-out);
+}
+
+.toast__accion:active {
+    transform: scale(0.96);
+}
+
+.toast :focus-visible {
+    outline-color: var(--dorado-claro);
+}
+
 .toast__cerrar {
     display: grid;
     place-items: center;

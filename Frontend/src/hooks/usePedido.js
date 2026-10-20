@@ -3,7 +3,7 @@ import PedidoContext from '../components/Pedido/PedidoContext.js';
 
 /*
  * Devuelve el pedido en curso:
- *   const { items, cantidadTotal, agregar } = usePedido();
+ *   const { items, cantidadTotal, total, agregar, cambiarCantidad, quitar, restaurar, vaciar } = usePedido();
  *   agregar(producto, variante);
  */
 export function usePedido() {

@@ -64,6 +64,9 @@
     --mantel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23f3f1eb'/%3E%3Crect width='24' height='48' fill='%23c1121f' fill-opacity='.55'/%3E%3Crect width='48' height='24' fill='%23c1121f' fill-opacity='.55'/%3E%3C/svg%3E");
     --mantel-tamano: 48px;
 
+    /* Franja de rayas rojas de la carta impresa: ciclo de 28px, 18 de rojo y 10 de papel */
+    --rayas: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Crect width='18' height='10' fill='%23c1121f'/%3E%3C/svg%3E");
+
     /* Piso calcáreo de bodegón, en línea fina y casi del mismo tono que el fondo (una versión por fondo) */
     --calcareo-hueso: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' fill='none' stroke='%23e2dac6' stroke-width='1.25'%3E%3Cpath d='M36 14L58 36L36 58L14 36Z'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3Ccircle r='12'/%3E%3Ccircle cx='72' r='12'/%3E%3Ccircle cy='72' r='12'/%3E%3Ccircle cx='72' cy='72' r='12'/%3E%3C/svg%3E");
     --calcareo-verde: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' fill='none' stroke='%231a4433' stroke-width='1.25'%3E%3Cpath d='M36 14L58 36L36 58L14 36Z'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3Ccircle r='12'/%3E%3Ccircle cx='72' r='12'/%3E%3Ccircle cy='72' r='12'/%3E%3Ccircle cx='72' cy='72' r='12'/%3E%3C/svg%3E");

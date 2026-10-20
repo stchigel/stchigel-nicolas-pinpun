@@ -100,6 +100,16 @@
     position: relative;
 }
 
+/* Con el resumen abierto el carrito queda dorado, como si siguiera apretado */
+.navbar__carrito[data-abierto] {
+    color: var(--dorado-claro);
+}
+
+/* El resumen se posiciona contra la barra, no contra su contenedor: esta caja no dibuja nada */
+.navbar__emergente {
+    display: contents;
+}
+
 /* Cantidad del pedido sobre el carrito; salta cada vez que se suma algo */
 .navbar__cantidad {
     position: absolute;

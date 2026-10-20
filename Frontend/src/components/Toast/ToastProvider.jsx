@@ -21,17 +21,18 @@ function ToastProvider({ children }) {
         }, DURACION_SALIDA_MS);
     }, []);
 
-    const mostrar = useCallback((tipo, mensaje) => {
+    /* `accion` es opcional: { etiqueta, onClick }, por ejemplo "Deshacer" */
+    const mostrar = useCallback((tipo, mensaje, accion) => {
         const id = siguienteId.current++;
-        setToasts((lista) => [...lista, { id, tipo, mensaje, saliendo: false }].slice(-MAXIMO_VISIBLES));
+        setToasts((lista) => [...lista, { id, tipo, mensaje, accion, saliendo: false }].slice(-MAXIMO_VISIBLES));
         return id;
     }, []);
 
     const notificar = useMemo(
         () => ({
-            exito: (mensaje) => mostrar('exito', mensaje),
-            error: (mensaje) => mostrar('error', mensaje),
-            info: (mensaje) => mostrar('info', mensaje),
+            exito: (mensaje, accion) => mostrar('exito', mensaje, accion),
+            error: (mensaje, accion) => mostrar('error', mensaje, accion),
+            info: (mensaje, accion) => mostrar('info', mensaje, accion),
             cerrar
         }),
         [mostrar, cerrar]
