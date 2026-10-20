@@ -1,0 +1,174 @@
+/*
+ * Reservas: el mismo partido que el carrito y la carta. A la izquierda se lee (el título, el local elegido y el salón),
+ * a la derecha queda fijo el formulario sobre el verde del salón. En el teléfono el formulario sube
+ * justo después del título y el local y el salón quedan para el final.
+ */
+.reservas {
+    --borde-lectura: max(var(--margen), calc((100vw - var(--ancho-max)) / 2 + var(--margen)));
+}
+
+html:has(.reservas) {
+    scroll-padding-top: calc(var(--alto-navbar) + 1.5rem);
+}
+
+.reservas__partido {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        'portada formulario'
+        'detalle formulario';
+}
+
+.reservas__portada {
+    grid-area: portada;
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+    min-width: 0;
+    padding: calc(var(--sobresale-logo) + clamp(2.5rem, 5vw, 4rem)) clamp(1.5rem, 4vw, 4rem) 0 var(--borde-lectura);
+}
+
+.reservas__titulo {
+    font-size: clamp(4.5rem, 10vw, 9rem);
+    line-height: 0.88;
+    color: var(--verde);
+}
+
+.reservas__bajada {
+    max-width: 34ch;
+    font-size: var(--t-destacado);
+    line-height: 1.45;
+}
+
+.reservas__detalle {
+    grid-area: detalle;
+    display: grid;
+    align-content: start;
+    gap: 1.5rem;
+    min-width: 0;
+    padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 4rem) var(--separacion-secciones) var(--borde-lectura);
+}
+
+.reservas__tarjeta {
+    max-width: 34rem;
+}
+
+.reservas__foto {
+    max-width: 44rem;
+}
+
+/* Formulario: la mitad verde, con el piso calcáreo del mitad y mitad */
+.reserva {
+    grid-area: formulario;
+    min-width: 0;
+    padding: calc(var(--sobresale-logo) + clamp(2.5rem, 5vw, 4rem)) var(--borde-lectura) var(--separacion-secciones)
+        clamp(1.5rem, 4vw, 4rem);
+    background: var(--verde) var(--calcareo-verde);
+    background-size: var(--calcareo-tamano);
+    color: var(--hueso);
+}
+
+.reserva :focus-visible {
+    outline-color: var(--dorado-claro);
+}
+
+.reserva__interior {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 30rem;
+}
+
+.reserva__titulo {
+    font-size: var(--t-titulo);
+}
+
+.reserva__par {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.reserva__local {
+    font-size: var(--t-chico);
+    line-height: 1.45;
+    color: var(--hueso-3);
+}
+
+.reserva__nota {
+    font-size: var(--t-chico);
+    line-height: 1.45;
+    color: var(--hueso-3);
+}
+
+.reserva__aviso {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+    font-size: var(--t-chico);
+}
+
+/* Personas: el número grande entre los dos botones */
+.reserva__personas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+}
+
+.reserva__personas .cantidad__valor {
+    min-width: 3.5rem;
+    font-family: var(--fuente-display);
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.reserva__resumen {
+    min-height: 4.2em;
+    margin-top: 0.5rem;
+    font-size: var(--t-destacado);
+    line-height: 1.4;
+}
+
+.reserva .boton--rojo {
+    box-shadow: none;
+    width: 100%;
+}
+
+/* Pantallas altas: el formulario acompaña mientras se lee el costado */
+@media (min-width: 52.0625rem) and (min-height: 50rem) {
+    .reserva__interior {
+        position: sticky;
+        top: calc(var(--alto-navbar) + 1.5rem);
+    }
+}
+
+@media (max-width: 52rem) {
+    .reservas__partido {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        grid-template-areas:
+            'portada'
+            'formulario'
+            'detalle';
+    }
+
+    .reservas__portada {
+        padding: clamp(2rem, 6vw, 3rem) var(--margen) 2rem;
+    }
+
+    .reserva {
+        padding: 3rem var(--margen) 3.5rem;
+    }
+
+    .reservas__detalle {
+        padding: 3rem var(--margen) 4rem;
+    }
+}
+
+@media (max-width: 30rem) {
+    .reserva__par {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

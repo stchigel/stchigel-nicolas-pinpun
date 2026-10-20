@@ -9,7 +9,9 @@
     outline-offset: -0.75rem;
 }
 
-.tarjeta-producto .foto {
+/* El botón de agregar va sobre la foto, así que la foto lleva un marco propio para posicionarlo */
+.tarjeta-producto__foto {
+    position: relative;
     margin: 0.5rem;
 }
 
@@ -63,6 +65,63 @@
     grid-column: 1 / -1;
     font-style: italic;
     color: var(--tinta);
+}
+
+/*
+ * Botón de agregar: chico, en la esquina inferior derecha de la foto, con el alto mínimo para el dedo (44px).
+ * Al sumar, "Agregado" reemplaza a la etiqueta en el mismo lugar
+ * (las dos comparten celda, así el botón no cambia de tamaño).
+ */
+.tarjeta-producto__agregar {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    display: grid;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    font-size: 0.9375rem;
+}
+
+.tarjeta-producto__agregar .boton__contenido {
+    display: grid;
+}
+
+.tarjeta-producto__etiqueta {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition:
+        opacity var(--t-ui) var(--ease-out),
+        transform var(--t-ui) var(--ease-out),
+        filter var(--t-ui) var(--ease-out);
+}
+
+.tarjeta-producto__etiqueta--listo {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(2px);
+}
+
+.tarjeta-producto__agregar[data-agregado] .tarjeta-producto__etiqueta:not(.tarjeta-producto__etiqueta--listo) {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(2px);
+}
+
+.tarjeta-producto__agregar[data-agregado] .tarjeta-producto__etiqueta--listo {
+    opacity: 1;
+    transform: none;
+    filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tarjeta-producto__etiqueta {
+        transition: opacity var(--t-ui) ease;
+        transform: none !important;
+        filter: none !important;
+    }
 }
 
 /* En tarjetas angostas el precio baja debajo del nombre */

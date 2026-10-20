@@ -62,7 +62,7 @@ function MasVendidos() {
                 items={productos}
                 obtenerClave={(producto) => producto.id}
                 indiceInicial={productos.length > 2 ? 1 : 0}
-                renderItem={(producto, activo) => <TarjetaProducto producto={producto} prioridad={activo} />}
+                renderItem={(producto, activo) => <TarjetaProducto producto={producto} prioridad={activo} activa={activo} />}
             />
         );
     }

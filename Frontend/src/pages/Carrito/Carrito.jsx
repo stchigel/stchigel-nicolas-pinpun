@@ -1,8 +1,10 @@
 import { useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Boton from '../../components/Boton/Boton.jsx';
+import Campo from '../../components/Campo/Campo.jsx';
 import Cantidad from '../../components/Carrito/Cantidad.jsx';
 import Icono from '../../components/Icono/Icono.jsx';
+import PantallaAparte from '../../components/PantallaAparte/PantallaAparte.jsx';
 import { useApi } from '../../hooks/useApi.js';
 import { usePedido } from '../../hooks/usePedido.js';
 import { useRevelar } from '../../hooks/useRevelar.js';
@@ -11,8 +13,8 @@ import { getLocales } from '../../services/localService.js';
 import { crearPedido } from '../../services/pedidoService.js';
 import { detalleItem } from '../../utils/carta.js';
 import { formatearPrecio } from '../../utils/formato.js';
+import { esTelefonoValido, MENSAJE_TELEFONO } from '../../utils/validaciones.js';
 import { describirHorario, estaAbierto, tieneHorario } from '../../utils/horario.js';
-import { obtenerFoto } from '../../utils/fotos.js';
 import './Carrito.css';
 
 const plural = (cantidad) => `${cantidad} ${cantidad === 1 ? 'producto' : 'productos'}`;
@@ -109,33 +111,12 @@ function VaciarPedido() {
     );
 }
 
-const esTelefonoValido = (texto) => texto.replace(/\D/g, '').length >= 8;
-
 function validar({ tipo, nombre, telefono, direccion }) {
     const errores = {};
     if (nombre.trim().length < 2) errores.nombre = 'Contanos tu nombre para llamarte cuando esté listo.';
-    if (!esTelefonoValido(telefono)) errores.telefono = 'Escribí un teléfono con código de área, por ejemplo 011 4862-3260.';
+    if (!esTelefonoValido(telefono)) errores.telefono = MENSAJE_TELEFONO;
     if (tipo === 'delivery' && direccion.trim().length < 5) errores.direccion = 'Falta la dirección de entrega, con calle y altura.';
     return errores;
-}
-
-function Campo({ nombre, etiqueta, error, children }) {
-    const idError = `${nombre}-error`;
-
-    return (
-        <div className="campo" data-error={error ? true : undefined}>
-            <label className="campo__etiqueta" htmlFor={`campo-${nombre}`}>
-                {etiqueta}
-            </label>
-            {children({ id: `campo-${nombre}`, name: nombre, 'aria-invalid': error ? true : undefined, 'aria-describedby': error ? idError : undefined })}
-            {error && (
-                <p id={idError} className="campo__error">
-                    <Icono nombre="error" tamano={18} />
-                    {error}
-                </p>
-            )}
-        </div>
-    );
 }
 
 /*
@@ -343,37 +324,6 @@ function PedidoArmado({ onConfirmado }) {
     );
 }
 
-/* Pantalla con la foto del mostrador a un lado, para el pedido vacío y para el pedido enviado */
-function PantallaAparte({ titulo, bajada, children }) {
-    const foto = obtenerFoto('pizzero');
-    const ref = useRevelar();
-
-    return (
-        <section ref={ref} className="aparte" aria-labelledby="aparte-titulo">
-            {foto && (
-                <img
-                    data-revelar="persiana"
-                    className="aparte__foto"
-                    src={foto}
-                    alt="Un pizzero con gorra a cuadros, detrás del mostrador, con una porción de fugazzeta en la bandeja."
-                    decoding="async"
-                />
-            )}
-            <div className="aparte__texto">
-                <h1 id="aparte-titulo" className="aparte__titulo" data-revelar="subir">
-                    {titulo}
-                </h1>
-                <p className="aparte__bajada" data-revelar="subir" style={{ '--i': 1 }}>
-                    {bajada}
-                </p>
-                <div className="aparte__acciones" data-revelar="subir" style={{ '--i': 2 }}>
-                    {children}
-                </div>
-            </div>
-        </section>
-    );
-}
-
 function Carrito() {
     const { items, vaciar } = usePedido();
     const [enviado, setEnviado] = useState(null);
@@ -387,6 +337,7 @@ function Carrito() {
         const { tipo, local, direccion } = enviado;
         return (
             <PantallaAparte
+                alt="Un pizzero con gorra a cuadros, detrás del mostrador, con una porción de fugazzeta en la bandeja."
                 titulo="Pedido enviado"
                 bajada={
                     tipo === 'retiro'
@@ -404,6 +355,7 @@ function Carrito() {
     if (items.length === 0) {
         return (
             <PantallaAparte
+                alt="Un pizzero con gorra a cuadros, detrás del mostrador, con una porción de fugazzeta en la bandeja."
                 titulo="Todavía no sumaste nada"
                 bajada="Tocá cualquier precio de la carta y aparece acá, con su cantidad y su total."
             >
