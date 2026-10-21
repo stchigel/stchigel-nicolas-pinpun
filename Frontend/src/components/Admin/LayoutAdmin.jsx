@@ -35,6 +35,7 @@ function Estructura() {
         { destino: 'pedidos', etiqueta: 'Pedidos', icono: 'pedidos', cuenta: activos, detalle: 'activos' },
         { destino: 'reservas', etiqueta: 'Reservas', icono: 'calendario', cuenta: pendientes, detalle: 'por confirmar' },
         ...(general ? [{ destino: 'menu', etiqueta: 'Menú', icono: 'carta' }] : []),
+        { destino: 'repartidores', etiqueta: 'Repartidores', icono: 'persona' },
         { destino: 'locales', etiqueta: general ? 'Locales' : 'Mi local', icono: 'ubicacion' }
     ];
 

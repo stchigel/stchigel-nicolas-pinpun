@@ -11,6 +11,13 @@ export const autenticar = (req, res, next) => {
     next();
 };
 
+/* Lo que es del panel de administración: lo toca el administrador general o el de una sucursal, nunca un repartidor */
+export const exigirAdministracion = (req, res, next) => {
+    if (req.usuario.rol === Rol.REPARTIDOR) throw new ForbiddenError(Messages.FORBIDDEN);
+
+    next();
+};
+
 /* Lo que solo toca el administrador general (por ejemplo, la carta, que es la misma para todos los locales) */
 export const exigirGeneral = (req, res, next) => {
     if (req.usuario.rol !== Rol.GENERAL) throw new ForbiddenError(Messages.FORBIDDEN);

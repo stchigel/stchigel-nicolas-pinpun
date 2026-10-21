@@ -3,8 +3,8 @@ import AdminDatosContext from '../components/Admin/AdminDatosContext.js';
 
 /*
  * Los datos que comparten las pantallas del panel de administración:
- *   const { pedidos, reservas, locales, cargando, error, ahora, recargar,
- *           cambiarEstadoPedido, cambiarEstadoReserva, reemplazarLocal } = useAdminDatos();
+ *   const { pedidos, reservas, locales, repartidores, cargando, error, ahora, recargar,
+ *           cambiarEstadoPedido, cambiarEstadoReserva, asignarPedido, reemplazarRepartidor, reemplazarLocal } = useAdminDatos();
  */
 export function useAdminDatos() {
     const datos = useContext(AdminDatosContext);

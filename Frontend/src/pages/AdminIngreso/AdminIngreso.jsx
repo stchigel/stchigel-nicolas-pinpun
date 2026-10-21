@@ -6,12 +6,16 @@ import Logo from '../../components/Logo/Logo.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
 import { obtenerFoto } from '../../utils/fotos.js';
+import { rutaInicial } from '../../utils/sesion.js';
 import './AdminIngreso.css';
 
 const CUENTAS_DE_PRUEBA = [
     { rol: 'Administración general', mail: 'admin@pinpun.com', contrasena: 'pinpun2026' },
     { rol: 'Sucursal Almagro', mail: 'almagro@pinpun.com', contrasena: 'almagro2026' },
-    { rol: 'Sucursal Villa Urquiza', mail: 'urquiza@pinpun.com', contrasena: 'urquiza2026' }
+    { rol: 'Sucursal Villa Urquiza', mail: 'urquiza@pinpun.com', contrasena: 'urquiza2026' },
+    { rol: 'Repartidor de Almagro', mail: 'diego@pinpun.com', contrasena: 'reparto2026' },
+    { rol: 'Repartidor de Almagro (otro)', mail: 'nahuel@pinpun.com', contrasena: 'reparto2026' },
+    { rol: 'Repartidora de Villa Urquiza', mail: 'vero@pinpun.com', contrasena: 'reparto2026' }
 ];
 
 const MAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,7 +31,7 @@ function AdminIngreso() {
     const [enviando, setEnviando] = useState(false);
     const foto = obtenerFoto('fachada');
 
-    if (!cargando && usuario) return <Navigate to={ubicacion.state?.desde ?? '/admin'} replace />;
+    if (!cargando && usuario) return <Navigate to={ubicacion.state?.desde ?? rutaInicial(usuario)} replace />;
 
     const cambiarCampo = (evento) => {
         const { name, value } = evento.target;
@@ -53,7 +57,7 @@ function AdminIngreso() {
         try {
             const sesion = await ingresar(campos.mail.trim(), campos.contrasena);
             notificar.exito(`Hola, ${sesion.nombre}.`);
-            navegar(ubicacion.state?.desde ?? '/admin', { replace: true });
+            navegar(ubicacion.state?.desde ?? rutaInicial(sesion), { replace: true });
         } catch (falla) {
             notificar.error(falla.message);
             setEnviando(false);
@@ -71,8 +75,8 @@ function AdminIngreso() {
                         <Logo />
                     </Link>
 
-                    <h1 className="ingreso__titulo">Panel de administración</h1>
-                    <p className="ingreso__bajada">Entrá con la cuenta de tu sucursal para ver los pedidos y las reservas.</p>
+                    <h1 className="ingreso__titulo">Acceso del personal</h1>
+                    <p className="ingreso__bajada">Entrá con tu cuenta para ver los pedidos y las reservas, o tus entregas si sos repartidor.</p>
 
                     <form className="ingreso__formulario" onSubmit={enviar} noValidate aria-label="Iniciar sesión">
                         <Campo nombre="mail" etiqueta="Mail" error={errores.mail}>

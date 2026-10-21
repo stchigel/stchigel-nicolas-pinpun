@@ -16,11 +16,15 @@ import AdminPedidos from './pages/AdminPedidos/AdminPedidos.jsx';
 import AdminReservas from './pages/AdminReservas/AdminReservas.jsx';
 import AdminMenu from './pages/AdminMenu/AdminMenu.jsx';
 import AdminLocales from './pages/AdminLocales/AdminLocales.jsx';
+import AdminRepartidores from './pages/AdminRepartidores/AdminRepartidores.jsx';
+import LayoutReparto from './components/Reparto/LayoutReparto.jsx';
+import Reparto from './pages/Reparto/Reparto.jsx';
 import Pendiente from './pages/Pendiente/Pendiente.jsx';
 
 /*
- * Estructura general: notificaciones, sesión y pedido en curso envuelven dos mundos con su propio marco:
- * el sitio (barra, contenido y pie) y el panel de administración (barra lateral y contenido).
+ * Estructura general: notificaciones, sesión y pedido en curso envuelven tres mundos con su propio marco:
+ * el sitio (barra, contenido y pie), el panel de administración (barra lateral y contenido)
+ * y el portal de reparto (una sola columna para el repartidor).
  * La carta del sitio es /carta; /menu quedó como alternativa.
  */
 function App() {
@@ -43,7 +47,7 @@ function App() {
                         <Route
                             path="/admin"
                             element={
-                                <RutaProtegida>
+                                <RutaProtegida roles={['general', 'sucursal']} alRechazar="inicio">
                                     <LayoutAdmin />
                                 </RutaProtegida>
                             }
@@ -59,7 +63,19 @@ function App() {
                                     </RutaProtegida>
                                 }
                             />
+                            <Route path="repartidores" element={<AdminRepartidores />} />
                             <Route path="locales" element={<AdminLocales />} />
+                        </Route>
+
+                        <Route
+                            path="/reparto"
+                            element={
+                                <RutaProtegida roles={['repartidor']} alRechazar="inicio">
+                                    <LayoutReparto />
+                                </RutaProtegida>
+                            }
+                        >
+                            <Route index element={<Reparto />} />
                         </Route>
                     </Routes>
                 </PedidoProvider>

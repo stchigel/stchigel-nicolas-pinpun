@@ -10,6 +10,8 @@ const TONO = {
     Retirado: 'cerrado',
     Concluida: 'cerrado',
     Cancelado: 'caido',
+    Activo: 'listo',
+    Desactivado: 'caido',
     Rechazada: 'caido'
 };
 

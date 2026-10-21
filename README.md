@@ -117,7 +117,11 @@ Todas las rutas cuelgan de `/api`. Las respuestas tienen siempre la forma `{ "su
 | GET | `/api/auth/me` | Devuelve quién es el dueño del token. |
 | POST | `/api/pedidos` | Hace un pedido de retiro o delivery. Público; el servidor calcula el total con la carta. |
 | GET | `/api/pedidos` | Lista pedidos (`?localId=` y `?estado=`). Requiere sesión. |
-| PATCH | `/api/pedidos/:id/estado` | Lo lleva al paso siguiente de su circuito o lo cancela. Requiere sesión. |
+| PATCH | `/api/pedidos/:id/estado` | Lo lleva al paso siguiente de su circuito o lo cancela (con un `motivo` opcional). Requiere sesión; el repartidor solo puede marcar sus pedidos En camino, Entregado o Cancelado. |
+| PATCH | `/api/pedidos/:id/repartidor` | Asigna un delivery: `{ "repartidorId": 2 }`, `{ "automatico": true }` (al que menos pedidos lleve) o `{ "repartidorId": null }` para quitarlo. Solo la administración. |
+| GET | `/api/repartidores` | Lista las cuentas de reparto con cuántos pedidos lleva cada una. Solo la administración. |
+| POST | `/api/repartidores` | Crea una cuenta de reparto (la sucursal, para su local). |
+| PUT | `/api/repartidores/:id` | Cambia nombre, teléfono, contraseña o activa o desactiva la cuenta. |
 | POST | `/api/reservas` | Pide una mesa. Público; valida horario, máximo de personas y lugar disponible. |
 | GET | `/api/reservas` | Lista reservas (`?localId=` y `?estado=`). Requiere sesión. |
 | PATCH | `/api/reservas/:id/estado` | La acepta, rechaza o concluye. Requiere sesión. |
@@ -153,10 +157,26 @@ Se entra por <http://localhost:5173/admin/ingresar> (hay un enlace "Acceso del p
 | Administración general | `admin@pinpun.com` | `pinpun2026` | Todas las sucursales y el menú |
 | Sucursal Almagro | `almagro@pinpun.com` | `almagro2026` | Pedidos, reservas y datos de Almagro |
 | Sucursal Villa Urquiza | `urquiza@pinpun.com` | `urquiza2026` | Pedidos, reservas y datos de Villa Urquiza |
+| Repartidor de Almagro | `diego@pinpun.com` | `reparto2026` | Portal de reparto: solo sus entregas |
+| Repartidor de Almagro | `nahuel@pinpun.com` | `reparto2026` | Portal de reparto: solo sus entregas |
+| Repartidora de Villa Urquiza | `vero@pinpun.com` | `reparto2026` | Portal de reparto: solo sus entregas |
 
 - **Pedidos y reservas:** se actualizan solos cada 20 segundos y avisan cuando llega algo nuevo. Cada botón lleva el pedido o la reserva al paso siguiente; cancelar o rechazar pide confirmación.
 - **Menú** (solo administración general): crear, editar y eliminar productos de la carta, que es la misma para todos los locales.
+- **Repartidores:** las cuentas de reparto de cada sucursal (la administración general ve todas). Se crean, se editan y se desactivan en vez de borrarse; no se puede desactivar a quien todavía lleva pedidos.
+- **Asignación de deliveries:** en Pedidos, cada delivery en marcha tiene un selector con los repartidores de su sucursal y cuántos pedidos lleva cada uno, y un botón para asignar automáticamente al que menos tenga (si empatan, al que hace más que no recibe uno). El filtro "Sin repartidor" junta los que todavía no tienen.
 - **Locales:** teléfono, horario, tipos de mesa (comensales por mesa y cantidad), si se pueden juntar mesas y máximo de personas por reserva. Con eso, el sitio solo acepta reservas dentro del horario y mientras haya lugar: si el local junta mesas, cuenta la suma de comensales; si no, cada grupo tiene que entrar en una sola mesa (un grupo de 5 no entra en un salón de mesas de 2 y 4).
+
+## Portal de reparto
+
+Los repartidores entran por el mismo acceso y van directo a <http://localhost:5173/reparto>. Ven solo los pedidos que les asignaron, en una columna pensada para el teléfono:
+
+- **Para llevar:** los pedidos listos y los que ya van en camino. Cada tarjeta trae el cliente, la dirección, un botón para abrirla en el mapa, otro para llamar y lo que lleva el pedido.
+- **Salí con el pedido** lo pasa a En camino; **Entregué el pedido** lo marca Entregado (con una confirmación, porque no se puede deshacer); **No pude entregarlo** lo cancela con el motivo que elija (no atendieron, dirección incorrecta, etc.), que queda en el recorrido del pedido.
+- **En cocina:** los que todavía se están preparando; no se pueden tocar hasta que estén listos.
+- Se actualiza solo cada 15 segundos y avisa cuando le asignan un pedido nuevo o uno queda listo. Los pedidos asignados se ven en cuanto se asignan, sin importar su estado.
+
+Un repartidor no puede ver reservas, locales, la carta ni los pedidos de otros, y el servidor se lo impide aunque cambie la URL.
 
 Al arrancar, la API carga algunos pedidos y reservas ficticios para que el panel no esté vacío (se omiten arrancando con `SIN_DATOS_DE_EJEMPLO=1`), y cada local trae mesas de ejemplo hasta que su sucursal cargue las reales. Las cuentas de prueba están en [Backend/src/repositories/usuarioRepository.js](Backend/src/repositories/usuarioRepository.js).
 

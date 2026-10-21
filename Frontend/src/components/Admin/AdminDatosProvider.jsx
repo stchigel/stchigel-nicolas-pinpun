@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AdminDatosContext from './AdminDatosContext.js';
 import { useToast } from '../../hooks/useToast.js';
 import { getLocales } from '../../services/localService.js';
-import { cambiarEstadoPedido, getPedidos } from '../../services/pedidoService.js';
+import { asignarRepartidor, cambiarEstadoPedido, getPedidos } from '../../services/pedidoService.js';
+import { getRepartidores } from '../../services/repartidorService.js';
 import { cambiarEstadoReserva, getReservas } from '../../services/reservaService.js';
 import { ETIQUETA_TIPO } from '../../utils/estados.js';
 
@@ -18,7 +19,15 @@ const reemplazar = (lista, nuevo) => lista.map((item) => (item.id === nuevo.id ?
  */
 function AdminDatosProvider({ children }) {
     const notificar = useToast();
-    const [datos, setDatos] = useState({ pedidos: [], reservas: [], locales: [], cargando: true, error: null, actualizado: null });
+    const [datos, setDatos] = useState({
+        pedidos: [],
+        reservas: [],
+        locales: [],
+        repartidores: [],
+        cargando: true,
+        error: null,
+        actualizado: null
+    });
     const [ahora, setAhora] = useState(() => Date.now());
     const vistos = useRef(null);
 
@@ -54,11 +63,16 @@ function AdminDatosProvider({ children }) {
     const cargar = useCallback(
         async ({ automatico = false } = {}) => {
             try {
-                const [pedidos, reservas, locales] = await Promise.all([getPedidos(), getReservas(), getLocales()]);
+                const [pedidos, reservas, locales, repartidores] = await Promise.all([
+                    getPedidos(),
+                    getReservas(),
+                    getLocales(),
+                    getRepartidores()
+                ]);
                 if (automatico) avisarNovedades(pedidos, reservas);
                 else vistos.current = { pedidos: new Set(pedidos.map((p) => p.id)), reservas: new Set(reservas.map((r) => r.id)) };
 
-                setDatos({ pedidos, reservas, locales, cargando: false, error: null, actualizado: Date.now() });
+                setDatos({ pedidos, reservas, locales, repartidores, cargando: false, error: null, actualizado: Date.now() });
             } catch (error) {
                 if (automatico) return;
                 setDatos((anterior) => ({ ...anterior, cargando: false, error }));
@@ -92,6 +106,22 @@ function AdminDatosProvider({ children }) {
         return actualizado;
     }, []);
 
+    /* `asignacion`: { repartidorId }, { automatico: true } o { repartidorId: null } para quitarlo */
+    const asignarPedido = useCallback(async (id, asignacion) => {
+        const actualizado = await asignarRepartidor(id, asignacion);
+        setDatos((anterior) => ({ ...anterior, pedidos: reemplazar(anterior.pedidos, actualizado) }));
+        return actualizado;
+    }, []);
+
+    const reemplazarRepartidor = useCallback((repartidor) => {
+        setDatos((anterior) => ({
+            ...anterior,
+            repartidores: anterior.repartidores.some((item) => item.id === repartidor.id)
+                ? reemplazar(anterior.repartidores, repartidor)
+                : [...anterior.repartidores, repartidor]
+        }));
+    }, []);
+
     const cambiarReserva = useCallback(async (id, estado) => {
         const actualizada = await cambiarEstadoReserva(id, estado);
         setDatos((anterior) => ({ ...anterior, reservas: reemplazar(anterior.reservas, actualizada) }));
@@ -109,9 +139,11 @@ function AdminDatosProvider({ children }) {
             recargar,
             cambiarEstadoPedido: cambiarPedido,
             cambiarEstadoReserva: cambiarReserva,
+            asignarPedido,
+            reemplazarRepartidor,
             reemplazarLocal
         }),
-        [datos, ahora, recargar, cambiarPedido, cambiarReserva, reemplazarLocal]
+        [datos, ahora, recargar, cambiarPedido, cambiarReserva, asignarPedido, reemplazarRepartidor, reemplazarLocal]
     );
 
     return <AdminDatosContext.Provider value={valor}>{children}</AdminDatosContext.Provider>;

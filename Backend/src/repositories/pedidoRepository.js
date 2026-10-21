@@ -4,10 +4,15 @@ const pedidos = [];
 
 let nextId = 1;
 
-/* Del más nuevo al más viejo; filtra por local y/o estado */
-const findAll = ({ localId, estado } = {}) =>
+/* Del más nuevo al más viejo; filtra por local, estado y/o repartidor */
+const findAll = ({ localId, estado, repartidorId } = {}) =>
     pedidos
-        .filter((pedido) => (localId === undefined || pedido.localId === localId) && (estado === undefined || pedido.estado === estado))
+        .filter(
+            (pedido) =>
+                (localId === undefined || pedido.localId === localId) &&
+                (estado === undefined || pedido.estado === estado) &&
+                (repartidorId === undefined || pedido.repartidorId === repartidorId)
+        )
         .sort((a, b) => b.fecha.localeCompare(a.fecha));
 
 const findById = (id) => pedidos.find((pedido) => pedido.id === id) ?? null;
@@ -18,13 +23,24 @@ const create = (datos) => {
     return pedido;
 };
 
-const cambiarEstado = (id, estado, fecha) => {
+/* El motivo (por qué no se pudo entregar) queda anotado en el recorrido del pedido */
+const cambiarEstado = (id, estado, fecha, motivo = '') => {
     const pedido = findById(id);
     if (!pedido) return null;
 
     pedido.estado = estado;
-    pedido.historial.push({ estado, fecha });
+    pedido.historial.push(motivo ? { estado, fecha, motivo } : { estado, fecha });
     return pedido;
 };
 
-export default { findAll, findById, create, cambiarEstado };
+/* `repartidorId` en null deja el pedido sin repartidor */
+const asignar = (id, repartidorId, fecha) => {
+    const pedido = findById(id);
+    if (!pedido) return null;
+
+    pedido.repartidorId = repartidorId;
+    pedido.asignadoEn = repartidorId === null ? null : fecha;
+    return pedido;
+};
+
+export default { findAll, findById, create, cambiarEstado, asignar };

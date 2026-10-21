@@ -80,6 +80,12 @@ const TRAZOS = {
             <path d="M19.5 4.5v4h-4" />
         </>
     ),
+    persona: (
+        <>
+            <circle cx="12" cy="8" r="3.5" />
+            <path d="M5 20c0-3.9 3.1-6.5 7-6.5s7 2.6 7 6.5" />
+        </>
+    ),
     sumar: <path d="M12 5v14M5 12h14" />,
     restar: <path d="M5 12h14" />,
     basura: <path d="M4.5 7h15M9.5 7V4.8h5V7M6.8 7l.8 12.2h8.8L17.2 7M10.2 11v5.2M13.8 11v5.2" />,

@@ -9,7 +9,12 @@ const RUTA = '/pedidos';
  */
 export const crearPedido = (pedido, opciones) => request(RUTA, { method: 'POST', body: pedido, ...opciones });
 
-/* Panel de administración: el administrador de sucursal recibe solo los de su local */
+/* Panel y portal de reparto: la sucursal recibe los de su local; el repartidor, solo los que le asignaron */
 export const getPedidos = (opciones) => request(RUTA, opciones);
 
-export const cambiarEstadoPedido = (id, estado) => request(`${RUTA}/${id}/estado`, { method: 'PATCH', body: { estado } });
+/* `motivo` explica por qué no se pudo entregar cuando el repartidor cancela */
+export const cambiarEstadoPedido = (id, estado, motivo) =>
+    request(`${RUTA}/${id}/estado`, { method: 'PATCH', body: motivo ? { estado, motivo } : { estado } });
+
+/* A quién le toca un delivery: { repartidorId }, { automatico: true } o { repartidorId: null } para quitarlo */
+export const asignarRepartidor = (id, asignacion) => request(`${RUTA}/${id}/repartidor`, { method: 'PATCH', body: asignacion });

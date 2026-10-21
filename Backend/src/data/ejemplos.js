@@ -34,7 +34,7 @@ const item = (nombre, variante, cantidad) => {
     };
 };
 
-const pedido = ({ localId, tipo, estado, antes, cliente, direccion = '', items }) => {
+const pedido = ({ localId, tipo, estado, antes, cliente, direccion = '', items, repartidorId = null }) => {
     const circuito = ESTADOS_PEDIDO[tipo];
     const recorrido = estado === CANCELADO ? circuito.slice(0, 2) : circuito.slice(0, circuito.indexOf(estado) + 1);
     const historial = [...recorrido, ...(estado === CANCELADO ? [CANCELADO] : [])].map((paso, indice, lista) => ({
@@ -51,7 +51,9 @@ const pedido = ({ localId, tipo, estado, antes, cliente, direccion = '', items }
         cliente,
         direccion,
         items,
-        historial
+        historial,
+        repartidorId,
+        asignadoEn: repartidorId ? hace(Math.max(antes - 3 * MINUTO, 0)) : null
     });
 };
 
@@ -74,6 +76,7 @@ export const cargarEjemplos = () => {
         antes: 18 * MINUTO,
         cliente: { nombre: 'Martín Sosa', telefono: '011 4777-2210' },
         direccion: 'Medrano 850, 3° B, Almagro',
+        repartidorId: 1,
         items: [item('Napolitana', 'Grande', 1), item('Muzzarella', 'Chica', 1)]
     });
     pedido({
@@ -83,6 +86,7 @@ export const cargarEjemplos = () => {
         antes: 42 * MINUTO,
         cliente: { nombre: 'Carolina Paz', telefono: '011 6012-4455' },
         direccion: 'Av. Corrientes 4120, Almagro',
+        repartidorId: 1,
         items: [item('Fugazza rellena', 'Grande', 1)]
     });
     pedido({
@@ -100,6 +104,26 @@ export const cargarEjemplos = () => {
         antes: 3 * HORA,
         cliente: { nombre: 'Sofía Ibarra', telefono: '011 5100-7788' },
         items: [item('Napolitana', 'Chica', 1)]
+    });
+    pedido({
+        localId: 1,
+        tipo: 'delivery',
+        estado: 'Listo',
+        antes: 12 * MINUTO,
+        cliente: { nombre: 'Brenda Aguirre', telefono: '011 5430-1187' },
+        direccion: 'Bulnes 1450, 2° A, Almagro',
+        repartidorId: 2,
+        items: [item('Muzzarella', 'Grande', 1), item('Fainá', 'Porción', 2)]
+    });
+    pedido({
+        localId: 1,
+        tipo: 'delivery',
+        estado: 'Entregado',
+        antes: 95 * MINUTO,
+        cliente: { nombre: 'Esteban Roldán', telefono: '011 4963-8820' },
+        direccion: 'Yatay 640, Almagro',
+        repartidorId: 1,
+        items: [item('Napolitana', 'Chica', 2)]
     });
     pedido({
         localId: 3,

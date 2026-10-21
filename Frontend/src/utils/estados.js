@@ -42,3 +42,19 @@ export const VERBO_PEDIDO = {
     Entregado: 'Marcar como entregado',
     Retirado: 'Marcar como retirado'
 };
+
+/* Pedidos sin terminar (en marcha) que lleva un repartidor */
+export const cargaDeRepartidor = (pedidos, repartidorId) =>
+    pedidos.filter((pedido) => pedido.repartidorId === repartidorId && pedidoActivo(pedido)).length;
+
+/* Un delivery en marcha al que todavía no se le asignó repartidor */
+export const sinRepartidor = (pedido) => pedido.tipo === 'delivery' && pedido.repartidorId === null && pedidoActivo(pedido);
+
+/* Motivos que un repartidor puede dar al no poder entregar */
+export const MOTIVOS_NO_ENTREGA = [
+    'No atendieron',
+    'La dirección no existe o está mal',
+    'El cliente canceló',
+    'No pude llegar (tránsito, clima, moto)',
+    'Otro motivo'
+];

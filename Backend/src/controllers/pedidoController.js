@@ -16,7 +16,11 @@ const create = (req, res) => {
 };
 
 const cambiarEstado = (req, res) => {
-    ApiResponse.success(res, pedidoService.cambiarEstado(Number(req.params.id), req.body.estado, req.usuario));
+    ApiResponse.success(res, pedidoService.cambiarEstado(Number(req.params.id), req.body.estado, req.usuario, req.body.motivo));
 };
 
-export default { getAll, getById, create, cambiarEstado };
+const asignarRepartidor = (req, res) => {
+    ApiResponse.success(res, pedidoService.asignarRepartidor(Number(req.params.id), req.body, req.usuario));
+};
+
+export default { getAll, getById, create, cambiarEstado, asignarRepartidor };

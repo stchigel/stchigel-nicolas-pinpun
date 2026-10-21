@@ -1,0 +1,309 @@
+/*
+ * Portal de reparto: una sola columna, pensada para el teléfono y para tocar con una mano.
+ * Mismo lenguaje que el panel (papel liso, barras verdes con filete dorado, Anton para nombrar, rojo para lo que se toca),
+ * con botones de 3.5rem y la dirección y el cliente en tamaño de lectura rápida.
+ */
+.reparto {
+    min-height: 100svh;
+    background: var(--hueso);
+}
+
+.reparto :focus-visible {
+    outline-color: var(--verde);
+}
+
+.reparto__barra {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem var(--margen) 0.75rem;
+    background: var(--verde);
+    color: var(--hueso);
+    box-shadow: inset 0 -0.25rem 0 var(--dorado-claro);
+}
+
+.reparto__barra :focus-visible {
+    outline-color: var(--dorado-claro);
+}
+
+.reparto__marca {
+    display: block;
+    width: 7.5rem;
+    flex-shrink: 0;
+    transition: transform var(--t-presion) var(--ease-out);
+}
+
+.reparto__marca:active {
+    transform: scale(0.97);
+}
+
+.reparto__usuario {
+    min-width: 0;
+    margin-left: auto;
+    text-align: right;
+}
+
+.reparto__nombre {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.reparto__sucursal {
+    font-size: var(--t-chico);
+    color: var(--hueso-3);
+}
+
+.reparto__salir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0 0.25rem;
+    border: 0;
+    background: transparent;
+    color: var(--hueso);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition: transform var(--t-presion) var(--ease-out);
+}
+
+.reparto__salir:active {
+    transform: scale(0.97);
+}
+
+.reparto__contenido {
+    width: 100%;
+    max-width: 44rem;
+    margin-inline: auto;
+    padding: clamp(1.25rem, 4vw, 2.5rem) var(--margen) 4rem;
+}
+
+.reparto__encabezado {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+}
+
+.reparto__titulo {
+    font-size: clamp(3rem, 12vw, 4.5rem);
+    line-height: 0.9;
+    color: var(--verde);
+}
+
+.reparto__bajada {
+    margin: 0.5rem 0 1.5rem;
+    color: var(--tinta-suave);
+}
+
+.reparto__vacio {
+    background: var(--hueso-2);
+}
+
+.reparto .boton {
+    width: 100%;
+    box-shadow: none;
+}
+
+.reparto__lista {
+    display: grid;
+    gap: 1.25rem;
+}
+
+/* Una entrega: cabecera verde con el número y el estado, y debajo lo que hay que saber para llegar */
+.entrega {
+    background: var(--hueso-2);
+}
+
+.entrega__cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--verde);
+    color: var(--hueso);
+}
+
+.entrega__numero {
+    font-family: var(--fuente-display);
+    font-size: var(--t-subtitulo);
+    line-height: 1;
+}
+
+.entrega__numero span {
+    margin-left: 0.5rem;
+    font-family: var(--fuente-texto);
+    font-size: var(--t-chico);
+    color: var(--hueso-3);
+}
+
+.entrega__cabecera .insignia {
+    background: var(--hueso);
+    color: var(--verde);
+}
+
+.entrega[data-estado='En camino'] .entrega__cabecera .insignia {
+    background: var(--dorado-claro);
+    color: var(--tinta);
+}
+
+.entrega[data-estado='Cancelado'] .entrega__cabecera .insignia {
+    background: var(--rojo);
+    color: var(--hueso);
+}
+
+.entrega__cuerpo {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem;
+}
+
+.entrega__cliente {
+    font-size: var(--t-destacado);
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.entrega__direccion {
+    font-size: var(--t-destacado);
+    line-height: 1.35;
+}
+
+.entrega__contacto {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem;
+}
+
+.entrega__enlace {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--hueso);
+    color: var(--verde);
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition:
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
+}
+
+.entrega__enlace:active {
+    transform: scale(0.97);
+}
+
+.entrega__items summary {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.entrega__items ul {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.25rem 0 0.75rem;
+}
+
+.entrega__items li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem;
+}
+
+.entrega__cantidad {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.entrega__telefono {
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
+}
+
+.entrega__motivo {
+    padding: 0.55rem 0.75rem;
+    background: var(--hueso);
+    color: var(--rojo-hondo);
+    font-weight: 500;
+}
+
+.entrega__pie {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0 1rem 1rem;
+}
+
+.entrega__aviso {
+    color: var(--tinta-suave);
+}
+
+.entrega__no-pude {
+    min-height: 2.75rem;
+    border: 0;
+    background: transparent;
+    color: var(--tinta);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--rojo);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition: transform var(--t-presion) var(--ease-out);
+}
+
+.entrega__no-pude:active {
+    transform: scale(0.97);
+}
+
+/* Confirmaciones en el mismo lugar: la pregunta y dos botones grandes */
+.entrega__formulario {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.entrega__formulario label,
+.entrega__pregunta {
+    font-size: var(--t-destacado);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.entrega__formulario select {
+    width: 100%;
+    min-height: 3.5rem;
+    padding: 0.6rem 0.8rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hueso);
+    color: var(--tinta);
+}
+
+.entrega__botones {
+    display: grid;
+    gap: 0.5rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .entrega__enlace:hover {
+        background: var(--hueso-3);
+    }
+}
+
+@media (min-width: 40rem) {
+    .entrega__botones {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+}

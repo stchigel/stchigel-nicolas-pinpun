@@ -1,8 +1,17 @@
 import pedidoRepository from '../repositories/pedidoRepository.js';
 import productoRepository from '../repositories/productoRepository.js';
+import usuarioRepository from '../repositories/usuarioRepository.js';
 import localService from './localService.js';
-import { BadRequestError, ConflictError, NotFoundError } from '../exceptions/AppError.js';
-import { CANCELADO, ESTADOS_PEDIDO } from '../enums/Estados.js';
+import { Rol } from './authService.js';
+import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '../exceptions/AppError.js';
+import {
+    CANCELADO,
+    ESTADOS_CANCELABLES_POR_REPARTIDOR,
+    ESTADOS_DEL_REPARTIDOR,
+    ESTADOS_PEDIDO,
+    TipoPedido,
+    estaTerminado
+} from '../enums/Estados.js';
 import { Messages } from '../enums/Messages.js';
 import { estaAbierto } from '../utils/horario.js';
 import { exigirLocal, localDelListado } from '../utils/permisos.js';
@@ -54,13 +63,27 @@ const resolverItem = ({ productoId, variante, cantidad }) => {
     };
 };
 
+const esRepartidor = (usuario) => usuario.rol === Rol.REPARTIDOR;
+
+/* Cuántos pedidos sin terminar tiene a cargo un repartidor */
+export const cargaDe = (repartidorId) =>
+    pedidoRepository.findAll({ repartidorId }).filter((pedido) => !estaTerminado(pedido)).length;
+
+/* El repartidor ve solo los pedidos que le asignaron; la administración, los de su alcance */
 const getAll = ({ localId, estado }, usuario) =>
-    pedidoRepository.findAll({ localId: localDelListado(usuario, localId), estado });
+    esRepartidor(usuario)
+        ? pedidoRepository.findAll({ repartidorId: usuario.id, estado })
+        : pedidoRepository.findAll({ localId: localDelListado(usuario, localId), estado });
 
 const getById = (id, usuario) => {
     const pedido = pedidoRepository.findById(id);
     if (!pedido) throw new NotFoundError(Messages.PEDIDO_NOT_FOUND);
-    exigirLocal(usuario, pedido.localId);
+
+    if (esRepartidor(usuario)) {
+        if (pedido.repartidorId !== usuario.id) throw new ForbiddenError(Messages.FORBIDDEN);
+    } else {
+        exigirLocal(usuario, pedido.localId);
+    }
 
     return pedido;
 };
@@ -80,23 +103,70 @@ const create = ({ localId, tipo, cliente, direccion, items }) => {
         estado,
         localId,
         cliente,
-        direccion: tipo === 'delivery' ? direccion : '',
+        direccion: tipo === TipoPedido.DELIVERY ? direccion : '',
         items: resueltos
     });
 };
 
-/* Un pedido avanza al estado siguiente de su circuito o se cancela, mientras no esté terminado */
-const cambiarEstado = (id, estado, usuario) => {
+/*
+ * Un pedido avanza al estado siguiente de su circuito o se cancela, mientras no esté terminado.
+ * El repartidor solo puede salir con el pedido, entregarlo o, si ya lo tiene en la mano, cancelarlo (con su motivo).
+ */
+const cambiarEstado = (id, estado, usuario, motivo = '') => {
     const pedido = getById(id, usuario);
     const circuito = ESTADOS_PEDIDO[pedido.tipo];
 
+    if (esRepartidor(usuario)) {
+        if (!ESTADOS_DEL_REPARTIDOR.includes(estado)) throw new ForbiddenError(Messages.REPARTIDOR_NO_PUEDE);
+        if (estado === CANCELADO && !ESTADOS_CANCELABLES_POR_REPARTIDOR.includes(pedido.estado)) {
+            throw new ConflictError(Messages.TRANSICION_INVALIDA);
+        }
+    }
+
     if (estado !== CANCELADO && !circuito.includes(estado)) throw new BadRequestError(Messages.INVALID_ESTADO);
 
-    const terminado = pedido.estado === CANCELADO || pedido.estado === circuito.at(-1);
     const siguiente = circuito[circuito.indexOf(pedido.estado) + 1];
-    if (terminado || (estado !== CANCELADO && estado !== siguiente)) throw new ConflictError(Messages.TRANSICION_INVALIDA);
+    if (estaTerminado(pedido) || (estado !== CANCELADO && estado !== siguiente)) throw new ConflictError(Messages.TRANSICION_INVALIDA);
 
-    return pedidoRepository.cambiarEstado(id, estado, new Date().toISOString());
+    return pedidoRepository.cambiarEstado(id, estado, new Date().toISOString(), motivo);
 };
 
-export default { getAll, getById, create, cambiarEstado };
+/* Entre los repartidores activos del local, el que menos pedidos lleva; si empatan, al que hace más que no se le asigna uno */
+const elegirAutomatico = (localId) => {
+    const candidatos = usuarioRepository.findRepartidores({ localId }).filter((repartidor) => repartidor.activo);
+    if (candidatos.length === 0) throw new ConflictError(Messages.SIN_REPARTIDORES);
+
+    const ultimaAsignacion = (repartidor) =>
+        pedidoRepository
+            .findAll({ repartidorId: repartidor.id })
+            .reduce((ultima, pedido) => Math.max(ultima, pedido.asignadoEn ? new Date(pedido.asignadoEn).getTime() : 0), 0);
+
+    return candidatos
+        .map((repartidor) => ({ repartidor, carga: cargaDe(repartidor.id), ultima: ultimaAsignacion(repartidor) }))
+        .sort((a, b) => a.carga - b.carga || a.ultima - b.ultima || a.repartidor.id - b.repartidor.id)[0].repartidor;
+};
+
+/*
+ * Asigna (o quita) el repartidor de un delivery. `automatico` elige al que tenga menos pedidos en curso.
+ * Solo los deliveries sin terminar, y solo repartidores activos de la misma sucursal que el pedido.
+ */
+const asignarRepartidor = (id, { repartidorId, automatico }, usuario) => {
+    const pedido = getById(id, usuario);
+
+    if (pedido.tipo !== TipoPedido.DELIVERY) throw new BadRequestError(Messages.SOLO_DELIVERY_LLEVA_REPARTIDOR);
+    if (estaTerminado(pedido)) throw new ConflictError(Messages.PEDIDO_TERMINADO);
+
+    let elegido = null;
+
+    if (automatico) {
+        elegido = elegirAutomatico(pedido.localId);
+    } else if (repartidorId !== null) {
+        elegido = usuarioRepository.findRepartidorById(repartidorId);
+        if (!elegido) throw new NotFoundError(Messages.REPARTIDOR_NOT_FOUND);
+        if (!elegido.activo || elegido.local !== pedido.localId) throw new ConflictError(Messages.REPARTIDOR_INVALIDO);
+    }
+
+    return pedidoRepository.asignar(id, elegido?.id ?? null, new Date().toISOString());
+};
+
+export default { getAll, getById, create, cambiarEstado, asignarRepartidor };

@@ -1,6 +1,7 @@
 import { createHmac, scryptSync, timingSafeEqual } from 'node:crypto';
 import usuarioRepository from '../repositories/usuarioRepository.js';
 import AdministradorSucursal from '../models/AdministradorSucursal.js';
+import Repartidor from '../models/Repartidor.js';
 import { UnauthorizedError } from '../exceptions/AppError.js';
 import { Messages } from '../enums/Messages.js';
 
@@ -10,7 +11,8 @@ const DURACION_SESION_MS = 8 * 60 * 60 * 1000;
 
 export const Rol = Object.freeze({
     GENERAL: 'general',
-    SUCURSAL: 'sucursal'
+    SUCURSAL: 'sucursal',
+    REPARTIDOR: 'repartidor'
 });
 
 const firmar = (contenido) => createHmac('sha256', SECRETO).update(contenido).digest('base64url');
@@ -21,17 +23,18 @@ const contrasenaCorrecta = (contrasena, guardada) => {
     return timingSafeEqual(intento, Buffer.from(hash, 'hex'));
 };
 
-/* Lo que el panel necesita saber de quien entró; nunca la contraseña */
+/* Lo que el panel necesita saber de quien entró; nunca la contraseña. Los repartidores suman su id. */
 const datosPublicos = (usuario) => {
-    const sucursal = usuario instanceof AdministradorSucursal;
+    const base = { mail: usuario.mail, nombre: usuario.nombre, apellido: usuario.apellido };
 
-    return {
-        mail: usuario.mail,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        rol: sucursal ? Rol.SUCURSAL : Rol.GENERAL,
-        localId: sucursal ? usuario.local : null
-    };
+    if (usuario instanceof Repartidor) return { ...base, rol: Rol.REPARTIDOR, localId: usuario.local, id: usuario.id };
+    if (usuario instanceof AdministradorSucursal) return { ...base, rol: Rol.SUCURSAL, localId: usuario.local };
+
+    return { ...base, rol: Rol.GENERAL, localId: null };
+};
+
+const exigirCuentaActiva = (usuario) => {
+    if (usuario instanceof Repartidor && !usuario.activo) throw new UnauthorizedError(Messages.CUENTA_DESACTIVADA);
 };
 
 /* Token firmado "datos.firma": sin base de sesiones, vence solo a las 8 horas */
@@ -45,11 +48,12 @@ const login = (mail, contrasena) => {
     if (!usuario || !contrasenaCorrecta(contrasena, usuario.contrasena)) {
         throw new UnauthorizedError(Messages.INVALID_CREDENCIALES);
     }
+    exigirCuentaActiva(usuario);
 
     return { token: crearToken(usuario), usuario: datosPublicos(usuario) };
 };
 
-/* Devuelve el usuario del token, o lanza si falta, está adulterado o venció */
+/* Devuelve el usuario del token, o lanza si falta, está adulterado, venció o la cuenta se desactivó */
 const verificarToken = (token) => {
     const [datos, firma] = (token ?? '').split('.');
     if (!datos || !firma) throw new UnauthorizedError(Messages.UNAUTHORIZED);
@@ -65,6 +69,7 @@ const verificarToken = (token) => {
 
     const usuario = usuarioRepository.findByMail(mail);
     if (!usuario) throw new UnauthorizedError(Messages.UNAUTHORIZED);
+    exigirCuentaActiva(usuario);
 
     return datosPublicos(usuario);
 };

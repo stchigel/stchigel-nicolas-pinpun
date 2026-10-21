@@ -11,7 +11,15 @@ import EstadoMensaje from '../../components/EstadoMensaje/EstadoMensaje.jsx';
 import { useAdminDatos } from '../../hooks/useAdminDatos.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
-import { CANCELADO, ETIQUETA_TIPO, VERBO_PEDIDO, pedidoActivo, siguienteEstadoPedido } from '../../utils/estados.js';
+import {
+    CANCELADO,
+    ETIQUETA_TIPO,
+    VERBO_PEDIDO,
+    cargaDeRepartidor,
+    pedidoActivo,
+    siguienteEstadoPedido,
+    sinRepartidor
+} from '../../utils/estados.js';
 import { formatearPrecio } from '../../utils/formato.js';
 import { urlTelefono } from '../../utils/sitio.js';
 import { haceCuanto, horaDe } from '../../utils/tiempo.js';
@@ -19,7 +27,68 @@ import './AdminPedidos.css';
 
 const unidades = (cantidad) => `${cantidad} ${cantidad === 1 ? 'producto' : 'productos'}`;
 
+const nombreCompleto = (repartidor) => `${repartidor.nombre} ${repartidor.apellido}`;
+
+/*
+ * A quién le toca un delivery: se elige de los repartidores de su sucursal (con cuántos pedidos lleva cada uno)
+ * o se deja que el sistema asigne al que menos tenga. Solo mientras el pedido no terminó.
+ */
+function Reparto({ pedido }) {
+    const { repartidores, pedidos, asignarPedido } = useAdminDatos();
+    const notificar = useToast();
+    const id = useId();
+    const [trabajando, setTrabajando] = useState(false);
+
+    const delLocal = repartidores.filter((repartidor) => repartidor.localId === pedido.localId && (repartidor.activo || repartidor.id === pedido.repartidorId));
+
+    const asignar = async (asignacion, mensaje) => {
+        setTrabajando(true);
+        try {
+            const actualizado = await asignarPedido(pedido.id, asignacion);
+            const elegido = repartidores.find((repartidor) => repartidor.id === actualizado.repartidorId);
+            notificar.exito(mensaje(elegido));
+        } catch (falla) {
+            notificar.error(falla.message);
+        } finally {
+            setTrabajando(false);
+        }
+    };
+
+    const cambiar = (evento) => {
+        const valor = evento.target.value;
+        if (valor === '') asignar({ repartidorId: null }, () => `Quitaste el repartidor del pedido #${pedido.id}.`);
+        else asignar({ repartidorId: Number(valor) }, (elegido) => `El pedido #${pedido.id} lo lleva ${nombreCompleto(elegido)}.`);
+    };
+
+    return (
+        <div className="pedido__reparto" data-sin={pedido.repartidorId === null || undefined}>
+            <label htmlFor={id}>Repartidor</label>
+            <select id={id} value={pedido.repartidorId ?? ''} onChange={cambiar} disabled={trabajando}>
+                <option value="">Sin asignar</option>
+                {delLocal.map((repartidor) => (
+                    <option key={repartidor.id} value={repartidor.id}>
+                        {nombreCompleto(repartidor)} · {cargaDeRepartidor(pedidos, repartidor.id)} en curso{repartidor.activo ? '' : ' (desactivado)'}
+                    </option>
+                ))}
+            </select>
+            {pedido.repartidorId === null && (
+                <button
+                    type="button"
+                    className="admin__texto-boton"
+                    disabled={trabajando}
+                    onClick={() => asignar({ automatico: true }, (elegido) => `El pedido #${pedido.id} lo lleva ${nombreCompleto(elegido)}.`)}
+                >
+                    Asignar automáticamente
+                </button>
+            )}
+        </div>
+    );
+}
+
 function Detalle({ id, pedido, local }) {
+    const { repartidores } = useAdminDatos();
+    const repartidor = repartidores.find((item) => item.id === pedido.repartidorId);
+
     return (
         <div id={id} className="pedido__detalle">
             <ul className="pedido__items" aria-label="Productos del pedido">
@@ -54,10 +123,18 @@ function Detalle({ id, pedido, local }) {
                         <dd>{local.nombre}</dd>
                     </div>
                 )}
+                {pedido.tipo === 'delivery' && (
+                    <div>
+                        <dt>Repartidor</dt>
+                        <dd>{repartidor ? nombreCompleto(repartidor) : 'Sin asignar'}</dd>
+                    </div>
+                )}
                 <div>
                     <dt>Recorrido</dt>
                     <dd>
-                        {pedido.historial.map((paso) => `${paso.estado} ${horaDe(paso.fecha)}`).join(' · ')}
+                        {pedido.historial
+                            .map((paso) => `${paso.estado} ${horaDe(paso.fecha)}${paso.motivo ? ` (${paso.motivo})` : ''}`)
+                            .join(' · ')}
                     </dd>
                 </div>
             </dl>
@@ -137,6 +214,8 @@ function FilaPedido({ pedido, local, ahora }) {
                 </div>
             </div>
 
+            {pedido.tipo === 'delivery' && siguiente && <Reparto pedido={pedido} />}
+
             {abierto && <Detalle id={idDetalle} pedido={pedido} local={local} />}
         </li>
     );
@@ -183,9 +262,12 @@ function AdminPedidos() {
     const activos = visibles.filter(pedidoActivo).reverse();
     const terminados = visibles.filter((pedido) => !pedidoActivo(pedido));
 
-    const mostrarActivos = filtro !== 'terminados';
-    const mostrarTerminados = filtro !== 'activos';
-    const vacio = (mostrarActivos ? activos.length : 0) + (mostrarTerminados ? terminados.length : 0) === 0;
+    const sinAsignar = visibles.filter(sinRepartidor).reverse();
+
+    const mostrarActivos = filtro === 'activos' || filtro === 'todos';
+    const mostrarTerminados = filtro === 'terminados' || filtro === 'todos';
+    const mostrarSinAsignar = filtro === 'sinAsignar';
+    const vacio = (mostrarActivos ? activos.length : 0) + (mostrarTerminados ? terminados.length : 0) + (mostrarSinAsignar ? sinAsignar.length : 0) === 0;
 
     return (
         <>
@@ -208,6 +290,7 @@ function AdminPedidos() {
                     onCambiar={setFiltro}
                     opciones={[
                         { id: 'activos', etiqueta: 'En marcha', cantidad: activos.length },
+                        { id: 'sinAsignar', etiqueta: 'Sin repartidor', cantidad: sinAsignar.length },
                         { id: 'terminados', etiqueta: 'Terminados', cantidad: terminados.length },
                         { id: 'todos', etiqueta: 'Todos', cantidad: visibles.length }
                     ]}
@@ -216,11 +299,20 @@ function AdminPedidos() {
                 {vacio ? (
                     <EstadoMensaje
                         className="admin-vacio"
-                        titulo={filtro === 'terminados' ? 'Todavía no hay pedidos terminados.' : 'No hay pedidos en marcha.'}
+                        titulo={
+                            filtro === 'terminados'
+                                ? 'Todavía no hay pedidos terminados.'
+                                : filtro === 'sinAsignar'
+                                  ? 'Todos los deliveries tienen repartidor.'
+                                  : 'No hay pedidos en marcha.'
+                        }
                         descripcion="Cuando llegue uno aparece acá y te avisamos con una notificación."
                     />
                 ) : (
                     <>
+                        {mostrarSinAsignar && (
+                            <Grupo titulo="Sin repartidor" pedidos={sinAsignar} locales={locales} mostrarLocal={general} ahora={ahora} />
+                        )}
                         {mostrarActivos && (
                             <Grupo titulo="En marcha" pedidos={activos} locales={locales} mostrarLocal={general} ahora={ahora} />
                         )}

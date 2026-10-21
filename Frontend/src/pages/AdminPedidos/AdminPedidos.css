@@ -162,3 +162,45 @@
         padding: 1rem;
     }
 }
+
+/* Repartidor de un delivery: a quién le toca, o "Asignar automáticamente" si todavía nadie */
+.pedido__reparto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    margin-top: 0.4rem;
+    padding-left: calc(5.75rem + 1.25rem);
+}
+
+.pedido__reparto label {
+    font-size: var(--t-chico);
+    font-weight: 700;
+    color: var(--tinta-suave);
+}
+
+.pedido__reparto select {
+    min-height: 2.75rem;
+    max-width: 100%;
+    padding: 0.4rem 0.7rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hueso);
+    color: var(--tinta);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+}
+
+.pedido:nth-child(odd) .pedido__reparto select {
+    background: var(--hueso-2);
+}
+
+.pedido__reparto[data-sin] select {
+    box-shadow: inset 0 -0.25rem 0 var(--rojo);
+}
+
+@media (max-width: 70rem) {
+    .pedido__reparto {
+        padding-left: 0;
+    }
+}
