@@ -1,0 +1,256 @@
+/*
+ * Seguimiento del pedido: a la izquierda, el estado, el recorrido y lo que se pidió; cuando un delivery va en camino,
+ * el mapa ocupa la otra mitad. Mismo papel, mismas letras y mismo rojo para lo que importa que en el resto del sitio.
+ */
+.seguimiento {
+    padding-block: calc(var(--sobresale-logo) + clamp(2rem, 5vw, 4rem)) var(--separacion-secciones);
+}
+
+.seguimiento__esqueleto {
+    height: 24rem;
+    background: var(--hueso-2);
+    animation: latido 1.4s var(--ease-in-out) infinite;
+}
+
+.seguimiento__cuerpo {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    max-width: 44rem;
+}
+
+.seguimiento__cuerpo[data-con-mapa] {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    max-width: none;
+    align-items: start;
+}
+
+.seguimiento__info {
+    display: grid;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.seguimiento__titulo {
+    font-size: var(--t-titulo);
+    color: var(--verde);
+}
+
+.seguimiento__titulo span {
+    color: var(--rojo);
+}
+
+.seguimiento__mensaje {
+    max-width: 34ch;
+    font-size: var(--t-destacado);
+    line-height: 1.4;
+}
+
+/* Recorrido: bloques llenos que se van pintando, sin números ni líneas */
+.pasos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.pasos__paso {
+    padding: 0.55rem 0.9rem;
+    background: var(--hueso-2);
+    color: var(--tinta-suave);
+    font-size: var(--t-chico);
+    font-weight: 500;
+    transition:
+        background-color var(--t-ui) ease,
+        color var(--t-ui) ease;
+}
+
+.pasos__paso[data-momento='hecho'] {
+    background: var(--verde);
+    color: var(--hueso);
+}
+
+.pasos__paso[data-momento='actual'] {
+    background: var(--rojo);
+    color: var(--hueso);
+    font-weight: 700;
+}
+
+.seguimiento__cancelado {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--hueso-2);
+}
+
+.seguimiento__cancelado .boton,
+.seguimiento .boton--rojo {
+    box-shadow: none;
+}
+
+/* El viaje en números: tres datos grandes, el que más importa (cuánto falta) en rojo */
+.viaje {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.viaje__datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.35rem;
+    margin: 0;
+}
+
+.viaje__dato {
+    display: grid;
+    align-content: space-between;
+    gap: 0.35rem;
+    padding: 0.85rem 1rem;
+    background: var(--hueso-2);
+}
+
+.viaje__dato dt {
+    font-size: var(--t-chico);
+    line-height: 1.3;
+    color: var(--tinta-suave);
+}
+
+.viaje__dato dd {
+    margin: 0;
+    font-family: var(--fuente-display);
+    font-size: var(--t-subtitulo);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.viaje__dato[data-destacado] {
+    background: var(--rojo);
+}
+
+.viaje__dato[data-destacado] dt {
+    color: var(--hueso);
+}
+
+.viaje__dato[data-destacado] dd {
+    color: var(--hueso);
+}
+
+.viaje__nota {
+    font-size: var(--t-chico);
+    line-height: 1.45;
+    color: var(--tinta-suave);
+}
+
+/* Lo que se pidió */
+.seguimiento__detalle {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    background: var(--hueso-2);
+}
+
+.seguimiento__detalle h2 {
+    font-size: var(--t-subtitulo);
+    color: var(--verde);
+}
+
+.seguimiento__detalle ul {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.seguimiento__detalle li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem;
+}
+
+.seguimiento__cantidad {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.seguimiento__total {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.5rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.seguimiento__total strong {
+    font-family: var(--fuente-display);
+    font-size: var(--t-destacado);
+    font-weight: 400;
+}
+
+.seguimiento__dato {
+    color: var(--tinta-suave);
+}
+
+.seguimiento__volver a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-weight: 500;
+    text-decoration-color: var(--rojo);
+    text-decoration-thickness: 2px;
+}
+
+/* Mapa */
+.seguimiento__mapa {
+    position: sticky;
+    top: calc(var(--alto-navbar) + 1.5rem);
+    display: grid;
+    gap: 0.75rem;
+}
+
+.seguimiento__mapa > .mapa-seguimiento,
+.seguimiento__sin-mapa,
+.seguimiento__cargando-mapa {
+    height: clamp(20rem, 60svh, 34rem);
+}
+
+.seguimiento__sin-mapa,
+.seguimiento__cargando-mapa {
+    display: grid;
+    place-items: center;
+    background: var(--hueso-2);
+    color: var(--tinta-suave);
+}
+
+.seguimiento__nota {
+    padding: 0.55rem 0.75rem;
+    background: var(--hueso-2);
+    font-size: var(--t-chico);
+    line-height: 1.45;
+}
+
+.seguimiento__nota[data-vieja] {
+    background: var(--dorado-claro);
+    color: var(--tinta);
+    font-weight: 500;
+}
+
+@media (max-width: 52rem) {
+    .seguimiento__cuerpo[data-con-mapa] {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* En el teléfono lo primero es el mapa: es para lo que se abre el enlace */
+    .seguimiento__mapa {
+        position: static;
+        order: -1;
+    }
+
+    .seguimiento__mapa > .mapa-seguimiento,
+    .seguimiento__sin-mapa,
+    .seguimiento__cargando-mapa {
+        height: 20rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .seguimiento__esqueleto {
+        animation: none;
+    }
+}

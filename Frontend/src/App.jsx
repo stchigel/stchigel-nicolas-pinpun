@@ -11,6 +11,7 @@ import Menu from './pages/Menu/Menu.jsx';
 import CartaEscenario from './pages/CartaEscenario/CartaEscenario.jsx';
 import Carrito from './pages/Carrito/Carrito.jsx';
 import Reservas from './pages/Reservas/Reservas.jsx';
+import Seguimiento from './pages/Seguimiento/Seguimiento.jsx';
 import AdminIngreso from './pages/AdminIngreso/AdminIngreso.jsx';
 import AdminPedidos from './pages/AdminPedidos/AdminPedidos.jsx';
 import AdminReservas from './pages/AdminReservas/AdminReservas.jsx';
@@ -40,6 +41,7 @@ function App() {
                             <Route path="/carta" element={<CartaEscenario />} />
                             <Route path="/reservas" element={<Reservas />} />
                             <Route path="/carrito" element={<Carrito />} />
+                            <Route path="/seguimiento/:codigo" element={<Seguimiento />} />
                             <Route path="*" element={<Pendiente />} />
                         </Route>
 

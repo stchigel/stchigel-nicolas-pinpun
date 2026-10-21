@@ -1,10 +1,12 @@
-import { useId, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import CargaAdmin from '../../components/Admin/CargaAdmin.jsx';
 import FiltrosAdmin from '../../components/Admin/FiltrosAdmin.jsx';
 import InsigniaEstado from '../../components/Admin/InsigniaEstado.jsx';
 import Boton from '../../components/Boton/Boton.jsx';
 import EstadoMensaje from '../../components/EstadoMensaje/EstadoMensaje.jsx';
 import Icono from '../../components/Icono/Icono.jsx';
+import UbicacionCompartida from '../../components/Reparto/UbicacionCompartida.jsx';
+import { useCompartirUbicacion } from '../../hooks/useCompartirUbicacion.js';
 import { useRepartoDatos } from '../../hooks/useRepartoDatos.js';
 import { useToast } from '../../hooks/useToast.js';
 import { MOTIVOS_NO_ENTREGA, pedidoActivo } from '../../utils/estados.js';
@@ -172,9 +174,12 @@ function Entrega({ pedido, ahora }) {
                     {paso === 'entregado' && <ConfirmarEntrega pedido={pedido} onVolver={() => setPaso(null)} />}
 
                     {paso === null && pedido.estado === 'Listo' && (
-                        <Boton variante="rojo" onClick={salir} cargando={saliendo} disabled={saliendo}>
-                            Salí con el pedido
-                        </Boton>
+                        <>
+                            <Boton variante="rojo" onClick={salir} cargando={saliendo} disabled={saliendo}>
+                                Salí con el pedido
+                            </Boton>
+                            <p className="entrega__aviso">Al salir, {pedido.cliente.nombre} puede ver tu ubicación hasta que entregues.</p>
+                        </>
                     )}
                     {paso === null && pedido.estado === 'En camino' && (
                         <Boton variante="rojo" onClick={() => setPaso('entregado')}>
@@ -207,6 +212,10 @@ function Reparto() {
     const listas = { llevar: paraLlevar, cocina, terminadas };
     const visibles = listas[filtro];
 
+    /* Mientras lleva pedidos En camino, su ubicación se comparte con sus clientes */
+    const idsEnCamino = useMemo(() => pedidos.filter((pedido) => pedido.estado === 'En camino').map((pedido) => pedido.id), [pedidos]);
+    const ubicacion = useCompartirUbicacion(idsEnCamino);
+
     const actualizar = async () => {
         setActualizando(true);
         await recargar();
@@ -228,6 +237,8 @@ function Reparto() {
                     : 'No tenés pedidos para llevar ahora.'}
                 {actualizado && ' Se actualiza solo.'}
             </p>
+
+            <UbicacionCompartida {...ubicacion} ahora={ahora} onPausar={ubicacion.pausar} onReanudar={ubicacion.reanudar} />
 
             <CargaAdmin cargando={cargando} error={error} onReintentar={recargar} etiqueta="Cargando tus entregas…">
                 <FiltrosAdmin

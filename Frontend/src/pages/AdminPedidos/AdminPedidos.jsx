@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { Link } from 'react-router-dom';
 import AccionConfirmada from '../../components/Admin/AccionConfirmada.jsx';
 import BotonActualizar from '../../components/Admin/BotonActualizar.jsx';
 import CargaAdmin from '../../components/Admin/CargaAdmin.jsx';
@@ -129,6 +130,15 @@ function Detalle({ id, pedido, local }) {
                         <dd>{repartidor ? nombreCompleto(repartidor) : 'Sin asignar'}</dd>
                     </div>
                 )}
+                <div>
+                    <dt>Seguimiento del cliente</dt>
+                    <dd>
+                        <Link to={`/seguimiento/${pedido.codigoSeguimiento}`} target="_blank" rel="noreferrer">
+                            Ver lo que ve el cliente
+                            <span className="visualmente-oculto"> (se abre en otra pestaña)</span>
+                        </Link>
+                    </dd>
+                </div>
                 <div>
                     <dt>Recorrido</dt>
                     <dd>

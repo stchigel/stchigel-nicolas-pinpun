@@ -78,6 +78,10 @@ Son opcionales; si no se definen se usan los valores por defecto.
 | `CORS_ORIGIN` | `*` | Origen permitido para pedidos desde el navegador (por ejemplo `http://localhost:5173`). |
 | `AUTH_SECRET` | un valor de desarrollo | Clave con la que se firman las sesiones del panel de administración. Definir una propia fuera del desarrollo. |
 | `SIN_DATOS_DE_EJEMPLO` | sin definir | Con `1`, la API arranca sin los pedidos y reservas de ejemplo con los que se prueba el panel. |
+| `GEOGRAFIA_SIMULADA` | sin definir | Con `1`, el seguimiento no sale a internet: ubica las direcciones y calcula los recorridos con datos inventados pero estables (para pruebas o para trabajar sin conexión). |
+| `GEOGRAFIA_GEOCODIFICADOR_URL` / `GEOGRAFIA_ENRUTADOR_URL` | Nominatim y OSRM públicos | Servicios que ubican direcciones y calculan recorridos. Para uso intenso, apuntarlos a un proveedor propio. |
+| `GEOGRAFIA_AGENTE` | `PinPun/1.0 (proyecto academico)` | Cómo se identifica el servidor ante esos servicios (Nominatim lo exige). |
+| `RUTA_ACTUALIZAR_CADA_MS` | `20000` | Cada cuánto se recalcula, como máximo, el recorrido de un pedido en camino. |
 
 Ejemplo para cambiar el puerto:
 
@@ -118,6 +122,8 @@ Todas las rutas cuelgan de `/api`. Las respuestas tienen siempre la forma `{ "su
 | POST | `/api/pedidos` | Hace un pedido de retiro o delivery. Público; el servidor calcula el total con la carta. |
 | GET | `/api/pedidos` | Lista pedidos (`?localId=` y `?estado=`). Requiere sesión. |
 | PATCH | `/api/pedidos/:id/estado` | Lo lleva al paso siguiente de su circuito o lo cancela (con un `motivo` opcional). Requiere sesión; el repartidor solo puede marcar sus pedidos En camino, Entregado o Cancelado. |
+| PUT | `/api/pedidos/:id/ubicacion` | El repartidor asignado informa dónde está (`{ latitud, longitud, precision }`). Solo mientras el pedido está En camino. |
+| GET | `/api/seguimiento/:codigo` | Público: el estado de un pedido, su recorrido, el local y, si va en camino, la última posición del repartidor. El `codigo` es el que devuelve `POST /api/pedidos` como `codigoSeguimiento`. |
 | PATCH | `/api/pedidos/:id/repartidor` | Asigna un delivery: `{ "repartidorId": 2 }`, `{ "automatico": true }` (al que menos pedidos lleve) o `{ "repartidorId": null }` para quitarlo. Solo la administración. |
 | GET | `/api/repartidores` | Lista las cuentas de reparto con cuántos pedidos lleva cada una. Solo la administración. |
 | POST | `/api/repartidores` | Crea una cuenta de reparto (la sucursal, para su local). |
@@ -167,6 +173,17 @@ Se entra por <http://localhost:5173/admin/ingresar> (hay un enlace "Acceso del p
 - **Asignación de deliveries:** en Pedidos, cada delivery en marcha tiene un selector con los repartidores de su sucursal y cuántos pedidos lleva cada uno, y un botón para asignar automáticamente al que menos tenga (si empatan, al que hace más que no recibe uno). El filtro "Sin repartidor" junta los que todavía no tienen.
 - **Locales:** teléfono, horario, tipos de mesa (comensales por mesa y cantidad), si se pueden juntar mesas y máximo de personas por reserva. Con eso, el sitio solo acepta reservas dentro del horario y mientras haya lugar: si el local junta mesas, cuenta la suma de comensales; si no, cada grupo tiene que entrar en una sola mesa (un grupo de 5 no entra en un salón de mesas de 2 y 4).
 
+## Seguimiento del pedido
+
+Al hacer un pedido, la pantalla "Pedido enviado" ofrece **Seguir mi pedido**: un enlace `/seguimiento/<código>` que no pide cuenta. El código es largo e inadivinable (16 bytes al azar), y también queda guardado en el navegador para volver desde el carrito vacío. En el panel, el detalle de cada pedido tiene un enlace a lo que ve el cliente.
+
+- **Qué ve el cliente:** en qué paso va el pedido, lo que pidió, el local y el nombre de pila de quien reparte. Nunca teléfonos, apellidos ni datos de otros pedidos.
+- **Mapa en vivo:** cuando un delivery está En camino y el repartidor comparte su ubicación, aparece un mapa con el local y la posición del repartidor, que se actualiza cada pocos segundos. El mapa usa [Leaflet](https://leafletjs.com/) con los mosaicos de OpenStreetMap (se descarga solo cuando hace falta). El servidor de mosaicos público de OpenStreetMap está pensado para poco tráfico: para uso intensivo conviene contratar un proveedor de mapas.
+- **Destino y recorrido:** la dirección del cliente se ubica en el mapa en segundo plano al hacer el pedido (OpenStreetMap/Nominatim, buscándola dentro del área de reparto del local, porque hay calles con el mismo nombre en todo el conurbano). Con cada posición nueva, el servidor calcula en OSRM el recorrido que le falta al repartidor hasta el destino. El cliente ve su dirección marcada en el mapa, ese recorrido dibujado y tres datos: cuánto lleva de viaje, cuánto le falta (con los kilómetros) y la hora estimada de llegada. El tiempo que falta se va descontando solo entre un cálculo y el siguiente.
+- **Si algo falla:** si la dirección no se encuentra, o los servicios no responden, el pedido sigue igual: el cliente ve al repartidor en el mapa y un aviso de que no se puede estimar el tiempo. Nada de esto frena nunca un pedido. Los tiempos son los de un auto (OSRM público); para una moto en el tránsito son una referencia.
+- **Privacidad:** la ubicación solo se comparte mientras el pedido va En camino, se guarda solo la última posición (sin historial de recorridos) y se borra al entregar, cancelar o cambiar de repartidor. El repartidor ve en todo momento un aviso de que se está compartiendo, puede dejar de compartir cuando quiera y le avisa antes de salir.
+- **Límites:** la ubicación se manda desde el navegador, así que solo funciona con la pantalla del portal abierta y encendida (se pide al navegador que no la apague). El navegador solo da la ubicación en `localhost` o en sitios con HTTPS: para probar desde un celular hace falta HTTPS.
+
 ## Portal de reparto
 
 Los repartidores entran por el mismo acceso y van directo a <http://localhost:5173/reparto>. Ven solo los pedidos que les asignaron, en una columna pensada para el teléfono:
@@ -174,6 +191,7 @@ Los repartidores entran por el mismo acceso y van directo a <http://localhost:51
 - **Para llevar:** los pedidos listos y los que ya van en camino. Cada tarjeta trae el cliente, la dirección, un botón para abrirla en el mapa, otro para llamar y lo que lleva el pedido.
 - **Salí con el pedido** lo pasa a En camino; **Entregué el pedido** lo marca Entregado (con una confirmación, porque no se puede deshacer); **No pude entregarlo** lo cancela con el motivo que elija (no atendieron, dirección incorrecta, etc.), que queda en el recorrido del pedido.
 - **En cocina:** los que todavía se están preparando; no se pueden tocar hasta que estén listos.
+- Al salir, el navegador le pide permiso para usar la ubicación y la comparte con el cliente de ese pedido (ver "Seguimiento del pedido"). Un aviso verde arriba le dice con quién la comparte y le deja cortarla.
 - Se actualiza solo cada 15 segundos y avisa cuando le asignan un pedido nuevo o uno queda listo. Los pedidos asignados se ven en cuanto se asignan, sin importar su estado.
 
 Un repartidor no puede ver reservas, locales, la carta ni los pedidos de otros, y el servidor se lo impide aunque cambie la URL.

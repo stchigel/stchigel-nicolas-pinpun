@@ -1,6 +1,7 @@
 import pedidoRepository from '../repositories/pedidoRepository.js';
 import reservaRepository from '../repositories/reservaRepository.js';
 import productoRepository from '../repositories/productoRepository.js';
+import ubicacionRepository from '../repositories/ubicacionRepository.js';
 import { CANCELADO, EstadoReserva, ESTADOS_PEDIDO } from '../enums/Estados.js';
 
 /*
@@ -142,6 +143,12 @@ export const cargarEjemplos = () => {
         direccion: 'Triunvirato 4550, Villa Urquiza',
         items: [item('Fugazza rellena', 'Grande', 1), item('Muzzarella', 'Porción', 2)]
     });
+
+    const enCamino = pedidoRepository.findAll({ estado: 'En camino' })[0];
+    if (enCamino) {
+        pedidoRepository.guardarDestino(enCamino.id, { latitud: -34.6031, longitud: -58.423 });
+        ubicacionRepository.guardar(enCamino.id, { latitud: -34.6064, longitud: -58.4208, precision: 20 });
+    }
 
     reserva({
         localId: 1,

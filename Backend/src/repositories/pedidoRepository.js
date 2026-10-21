@@ -17,6 +17,8 @@ const findAll = ({ localId, estado, repartidorId } = {}) =>
 
 const findById = (id) => pedidos.find((pedido) => pedido.id === id) ?? null;
 
+const findByCodigo = (codigo) => pedidos.find((pedido) => pedido.codigoSeguimiento === codigo) ?? null;
+
 const create = (datos) => {
     const pedido = new Pedido({ id: nextId++, ...datos });
     pedidos.push(pedido);
@@ -43,4 +45,14 @@ const asignar = (id, repartidorId, fecha) => {
     return pedido;
 };
 
-export default { findAll, findById, create, cambiarEstado, asignar };
+const guardarDestino = (id, destino) => {
+    const pedido = findById(id);
+    if (pedido) pedido.destino = destino;
+};
+
+const marcarDestinoIntentado = (id) => {
+    const pedido = findById(id);
+    if (pedido) pedido.destinoIntentadoEn = Date.now();
+};
+
+export default { findAll, findById, findByCodigo, create, cambiarEstado, asignar, guardarDestino, marcarDestinoIntentado };

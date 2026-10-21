@@ -16,5 +16,8 @@ export const getPedidos = (opciones) => request(RUTA, opciones);
 export const cambiarEstadoPedido = (id, estado, motivo) =>
     request(`${RUTA}/${id}/estado`, { method: 'PATCH', body: motivo ? { estado, motivo } : { estado } });
 
+/* El repartidor informa dónde está mientras lleva el pedido: { latitud, longitud, precision } */
+export const informarUbicacion = (id, ubicacion) => request(`${RUTA}/${id}/ubicacion`, { method: 'PUT', body: ubicacion });
+
 /* A quién le toca un delivery: { repartidorId }, { automatico: true } o { repartidorId: null } para quitarlo */
 export const asignarRepartidor = (id, asignacion) => request(`${RUTA}/${id}/repartidor`, { method: 'PATCH', body: asignacion });

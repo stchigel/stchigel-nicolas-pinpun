@@ -52,6 +52,9 @@ export const Messages = Object.freeze({
     INVALID_REPARTIDOR: 'Faltan datos del repartidor: nombre, apellido, mail válido, teléfono y una contraseña de al menos 8 caracteres.',
     MAIL_EN_USO: 'Ya existe una cuenta con ese mail.',
     REPARTIDOR_CON_PEDIDOS: 'Tiene pedidos en curso: reasignalos antes de desactivar la cuenta.',
+    SEGUIMIENTO_NOT_FOUND: 'No encontramos ese pedido. Revisá que el enlace esté completo.',
+    INVALID_UBICACION: 'La ubicación debe tener latitud y longitud válidas.',
+    UBICACION_SOLO_EN_CAMINO: 'Solo se comparte la ubicación mientras el pedido va en camino.',
     INVALID_TELEFONO: 'El teléfono debe ser un texto o quedar vacío.',
     ROUTE_NOT_FOUND: 'La ruta solicitada no existe.',
     INTERNAL_SERVER_ERROR: 'Ocurrió un error interno en el servidor.'

@@ -23,4 +23,9 @@ const asignarRepartidor = (req, res) => {
     ApiResponse.success(res, pedidoService.asignarRepartidor(Number(req.params.id), req.body, req.usuario));
 };
 
-export default { getAll, getById, create, cambiarEstado, asignarRepartidor };
+const informarUbicacion = (req, res) => {
+    const { fecha } = pedidoService.informarUbicacion(Number(req.params.id), req.body, req.usuario);
+    ApiResponse.success(res, { fecha });
+};
+
+export default { getAll, getById, create, cambiarEstado, asignarRepartidor, informarUbicacion };

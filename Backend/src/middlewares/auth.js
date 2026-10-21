@@ -18,6 +18,13 @@ export const exigirAdministracion = (req, res, next) => {
     next();
 };
 
+/* Lo que es solo de quien reparte (por ejemplo, compartir su ubicación en un pedido que lleva) */
+export const exigirRepartidor = (req, res, next) => {
+    if (req.usuario.rol !== Rol.REPARTIDOR) throw new ForbiddenError(Messages.FORBIDDEN);
+
+    next();
+};
+
 /* Lo que solo toca el administrador general (por ejemplo, la carta, que es la misma para todos los locales) */
 export const exigirGeneral = (req, res, next) => {
     if (req.usuario.rol !== Rol.GENERAL) throw new ForbiddenError(Messages.FORBIDDEN);

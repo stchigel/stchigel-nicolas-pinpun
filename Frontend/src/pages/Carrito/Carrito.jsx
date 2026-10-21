@@ -13,6 +13,7 @@ import { getLocales } from '../../services/localService.js';
 import { crearPedido } from '../../services/pedidoService.js';
 import { detalleItem } from '../../utils/carta.js';
 import { formatearPrecio } from '../../utils/formato.js';
+import { guardarSeguimiento, leerSeguimientos } from '../../utils/seguimientoGuardado.js';
 import { esTelefonoValido, MENSAJE_TELEFONO } from '../../utils/validaciones.js';
 import { describirHorario, estaAbierto, tieneHorario } from '../../utils/horario.js';
 import './Carrito.css';
@@ -158,7 +159,7 @@ function Comanda({ onConfirmado }) {
 
         setEnviando(true);
         try {
-            await crearPedido({
+            const creado = await crearPedido({
                 localId: local.id,
                 tipo,
                 cliente: { nombre: campos.nombre.trim(), telefono: campos.telefono.trim() },
@@ -173,7 +174,8 @@ function Comanda({ onConfirmado }) {
                     cantidad
                 }))
             });
-            onConfirmado({ tipo, local, nombre: campos.nombre.trim(), direccion: campos.direccion.trim() });
+            guardarSeguimiento(creado.codigoSeguimiento);
+            onConfirmado({ tipo, local, nombre: campos.nombre.trim(), direccion: campos.direccion.trim(), codigo: creado.codigoSeguimiento });
         } catch (falla) {
             notificar.error(falla.message);
             setEnviando(false);
@@ -327,6 +329,7 @@ function PedidoArmado({ onConfirmado }) {
 function Carrito() {
     const { items, vaciar } = usePedido();
     const [enviado, setEnviado] = useState(null);
+    const [ultimoSeguimiento] = useState(() => leerSeguimientos()[0]);
 
     const alConfirmar = (datos) => {
         setEnviado(datos);
@@ -334,7 +337,7 @@ function Carrito() {
     };
 
     if (enviado) {
-        const { tipo, local, direccion } = enviado;
+        const { tipo, local, direccion, codigo } = enviado;
         return (
             <PantallaAparte
                 alt="Un pizzero con gorra a cuadros, detrás del mostrador, con una porción de fugazzeta en la bandeja."
@@ -345,7 +348,10 @@ function Carrito() {
                         : `Se lo mandamos a Pin Pun ${local.nombre}. Va a ${direccion}.`
                 }
             >
-                <Boton a="/carta" variante="rojo">
+                <Boton a={`/seguimiento/${codigo}`} variante="rojo">
+                    Seguir mi pedido
+                </Boton>
+                <Boton a="/carta" variante="hueso">
                     Volver a la carta
                 </Boton>
             </PantallaAparte>
@@ -362,6 +368,11 @@ function Carrito() {
                 <Boton a="/carta" variante="rojo">
                     Ir a la carta
                 </Boton>
+                {ultimoSeguimiento && (
+                    <Boton a={`/seguimiento/${ultimoSeguimiento}`} variante="hueso">
+                        Seguir mi último pedido
+                    </Boton>
+                )}
             </PantallaAparte>
         );
     }

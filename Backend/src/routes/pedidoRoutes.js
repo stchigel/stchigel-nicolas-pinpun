@@ -4,7 +4,8 @@ import validateId from '../middlewares/validateId.js';
 import validatePedido from '../middlewares/validatePedido.js';
 import validateEstado from '../middlewares/validateEstado.js';
 import validateAsignacion from '../middlewares/validateAsignacion.js';
-import { autenticar, exigirAdministracion } from '../middlewares/auth.js';
+import validateUbicacion from '../middlewares/validateUbicacion.js';
+import { autenticar, exigirAdministracion, exigirRepartidor } from '../middlewares/auth.js';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.get('/:id', autenticar, validateId, pedidoController.getById);
 router.patch('/:id/estado', autenticar, validateId, validateEstado, pedidoController.cambiarEstado);
 
 router.patch('/:id/repartidor', autenticar, exigirAdministracion, validateId, validateAsignacion, pedidoController.asignarRepartidor);
+router.put('/:id/ubicacion', autenticar, exigirRepartidor, validateId, validateUbicacion, pedidoController.informarUbicacion);
 
 export default router;

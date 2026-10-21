@@ -1,7 +1,10 @@
 import pedidoRepository from '../repositories/pedidoRepository.js';
 import productoRepository from '../repositories/productoRepository.js';
 import usuarioRepository from '../repositories/usuarioRepository.js';
+import ubicacionRepository from '../repositories/ubicacionRepository.js';
 import localService from './localService.js';
+import { asegurarDestino } from './destinoService.js';
+import { refrescarRuta } from './rutaService.js';
 import { Rol } from './authService.js';
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '../exceptions/AppError.js';
 import {
@@ -96,7 +99,7 @@ const create = ({ localId, tipo, cliente, direccion, items }) => {
     const total = resueltos.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
     const estado = ESTADOS_PEDIDO[tipo][0];
 
-    return pedidoRepository.create({
+    const creado = pedidoRepository.create({
         fecha: new Date().toISOString(),
         total,
         tipo,
@@ -106,6 +109,10 @@ const create = ({ localId, tipo, cliente, direccion, items }) => {
         direccion: tipo === TipoPedido.DELIVERY ? direccion : '',
         items: resueltos
     });
+
+    asegurarDestino(creado);
+
+    return creado;
 };
 
 /*
@@ -128,7 +135,25 @@ const cambiarEstado = (id, estado, usuario, motivo = '') => {
     const siguiente = circuito[circuito.indexOf(pedido.estado) + 1];
     if (estaTerminado(pedido) || (estado !== CANCELADO && estado !== siguiente)) throw new ConflictError(Messages.TRANSICION_INVALIDA);
 
-    return pedidoRepository.cambiarEstado(id, estado, new Date().toISOString(), motivo);
+    const actualizado = pedidoRepository.cambiarEstado(id, estado, new Date().toISOString(), motivo);
+    if (estaTerminado(actualizado)) ubicacionRepository.borrar(id);
+
+    return actualizado;
+};
+
+/*
+ * El repartidor informa dónde está mientras lleva un pedido. Solo vale con el pedido En camino y solo del repartidor
+ * al que está asignado (getById ya lo exige); el cliente la ve en su enlace de seguimiento.
+ */
+const informarUbicacion = (id, ubicacion, usuario) => {
+    const pedido = getById(id, usuario);
+    if (pedido.estado !== 'En camino') throw new ConflictError(Messages.UBICACION_SOLO_EN_CAMINO);
+
+    const guardada = ubicacionRepository.guardar(id, ubicacion);
+    asegurarDestino(pedido);
+    refrescarRuta(pedido);
+
+    return guardada;
 };
 
 /* Entre los repartidores activos del local, el que menos pedidos lleva; si empatan, al que hace más que no se le asigna uno */
@@ -166,7 +191,9 @@ const asignarRepartidor = (id, { repartidorId, automatico }, usuario) => {
         if (!elegido.activo || elegido.local !== pedido.localId) throw new ConflictError(Messages.REPARTIDOR_INVALIDO);
     }
 
+    ubicacionRepository.borrar(id);
+
     return pedidoRepository.asignar(id, elegido?.id ?? null, new Date().toISOString());
 };
 
-export default { getAll, getById, create, cambiarEstado, asignarRepartidor };
+export default { getAll, getById, create, cambiarEstado, asignarRepartidor, informarUbicacion };
