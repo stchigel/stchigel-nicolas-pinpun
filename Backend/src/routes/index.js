@@ -6,10 +6,12 @@ import pedidoRoutes from './pedidoRoutes.js';
 import reservaRoutes from './reservaRoutes.js';
 import repartidorRoutes from './repartidorRoutes.js';
 import seguimientoRoutes from './seguimientoRoutes.js';
+import cartaRoutes from './cartaRoutes.js';
 
 const router = Router();
 
 router.use('/productos', productoRoutes);
+router.use('/cartas', cartaRoutes);
 router.use('/locales', localRoutes);
 router.use('/auth', authRoutes);
 router.use('/pedidos', pedidoRoutes);

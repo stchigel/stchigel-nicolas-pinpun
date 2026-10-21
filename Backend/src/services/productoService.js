@@ -1,13 +1,20 @@
 import productoRepository from '../repositories/productoRepository.js';
+import cartaService from './cartaService.js';
 import { NotFoundError, ConflictError } from '../exceptions/AppError.js';
 import { Messages } from '../enums/Messages.js';
 
+/* El nombre puede repetirse entre cartas, pero no entre dos platos de la misma sección de una misma carta */
 const verificarNombreDisponible = (datos, idActual = null) => {
     const existente = productoRepository.findByNombre(datos);
     if (existente && existente.id !== idActual) throw new ConflictError(Messages.PRODUCTO_DUPLICATED);
 };
 
-const getAll = (filtros) => productoRepository.findAll(filtros);
+/* Los platos de la carta pedida: la de un local en un canal, una en particular, o la carta general */
+const getAll = ({ categoria, destacado, cartaId, localId, canal }) => {
+    const carta = cartaService.resolver({ cartaId, localId, canal });
+
+    return productoRepository.findAll({ categoria, destacado, cartaId: carta.id });
+};
 
 const getById = (id) => {
     const producto = productoRepository.findById(id);
@@ -16,15 +23,19 @@ const getById = (id) => {
     return producto;
 };
 
+/* Se crea en la carta indicada (`cartaId`) o, si no se dice, en la carta general */
 const create = (datos) => {
-    verificarNombreDisponible(datos);
+    const carta = cartaService.resolver({ cartaId: datos.cartaId });
+    const completos = { ...datos, cartaId: carta.id };
+    verificarNombreDisponible(completos);
 
-    return productoRepository.create(datos);
+    return productoRepository.create(completos);
 };
 
+/* Un plato no cambia de carta al editarlo */
 const update = (id, datos) => {
-    getById(id);
-    verificarNombreDisponible(datos, id);
+    const actual = getById(id);
+    verificarNombreDisponible({ ...datos, cartaId: actual.cartaId }, id);
 
     return productoRepository.update(id, datos);
 };

@@ -1,5 +1,6 @@
 import pedidoRepository from '../repositories/pedidoRepository.js';
 import productoRepository from '../repositories/productoRepository.js';
+import cartaRepository from '../repositories/cartaRepository.js';
 import usuarioRepository from '../repositories/usuarioRepository.js';
 import ubicacionRepository from '../repositories/ubicacionRepository.js';
 import localService from './localService.js';
@@ -29,13 +30,14 @@ const precioDe = (producto, variante) => {
 /*
  * El precio y el nombre se toman de la carta, no de lo que mande el navegador: el total lo calcula el servidor.
  * La mitad y mitad ("mitad:3-7") cobra la más cara de las dos, como en el mostrador.
+ * Solo se aceptan platos de la carta que ese local usa para ese tipo de pedido (retiro o delivery).
  */
-const resolverItem = ({ productoId, variante, cantidad }) => {
+const resolverItem = ({ productoId, variante, cantidad }, cartaId) => {
     const mitad = /^mitad:(\d+)-(\d+)$/.exec(String(productoId));
 
     if (mitad) {
         const pizzas = [mitad[1], mitad[2]].map((id) => productoRepository.findById(Number(id)));
-        const precios = pizzas.map((pizza) => pizza && precioDe(pizza, variante));
+        const precios = pizzas.map((pizza) => (pizza?.cartaId === cartaId ? precioDe(pizza, variante) : null));
         if (precios.some((precio) => precio === null || precio === undefined)) {
             throw new BadRequestError(Messages.PRODUCTO_DEL_PEDIDO_NOT_FOUND);
         }
@@ -52,7 +54,7 @@ const resolverItem = ({ productoId, variante, cantidad }) => {
     }
 
     const producto = productoRepository.findById(Number(productoId));
-    const precio = producto && precioDe(producto, variante);
+    const precio = producto?.cartaId === cartaId ? precioDe(producto, variante) : null;
     if (!producto || precio === null) throw new BadRequestError(Messages.PRODUCTO_DEL_PEDIDO_NOT_FOUND);
 
     return {
@@ -95,7 +97,10 @@ const create = ({ localId, tipo, cliente, direccion, items }) => {
     const local = localService.getById(localId);
     if (!estaAbierto(local)) throw new ConflictError(Messages.LOCAL_CERRADO);
 
-    const resueltos = items.map(resolverItem);
+    const carta = cartaRepository.deLocal(localId, tipo);
+    if (!carta) throw new ConflictError(Messages.LOCAL_SIN_CARTA);
+
+    const resueltos = items.map((item) => resolverItem(item, carta.id));
     const total = resueltos.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
     const estado = ESTADOS_PEDIDO[tipo][0];
 

@@ -4,12 +4,12 @@ Sitio y sistema de pedidos de la Pizzería Pin Pun. Tiene dos partes que se ejec
 
 | Carpeta | Qué es | Puerto por defecto |
 | --- | --- | --- |
-| [Backend/](Backend/) | API REST con Express (patrón MVC, datos en memoria) | `3000` |
+| [Backend/](Backend/) | API REST con Express (patrón MVC) y base de datos SQLite | `3000` |
 | [Frontend/](Frontend/) | Interfaz web con React + Vite | `5173` |
 
 ## Requisitos
 
-- [Node.js](https://nodejs.org/) **20.19 o superior** (Vite 8 no funciona con versiones anteriores). Se recomienda la última LTS.
+- [Node.js](https://nodejs.org/) **22.13 o superior** (el backend usa el SQLite que trae Node, sin instalar nada más; Vite 8 pide 20.19 o superior). Se recomienda la última LTS.
 - npm (viene con Node).
 
 Para comprobar la versión instalada:
@@ -57,6 +57,7 @@ Después abrir <http://localhost:5173>.
 | --- | --- |
 | `npm start` | Levanta la API con `node src/server.js`. |
 | `npm run dev` | Igual que `start`, pero reinicia el servidor solo cada vez que se guarda un archivo (`node --watch`). |
+| `npm run db:reset` | Borra la base de datos para empezar de cero (con el servidor apagado). Al arrancar se crea una nueva con los datos iniciales. |
 
 ### Frontend ([Frontend/package.json](Frontend/package.json))
 
@@ -75,6 +76,7 @@ Son opcionales; si no se definen se usan los valores por defecto.
 | Variable | Por defecto | Para qué sirve |
 | --- | --- | --- |
 | `PORT` | `3000` | Puerto donde escucha la API. |
+| `DB_PATH` | `Backend/data/pinpun.db` | Archivo de la base de datos. Con `:memory:` queda solo en memoria y empieza vacía en cada arranque (así se hacen las pruebas). |
 | `CORS_ORIGIN` | `*` | Origen permitido para pedidos desde el navegador (por ejemplo `http://localhost:5173`). |
 | `AUTH_SECRET` | un valor de desarrollo | Clave con la que se firman las sesiones del panel de administración. Definir una propia fuera del desarrollo. |
 | `SIN_DATOS_DE_EJEMPLO` | sin definir | Con `1`, la API arranca sin los pedidos y reservas de ejemplo con los que se prueba el panel. |
@@ -109,12 +111,17 @@ Todas las rutas cuelgan de `/api`. Las respuestas tienen siempre la forma `{ "su
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
-| GET | `/api/productos` | Lista todos los productos. |
+| GET | `/api/productos` | Lista los platos de una carta: la general por defecto, o la de un local y canal (`?localId=1&canal=delivery`; canal: `salon`, `retiro` o `delivery`), o una en particular (`?cartaId=2`). También `?categoria=` y `?destacado=`. |
 | GET | `/api/productos/:id` | Devuelve un producto. |
-| POST | `/api/productos` | Crea un producto. |
+| POST | `/api/productos` | Crea un producto en la carta indicada (`cartaId`) o, si no se dice, en la general. |
 | PUT | `/api/productos/:id` | Reemplaza un producto. |
 | DELETE | `/api/productos/:id` | Borra un producto. Solo el administrador general. |
-| GET | `/api/locales` | Lista todos los locales, con su horario, mesas y comensales. |
+| GET | `/api/locales` | Lista todos los locales, con su horario, mesas, comensales y qué carta usa cada uno en cada canal (`cartas`). |
+| GET | `/api/cartas` | Lista las cartas con cuántos platos tienen y quién las usa. Solo la administración general. |
+| POST | `/api/cartas` | Crea una carta vacía o, con `copiarDeId`, una copia de otra con todos sus platos. |
+| PUT | `/api/cartas/:id` | Cambia el nombre de una carta. |
+| DELETE | `/api/cartas/:id` | Borra una carta con sus platos, si ningún local la usa y no es la última. |
+| PUT | `/api/locales/:id/cartas` | Elige qué carta usa un local: `{ "delivery": 2 }` (puede llevar `salon`, `retiro` y `delivery`). Solo la administración general. |
 | GET | `/api/locales/:id` | Devuelve un local. |
 | PUT | `/api/locales/:id` | Cambia teléfono, horario, mesas, si se pueden juntar y máximo de personas por reserva. Requiere sesión (la sucursal, solo el suyo). |
 | POST | `/api/auth/login` | Inicia sesión: devuelve un token y los datos de quien entró. |
@@ -152,7 +159,17 @@ Circuitos de estados:
 - Un pedido se puede cancelar mientras no haya terminado.
 - **Reserva:** Esperando confirmación → Aceptada → Concluida; se puede rechazar antes de concluirla.
 
-Los datos se guardan en memoria: los cambios hechos con `POST`, `PUT` o `DELETE` se pierden al reiniciar el servidor.
+## Base de datos
+
+Todo se guarda en un archivo SQLite (`Backend/data/pinpun.db`, fuera de git): pedidos, reservas, la carta, los locales, las cuentas y las cartas asignadas. Sobrevive a reinicios del servidor.
+
+- **Primer arranque:** la API crea el archivo y las tablas, y carga los 6 locales, la carta, las cuentas de prueba y, una sola vez, los pedidos y reservas de ejemplo (no se cargan si se arranca con `SIN_DATOS_DE_EJEMPLO=1`). Después, reiniciar o actualizar el código nunca pisa lo que ya hay.
+- **Empezar de cero:** con el servidor apagado, `npm run db:reset` borra el archivo (se pierde todo lo cargado). Los pedidos y reservas de ejemplo llevan fechas relativas al primer arranque, así que con los días quedan viejos: es un buen motivo para reiniciar la base.
+- **Copia de seguridad:** con el servidor apagado, alcanza con copiar `Backend/data/pinpun.db`.
+- **Cambios de estructura:** el esquema está versionado en [Backend/src/db/esquema.js](Backend/src/db/esquema.js). Para cambiarlo sin perder datos hay que **agregar** una migración al final de la lista (nunca editar una anterior): al arrancar, la API aplica las que falten.
+- **Qué no se guarda:** la posición en vivo del repartidor queda solo en memoria (ver "Seguimiento del pedido"), a propósito.
+- **Cartas por local y canal:** la carta (menú) es una entidad con nombre y cada local tiene asignada una por canal: salón, retiro y delivery. Hoy arranca una sola, "Carta general", que usan todos los locales en los tres canales. Para que una sucursal tenga la suya, o una distinta para el delivery, se crea otra carta (`POST /api/cartas`, que puede copiar una existente) y se asigna al local (`PUT /api/locales/:id/cartas`). Un pedido solo acepta platos de la carta que ese local usa para ese tipo de pedido, y cobra con sus precios. Todavía no hay pantallas para manejar varias cartas ni el sitio le pide al cliente que elija un local antes de ver la carta: hoy el sitio muestra la carta general.
+- Por ahora la API devuelve todos los pedidos de un local: con el tiempo la lista va a crecer y va a hacer falta paginarla o filtrar por fecha.
 
 ## Panel de administración
 
@@ -207,4 +224,5 @@ Las imágenes se agregan copiándolas a `Frontend/src/assets/`, sin tocar códig
 - **El sitio dice "No pudimos conectarnos con Pin Pun"**: el backend no está corriendo, o `VITE_API_URL` apunta a otro puerto.
 - **`EADDRINUSE: address already in use :::3000`**: ya hay algo usando el puerto. Cerrar la otra terminal o cambiar `PORT` (y `VITE_API_URL`).
 - **Error al levantar Vite sobre la versión de Node**: actualizar Node a 20.19 o superior.
+- **`Cannot find module 'node:sqlite'` al levantar el backend**: el backend necesita Node 22.13 o superior.
 - **Cambié el `.env` y no pasa nada**: Vite solo lee el `.env` al arrancar; cortar con `Ctrl + C` y volver a correr `npm run dev`.

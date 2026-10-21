@@ -1,52 +1,64 @@
+import { db, transaccion } from '../db/iniciar.js';
 import Local from '../models/Local.js';
 
-/*
- * Coordenadas tomadas de OpenStreetMap a partir de cada dirección.
- * Los horarios en null son los que todavía no están confirmados.
- * Las mesas son datos de ejemplo hasta que cada sucursal cargue las suyas desde el panel de administración.
- */
-const mesas = (dosPersonas, cuatroPersonas, seisPersonas) =>
-    [
-        { capacidad: 2, cantidad: dosPersonas },
-        { capacidad: 4, cantidad: cuatroPersonas },
-        { capacidad: 6, cantidad: seisPersonas }
-    ].filter((tipo) => tipo.cantidad > 0);
+const mesasDe = db.prepare('SELECT capacidad, cantidad FROM local_mesas WHERE local_id = ? ORDER BY capacidad');
+const cartasDe = db.prepare('SELECT canal, carta_id FROM local_cartas WHERE local_id = ?');
 
-const locales = [
-    new Local(1, 'Almagro', 'Av. Corrientes 3954, Almagro', '011 4862-3260', 'pinpuncorrientes', -34.60335, -58.42042, '07:00', '01:00', mesas(8, 10, 2)),
-    new Local(2, 'Angelina', 'Av. Corrientes 5600, Villa Crespo', null, 'pinpunangelina', -34.59650, -58.44261, null, null, mesas(6, 8, 1)),
-    new Local(3, 'Villa Urquiza', 'La Pampa 5201, Villa Urquiza', '011 4521-2181', 'pinpunurquiza', -34.58037, -58.48132, '07:00', '01:00', mesas(6, 9, 2)),
-    new Local(4, 'Monte Castro', 'Av. Lope de Vega 1650, Monte Castro', '011 4567-3115', 'pinpunmontecastro', -34.62480, -58.51130, null, null, mesas(5, 7, 1)),
-    new Local(5, 'Lanús', 'Av. Hipólito Yrigoyen 4485, Lanús Oeste', null, 'pinpunlanus', -34.70649, -58.39192, '10:00', '23:00', mesas(6, 8, 2)),
-    new Local(6, 'Lomas de Zamora', 'Colombres 606, Lomas de Zamora', null, 'pinpunlomas', -34.76367, -58.40633, null, null, mesas(4, 6, 1))
-];
-
-const findAll = () => [...locales];
-
-const findById = (id) => locales.find((local) => local.id === id) ?? null;
-
-/* Solo cambian los datos que administra la sucursal; nombre, dirección y ubicación son su identidad */
-const update = (id, { numero, horarioApertura, horarioCierre, mesas: nuevasMesas, reservaMaxPersonas, juntarMesas }) => {
-    const index = locales.findIndex((local) => local.id === id);
-    if (index === -1) return null;
-
-    const actual = locales[index];
-    locales[index] = new Local(
-        actual.id,
-        actual.nombre,
-        actual.direccion,
-        numero,
-        actual.instagram,
-        actual.latitud,
-        actual.longitud,
-        horarioApertura,
-        horarioCierre,
-        nuevasMesas,
-        reservaMaxPersonas,
-        juntarMesas
+const aLocal = (fila) =>
+    new Local(
+        fila.id,
+        fila.nombre,
+        fila.direccion,
+        fila.numero,
+        fila.instagram,
+        fila.latitud,
+        fila.longitud,
+        fila.horario_apertura,
+        fila.horario_cierre,
+        mesasDe.all(fila.id).map(({ capacidad, cantidad }) => ({ capacidad, cantidad })),
+        fila.reserva_max_personas,
+        Boolean(fila.juntar_mesas),
+        Object.fromEntries(cartasDe.all(fila.id).map(({ canal, carta_id: cartaId }) => [canal, cartaId]))
     );
 
-    return locales[index];
+const findAll = () =>
+    db
+        .prepare('SELECT * FROM locales ORDER BY id')
+        .all()
+        .map(aLocal);
+
+const findById = (id) => {
+    const fila = db.prepare('SELECT * FROM locales WHERE id = ?').get(id);
+    return fila ? aLocal(fila) : null;
 };
 
-export default { findAll, findById, update };
+/* Solo cambian los datos que administra la sucursal; nombre, dirección y ubicación son su identidad */
+const update = (id, { numero, horarioApertura, horarioCierre, mesas, reservaMaxPersonas, juntarMesas }) => {
+    if (!findById(id)) return null;
+
+    transaccion(() => {
+        db.prepare(
+            'UPDATE locales SET numero = ?, horario_apertura = ?, horario_cierre = ?, reserva_max_personas = ?, juntar_mesas = ? WHERE id = ?'
+        ).run(numero, horarioApertura, horarioCierre, reservaMaxPersonas, juntarMesas ? 1 : 0, id);
+
+        db.prepare('DELETE FROM local_mesas WHERE local_id = ?').run(id);
+        const insertar = db.prepare('INSERT INTO local_mesas (local_id, capacidad, cantidad) VALUES (?, ?, ?)');
+        for (const mesa of mesas) insertar.run(id, mesa.capacidad, mesa.cantidad);
+    });
+
+    return findById(id);
+};
+
+/* Asigna la carta de cada canal indicado ({ salon: 2, delivery: 3 }); los canales que no vienen quedan como estaban */
+const asignarCartas = (id, cartas) => {
+    transaccion(() => {
+        const asignar = db.prepare(
+            'INSERT INTO local_cartas (local_id, canal, carta_id) VALUES (?, ?, ?) ON CONFLICT (local_id, canal) DO UPDATE SET carta_id = excluded.carta_id'
+        );
+        for (const [canal, cartaId] of Object.entries(cartas)) asignar.run(id, canal, cartaId);
+    });
+
+    return findById(id);
+};
+
+export default { findAll, findById, update, asignarCartas };

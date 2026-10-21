@@ -5,7 +5,8 @@ import {
     isNonEmptyString,
     isOptionalString,
     isOptionalBoolean,
-    isPositiveNumber
+    isPositiveNumber,
+    isPositiveInteger
 } from '../utils/validators.js';
 
 const isVariante = (variante) =>
@@ -14,7 +15,7 @@ const isVariante = (variante) =>
 const validateProducto = (req, res, next) => {
     if (!isPlainObject(req.body)) throw new BadRequestError(Messages.INVALID_DATA);
 
-    const { nombre, categoria, subcategoria, imagen, precio, variantes, descripcion, destacado } = req.body;
+    const { nombre, categoria, subcategoria, imagen, precio, variantes, descripcion, destacado, cartaId } = req.body;
     const tieneVariantes = Array.isArray(variantes) && variantes.length > 0;
 
     if (!isNonEmptyString(nombre)) throw new BadRequestError(Messages.INVALID_NOMBRE);
@@ -27,6 +28,7 @@ const validateProducto = (req, res, next) => {
     if (!isOptionalString(imagen)) throw new BadRequestError(Messages.INVALID_IMAGEN);
     if (!isOptionalString(descripcion)) throw new BadRequestError(Messages.INVALID_DESCRIPCION);
     if (!isOptionalBoolean(destacado)) throw new BadRequestError(Messages.INVALID_DESTACADO);
+    if (cartaId !== undefined && !isPositiveInteger(cartaId)) throw new BadRequestError(Messages.INVALID_CARTA_ID);
 
     req.body = {
         nombre: nombre.trim(),
@@ -36,7 +38,8 @@ const validateProducto = (req, res, next) => {
         precio: tieneVariantes ? variantes[0].precio : precio,
         variantes: tieneVariantes ? variantes.map(({ nombre, precio }) => ({ nombre: nombre.trim(), precio })) : [],
         descripcion: descripcion ?? '',
-        destacado: destacado ?? false
+        destacado: destacado ?? false,
+        cartaId: cartaId === undefined ? undefined : Number(cartaId)
     };
 
     next();

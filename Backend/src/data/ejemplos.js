@@ -1,6 +1,7 @@
 import pedidoRepository from '../repositories/pedidoRepository.js';
 import reservaRepository from '../repositories/reservaRepository.js';
 import productoRepository from '../repositories/productoRepository.js';
+import cartaRepository from '../repositories/cartaRepository.js';
 import ubicacionRepository from '../repositories/ubicacionRepository.js';
 import { CANCELADO, EstadoReserva, ESTADOS_PEDIDO } from '../enums/Estados.js';
 
@@ -21,7 +22,7 @@ const enElSalon = (dias, hora) => {
 };
 
 const item = (nombre, variante, cantidad) => {
-    const producto = productoRepository.findAll().find((candidato) => candidato.nombre === nombre);
+    const producto = productoRepository.findAll({ cartaId: cartaRepository.predeterminada().id }).find((candidato) => candidato.nombre === nombre);
     const precio = producto.variantes.length > 0 ? producto.variantes.find((v) => v.nombre === variante).precio : producto.precio;
 
     return {

@@ -17,4 +17,6 @@ const update = (id, datos) => {
     return localRepository.update(id, datos);
 };
 
-export default { getAll, getById, update };
+const asignarCartas = (id, cartas) => localRepository.asignarCartas(id, cartas);
+
+export default { getAll, getById, update, asignarCartas };

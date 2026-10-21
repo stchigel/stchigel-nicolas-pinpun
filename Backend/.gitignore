@@ -1,2 +1,5 @@
 node_modules/
 .env
+
+# Base de datos local (SQLite): se crea sola al arrancar
+data/
