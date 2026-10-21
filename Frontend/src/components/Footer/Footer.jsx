@@ -71,6 +71,9 @@ function Footer() {
                     Pin Pun © {anioActual}. La pizzería más antigua de Buenos Aires, en Av. Corrientes 3954 desde{' '}
                     {ANIO_FUNDACION}.
                 </p>
+                <Link to="/admin/ingresar" className="footer__enlace footer__acceso">
+                    Acceso del personal
+                </Link>
             </div>
         </footer>
     );

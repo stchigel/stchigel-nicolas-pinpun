@@ -1,8 +1,5 @@
 import { tieneHorario } from './horario.js';
 
-/* Tope de personas del formulario: provisorio hasta que la API informe la capacidad de cada local */
-export const MAXIMO_PERSONAS = 12;
-
 const PASO_MINUTOS = 30;
 const ANTICIPACION_MINUTOS = 30;
 const ULTIMO_TURNO_ANTES_DEL_CIERRE = 60;

@@ -72,6 +72,15 @@
     color: var(--sobre-negro-suave);
 }
 
+.footer__acceso {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin-top: -1.5rem;
+    font-size: var(--t-chico);
+    color: var(--sobre-negro-suave);
+}
+
 @media (hover: hover) and (pointer: fine) {
     .footer__enlace:hover {
         text-decoration-color: var(--dorado-claro);

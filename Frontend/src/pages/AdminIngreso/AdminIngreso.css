@@ -1,0 +1,105 @@
+/* Ingreso al panel: la fachada a sangre a la izquierda y el formulario sobre el verde del salón a la derecha */
+.ingreso {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 100svh;
+}
+
+.ingreso__foto {
+    width: 100%;
+    height: 100svh;
+    position: sticky;
+    top: 0;
+    object-fit: cover;
+    object-position: 50% 40%;
+}
+
+.ingreso__panel {
+    display: grid;
+    align-items: center;
+    padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 5rem);
+    background: var(--verde) var(--calcareo-verde);
+    background-size: var(--calcareo-tamano);
+    color: var(--hueso);
+}
+
+.ingreso :focus-visible {
+    outline-color: var(--dorado-claro);
+}
+
+.ingreso__interior {
+    display: grid;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 28rem;
+    margin-inline: auto;
+}
+
+.ingreso__marca {
+    display: block;
+    width: 11rem;
+    margin-bottom: 0.5rem;
+    transition: transform var(--t-presion) var(--ease-out);
+}
+
+.ingreso__marca:active {
+    transform: scale(0.97);
+}
+
+.ingreso__titulo {
+    font-size: var(--t-titulo);
+}
+
+.ingreso__bajada {
+    max-width: 34ch;
+    font-size: var(--t-destacado);
+    line-height: 1.45;
+}
+
+.ingreso__formulario {
+    display: grid;
+    gap: 1.1rem;
+    margin-top: 0.5rem;
+}
+
+.ingreso .boton {
+    width: 100%;
+    box-shadow: none;
+}
+
+.ingreso__pruebas {
+    margin-top: 1rem;
+    font-size: var(--t-chico);
+    color: var(--hueso-3);
+}
+
+.ingreso__pruebas summary {
+    min-height: 2.75rem;
+    cursor: pointer;
+}
+
+.ingreso__pruebas ul {
+    display: grid;
+    gap: 0.25rem;
+    padding-top: 0.5rem;
+}
+
+.ingreso__pruebas li {
+    display: grid;
+    gap: 0.1rem;
+}
+
+@media (max-width: 52rem) {
+    .ingreso {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ingreso__foto {
+        position: static;
+        height: 14rem;
+    }
+
+    .ingreso__panel {
+        padding: 2.5rem var(--margen) 3.5rem;
+    }
+}

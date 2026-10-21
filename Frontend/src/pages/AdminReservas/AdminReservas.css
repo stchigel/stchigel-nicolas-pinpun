@@ -1,0 +1,88 @@
+/* Renglón de reserva: la hora grande, quién viene y qué hay que resolver */
+.reserva-fila {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1.6fr) 11rem minmax(0, 1.4fr);
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    padding: 0.9rem clamp(1rem, 2vw, 1.5rem);
+}
+
+.reserva-fila__hora {
+    font-family: var(--fuente-display);
+    font-size: var(--t-subtitulo);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.reserva-fila__quien {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.reserva-fila__nombre {
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.reserva-fila__personas {
+    font-weight: 400;
+}
+
+.reserva-fila__sub {
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
+}
+
+.reserva-fila__aclaracion {
+    font-size: var(--t-chico);
+    font-style: italic;
+}
+
+.reserva-fila__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.25rem 1.25rem;
+}
+
+@media (max-width: 70rem) {
+    .reserva-fila {
+        grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+        grid-template-areas:
+            'hora quien estado'
+            'acciones acciones acciones';
+    }
+
+    .reserva-fila__hora {
+        grid-area: hora;
+    }
+
+    .reserva-fila__quien {
+        grid-area: quien;
+    }
+
+    .reserva-fila__estado {
+        grid-area: estado;
+    }
+
+    .reserva-fila__acciones {
+        grid-area: acciones;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 30rem) {
+    .reserva-fila {
+        grid-template-columns: 4rem minmax(0, 1fr);
+        grid-template-areas:
+            'hora estado'
+            'quien quien'
+            'acciones acciones';
+    }
+
+    .reserva-fila__estado {
+        justify-self: end;
+    }
+}

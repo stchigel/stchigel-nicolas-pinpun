@@ -12,7 +12,6 @@ import { getLocales } from '../../services/localService.js';
 import { crearReserva } from '../../services/reservaService.js';
 import { describirHorario, tieneHorario } from '../../utils/horario.js';
 import {
-    MAXIMO_PERSONAS,
     aHora,
     aMinutos,
     fechaHoraDe,
@@ -23,6 +22,8 @@ import {
 import { esTelefonoValido, MENSAJE_TELEFONO } from '../../utils/validaciones.js';
 import '../../components/Carrito/Cantidad.css';
 import './Reservas.css';
+
+const MAXIMO_POR_DEFECTO = 12;
 
 const personas = (cantidad) => `${cantidad} ${cantidad === 1 ? 'persona' : 'personas'}`;
 
@@ -44,11 +45,14 @@ function FormularioReserva({ local, locales, cargando, error, onReintentar, onEl
     const hoy = fechaISO();
     const [fecha, setFecha] = useState(hoy);
     const [horario, setHorario] = useState('');
-    const [cantidad, setCantidad] = useState(2);
+    const [pedidas, setCantidad] = useState(2);
     const [campos, setCampos] = useState({ nombre: '', telefono: '', aclaraciones: '' });
     const [errores, setErrores] = useState({});
     const [enviando, setEnviando] = useState(false);
 
+    /* El tope lo calcula la API con las mesas del local y si las junta; si cambia de local, la cantidad se ajusta */
+    const maximo = local?.maximoPorReserva ?? MAXIMO_POR_DEFECTO;
+    const cantidad = Math.min(pedidas, maximo);
     const conHorario = Boolean(local) && tieneHorario(local);
     const turnos = local && conHorario && fecha >= hoy ? horariosDeReserva(local, fecha) : [];
     const sinTurnos = conHorario && fecha >= hoy && turnos.length === 0;
@@ -222,15 +226,15 @@ function FormularioReserva({ local, locales, cargando, error, onReintentar, onEl
                                 type="button"
                                 className="cantidad__boton"
                                 aria-label="Una persona más"
-                                disabled={cantidad >= MAXIMO_PERSONAS}
-                                onClick={() => setCantidad((valor) => Math.min(MAXIMO_PERSONAS, valor + 1))}
+                                disabled={cantidad >= maximo}
+                                onClick={() => setCantidad((valor) => Math.min(maximo, valor + 1))}
                             >
                                 <Icono nombre="sumar" tamano={18} />
                             </button>
                         </div>
-                        {cantidad >= MAXIMO_PERSONAS && (
+                        {cantidad >= maximo && (
                             <p className="reserva__nota reserva__nota--suelta">
-                                Para más de {MAXIMO_PERSONAS} personas, llamá al local.
+                                Para más de {maximo} personas, llamá al local.
                             </p>
                         )}
                     </div>

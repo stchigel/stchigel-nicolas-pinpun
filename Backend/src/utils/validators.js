@@ -15,3 +15,10 @@ export const isPositiveNumber = (value) =>
 
 export const isPositiveInteger = (value) =>
     /^\d+$/.test(String(value)) && Number(value) > 0;
+
+export const isIntegerBetween = (value, min, max) =>
+    Number.isInteger(value) && value >= min && value <= max;
+
+/* Un teléfono sirve si tiene al menos 8 dígitos, con o sin espacios y guiones */
+export const isTelefono = (value) =>
+    typeof value === 'string' && value.replace(/\D/g, '').length >= 8;

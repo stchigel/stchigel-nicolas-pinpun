@@ -1,0 +1,84 @@
+.menu-filtros {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-vacio {
+    background: var(--hueso-2);
+}
+
+/* Renglón de producto */
+.producto {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    padding: 0.5rem clamp(1rem, 2vw, 1.5rem);
+    transition: background-color var(--t-hover) ease;
+}
+
+.grupo-admin__lista > .producto[data-seleccionado] {
+    background: var(--hueso-3);
+}
+
+.producto__texto {
+    display: grid;
+    gap: 0.1rem;
+    padding-block: 0.35rem;
+}
+
+.producto__nombre {
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.producto__sub {
+    font-weight: 400;
+    color: var(--tinta-suave);
+}
+
+.producto__destacado {
+    display: inline-block;
+    margin-left: 0.6rem;
+    padding: 0.05rem 0.45rem;
+    background: var(--dorado-claro);
+    color: var(--tinta);
+    font-size: var(--t-chico);
+    font-weight: 700;
+}
+
+.producto__precios {
+    font-size: var(--t-chico);
+    font-variant-numeric: tabular-nums;
+    color: var(--tinta-suave);
+}
+
+/* Formulario del panel */
+.tamanos {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.tamanos__fila {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+    gap: 0.5rem;
+}
+
+.tamanos__fila input {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.6rem 0.8rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hueso);
+    color: var(--tinta);
+}
+
+@media (max-width: 40rem) {
+    .menu-filtros {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

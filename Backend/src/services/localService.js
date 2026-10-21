@@ -11,4 +11,10 @@ const getById = (id) => {
     return local;
 };
 
-export default { getAll, getById };
+const update = (id, datos) => {
+    getById(id);
+
+    return localRepository.update(id, datos);
+};
+
+export default { getAll, getById, update };

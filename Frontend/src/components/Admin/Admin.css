@@ -1,0 +1,591 @@
+/*
+ * Panel de administración. Es una herramienta de trabajo: papel liso en vez del piso calcáreo, lectura rápida
+ * y botones a la altura del dedo. La marca vive en los detalles: el verde de la barra lateral con su filete
+ * dorado, las barras verdes por grupo (como la carta), Anton para nombrar y el rojo solo para lo que se toca.
+ */
+.admin {
+    --ancho-lateral: 16.5rem;
+    display: grid;
+    grid-template-columns: var(--ancho-lateral) minmax(0, 1fr);
+    min-height: 100svh;
+    background: var(--hueso);
+}
+
+.admin :focus-visible {
+    outline-color: var(--verde);
+}
+
+/* Barra lateral */
+.admin__lateral {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100svh;
+    padding: 1.5rem 1.25rem 1.25rem;
+    background: var(--verde) var(--calcareo-verde);
+    background-size: var(--calcareo-tamano);
+    color: var(--hueso);
+    box-shadow: inset -0.25rem 0 0 var(--dorado-claro);
+    overflow-y: auto;
+}
+
+.admin__lateral :focus-visible {
+    outline-color: var(--dorado-claro);
+}
+
+.admin__marca {
+    display: block;
+    width: 11rem;
+    align-self: center;
+    transition: transform var(--t-presion) var(--ease-out);
+}
+
+.admin__marca:active {
+    transform: scale(0.97);
+}
+
+.admin__nav ul {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.admin__enlace {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3rem;
+    padding: 0.5rem 0.9rem;
+    color: var(--hueso);
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
+}
+
+.admin__enlace:active {
+    transform: scale(0.98);
+}
+
+.admin__enlace[aria-current='page'] {
+    background: var(--hueso);
+    color: var(--verde);
+}
+
+.admin__cuenta {
+    display: grid;
+    place-items: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding-inline: 0.4rem;
+    border-radius: 0.75rem;
+    background: var(--dorado-claro);
+    color: var(--verde-hondo);
+    font-size: var(--t-chico);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.admin__usuario {
+    display: grid;
+    gap: 0.15rem;
+    margin-top: auto;
+}
+
+.admin__nombre {
+    font-weight: 700;
+}
+
+.admin__rol {
+    font-size: var(--t-chico);
+    color: var(--hueso-3);
+}
+
+.admin__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+    margin-top: 0.5rem;
+}
+
+/* Botones de texto: acciones que no merecen un bloque de color */
+.admin__texto-boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition:
+        color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
+}
+
+.admin__texto-boton:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.admin__texto-boton:disabled {
+    cursor: progress;
+    opacity: 0.6;
+}
+
+.admin__texto-boton--peligro {
+    text-decoration-color: var(--rojo);
+}
+
+/* Contenido */
+.admin__contenido {
+    min-width: 0;
+    padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem, 3vw, 3rem) 4rem;
+}
+
+.encabezado-admin {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.encabezado-admin__titulo {
+    font-size: clamp(2.75rem, 5vw, 4.5rem);
+    line-height: 0.9;
+    color: var(--verde);
+}
+
+.encabezado-admin__bajada {
+    margin-top: 0.5rem;
+    max-width: 52ch;
+    color: var(--tinta-suave);
+}
+
+.encabezado-admin__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem 1.5rem;
+}
+
+.actualizar {
+    display: grid;
+    justify-items: end;
+    gap: 0.1rem;
+}
+
+.actualizar__hora {
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
+}
+
+.actualizar__giro {
+    animation: admin-giro 800ms linear infinite;
+}
+
+@keyframes admin-giro {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Filtros */
+.filtros-admin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.filtros-admin__boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border: 0;
+    background: var(--hueso-2);
+    color: var(--tinta);
+    font-weight: 500;
+    transition:
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
+}
+
+.filtros-admin__boton:active {
+    transform: scale(0.97);
+}
+
+.filtros-admin__boton[aria-pressed='true'] {
+    background: var(--verde);
+    color: var(--hueso);
+}
+
+.filtros-admin__cantidad {
+    font-size: var(--t-chico);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.75;
+}
+
+/* Estado: bloque de color según el momento del circuito */
+.insignia {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    background: var(--hueso-3);
+    color: var(--tinta);
+    font-size: var(--t-chico);
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.insignia[data-tono='nuevo'] {
+    background: var(--rojo);
+    color: var(--hueso);
+}
+
+.insignia[data-tono='trabajando'] {
+    background: var(--dorado-claro);
+    color: var(--tinta);
+}
+
+.insignia[data-tono='listo'] {
+    background: var(--verde);
+    color: var(--hueso);
+}
+
+.insignia[data-tono='caido'] {
+    background: var(--hueso-3);
+    color: var(--rojo-hondo);
+}
+
+/* Grupo: barra verde con su título y debajo los renglones sobre papel, como las barras de la carta */
+.grupo-admin + .grupo-admin {
+    margin-top: 1.5rem;
+}
+
+.grupo-admin__cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    padding: 0.9rem clamp(1rem, 2vw, 1.5rem);
+    background: var(--verde);
+    color: var(--hueso);
+}
+
+.grupo-admin__titulo {
+    font-size: var(--t-subtitulo);
+}
+
+.grupo-admin__dato {
+    font-size: var(--t-chico);
+    font-variant-numeric: tabular-nums;
+    color: var(--hueso-3);
+}
+
+.grupo-admin__lista {
+    background: var(--hueso);
+}
+
+.grupo-admin__lista > li:nth-child(even) {
+    background: var(--hueso-2);
+}
+
+/* Confirmación en el mismo lugar */
+.confirmar {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.confirmar__pregunta {
+    font-weight: 700;
+}
+
+.confirmar__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Botones planos y a la altura del dedo */
+.admin .boton {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.9375rem;
+    box-shadow: none;
+}
+
+/* Dos columnas: lista a la izquierda y panel de edición fijo a la derecha */
+.admin-dos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 27rem);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: start;
+}
+
+.panel-edicion {
+    position: sticky;
+    top: 1.5rem;
+    max-height: calc(100svh - 3rem);
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+    overflow-y: auto;
+    background: var(--verde) var(--calcareo-verde);
+    background-size: var(--calcareo-tamano);
+    color: var(--hueso);
+}
+
+.panel-edicion :focus-visible {
+    outline-color: var(--dorado-claro);
+}
+
+.panel-edicion__titulo {
+    margin-bottom: 1.35rem;
+    font-size: var(--t-subtitulo);
+}
+
+.panel-edicion__vacio {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+}
+
+.panel-edicion__formulario {
+    display: grid;
+    gap: 1.1rem;
+}
+
+.panel-edicion__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.panel-edicion .admin__texto-boton--peligro {
+    text-decoration-color: var(--hueso);
+}
+
+.panel-edicion .confirmar__pregunta {
+    color: var(--hueso);
+}
+
+.admin-verificando {
+    display: grid;
+    place-items: center;
+    min-height: 60svh;
+    font-size: var(--t-destacado);
+}
+
+.admin-sin-permiso {
+    margin: 2rem auto;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .admin__enlace:not([aria-current='page']):hover {
+        background: var(--verde-hondo);
+    }
+
+    .admin__texto-boton:hover:not(:disabled) {
+        color: var(--rojo);
+    }
+
+    .admin__lateral .admin__texto-boton:hover:not(:disabled) {
+        color: var(--dorado-claro);
+    }
+
+    .filtros-admin__boton[aria-pressed='false']:hover {
+        background: var(--hueso-3);
+    }
+}
+
+@media (max-width: 75rem) {
+    .admin-dos {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .panel-edicion {
+        position: static;
+        max-height: none;
+    }
+}
+
+/* Teléfono: marca y usuario arriba, secciones abajo como pestañas al alcance del pulgar */
+@media (max-width: 52rem) {
+    .admin {
+        grid-template-columns: minmax(0, 1fr);
+        align-content: start;
+    }
+
+    .admin__lateral {
+        position: static;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        height: auto;
+        padding: 0.5rem var(--margen) 0.75rem;
+        overflow: visible;
+        background: var(--verde);
+        box-shadow: inset 0 -0.25rem 0 var(--dorado-claro);
+    }
+
+    .admin__marca {
+        width: 7.5rem;
+        align-self: auto;
+    }
+
+    .admin__usuario {
+        margin-top: 0;
+    }
+
+    .admin__nombre,
+    .admin__rol {
+        display: none;
+    }
+
+    .admin__acciones {
+        margin-top: 0;
+    }
+
+    .admin__contenido {
+        padding-bottom: 6rem;
+    }
+
+    .admin__nav {
+        position: fixed;
+        inset: auto 0 0;
+        z-index: 20;
+        padding-bottom: env(safe-area-inset-bottom);
+        background: var(--verde);
+        box-shadow: inset 0 0.25rem 0 var(--dorado-claro);
+    }
+
+    .admin__nav ul {
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        gap: 0;
+    }
+
+    .admin__enlace {
+        position: relative;
+        grid-template-columns: auto;
+        justify-items: center;
+        gap: 0.2rem;
+        min-height: 4rem;
+        padding: 0.6rem 0.25rem 0.5rem;
+        font-size: var(--t-chico);
+    }
+
+    .admin__cuenta {
+        position: absolute;
+        top: 0.4rem;
+        right: calc(50% - 1.6rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .actualizar__giro {
+        animation: none;
+    }
+}
+
+/* Selector de local y esqueleto de carga */
+.selector-admin {
+    display: grid;
+    gap: 0.25rem;
+    font-size: var(--t-chico);
+    font-weight: 500;
+}
+
+.selector-admin select {
+    min-height: 2.75rem;
+    padding: 0.5rem 0.8rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hueso-2);
+    color: var(--tinta);
+    font-size: var(--t-cuerpo);
+    cursor: pointer;
+}
+
+.carga-admin {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.carga-admin__hueco {
+    height: 4.5rem;
+    background: var(--hueso-2);
+    animation: latido 1.4s var(--ease-in-out) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .carga-admin__hueco {
+        animation: none;
+    }
+}
+
+.selector-admin input {
+    min-height: 2.75rem;
+    padding: 0.5rem 0.8rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hueso-2);
+    color: var(--tinta);
+    font-size: var(--t-cuerpo);
+}
+
+/* Formularios del panel: pares de campos y botón para quitar una fila */
+.editor-par {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.75rem;
+}
+
+.tamanos__quitar {
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    border: 0;
+    background: var(--verde-hondo);
+    color: var(--hueso);
+    transition:
+        background-color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
+}
+
+.tamanos__quitar:active:not(:disabled) {
+    transform: scale(0.94);
+}
+
+.tamanos__quitar:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .tamanos__quitar:hover:not(:disabled) {
+        background: var(--rojo);
+    }
+}
+
+@media (max-width: 40rem) {
+    .editor-par {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

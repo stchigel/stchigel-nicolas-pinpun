@@ -76,6 +76,8 @@ Son opcionales; si no se definen se usan los valores por defecto.
 | --- | --- | --- |
 | `PORT` | `3000` | Puerto donde escucha la API. |
 | `CORS_ORIGIN` | `*` | Origen permitido para pedidos desde el navegador (por ejemplo `http://localhost:5173`). |
+| `AUTH_SECRET` | un valor de desarrollo | Clave con la que se firman las sesiones del panel de administración. Definir una propia fuera del desarrollo. |
+| `SIN_DATOS_DE_EJEMPLO` | sin definir | Con `1`, la API arranca sin los pedidos y reservas de ejemplo con los que se prueba el panel. |
 
 Ejemplo para cambiar el puerto:
 
@@ -107,9 +109,18 @@ Todas las rutas cuelgan de `/api`. Las respuestas tienen siempre la forma `{ "su
 | GET | `/api/productos/:id` | Devuelve un producto. |
 | POST | `/api/productos` | Crea un producto. |
 | PUT | `/api/productos/:id` | Reemplaza un producto. |
-| DELETE | `/api/productos/:id` | Borra un producto. |
-| GET | `/api/locales` | Lista todos los locales. |
+| DELETE | `/api/productos/:id` | Borra un producto. Solo el administrador general. |
+| GET | `/api/locales` | Lista todos los locales, con su horario, mesas y comensales. |
 | GET | `/api/locales/:id` | Devuelve un local. |
+| PUT | `/api/locales/:id` | Cambia teléfono, horario, mesas, si se pueden juntar y máximo de personas por reserva. Requiere sesión (la sucursal, solo el suyo). |
+| POST | `/api/auth/login` | Inicia sesión: devuelve un token y los datos de quien entró. |
+| GET | `/api/auth/me` | Devuelve quién es el dueño del token. |
+| POST | `/api/pedidos` | Hace un pedido de retiro o delivery. Público; el servidor calcula el total con la carta. |
+| GET | `/api/pedidos` | Lista pedidos (`?localId=` y `?estado=`). Requiere sesión. |
+| PATCH | `/api/pedidos/:id/estado` | Lo lleva al paso siguiente de su circuito o lo cancela. Requiere sesión. |
+| POST | `/api/reservas` | Pide una mesa. Público; valida horario, máximo de personas y lugar disponible. |
+| GET | `/api/reservas` | Lista reservas (`?localId=` y `?estado=`). Requiere sesión. |
+| PATCH | `/api/reservas/:id/estado` | La acepta, rechaza o concluye. Requiere sesión. |
 
 Cuerpo para `POST` y `PUT` de productos (`nombre` y `precio` son obligatorios):
 
@@ -122,7 +133,32 @@ Cuerpo para `POST` y `PUT` de productos (`nombre` y `precio` son obligatorios):
 }
 ```
 
+Las rutas que piden sesión esperan el encabezado `Authorization: Bearer <token>`. Los administradores de sucursal solo ven y cambian lo de su local.
+
+Circuitos de estados:
+
+- **Pedido de retiro:** Recibido → En preparación → Listo → Retirado.
+- **Pedido de delivery:** Recibido → En preparación → Listo → En camino → Entregado.
+- Un pedido se puede cancelar mientras no haya terminado.
+- **Reserva:** Esperando confirmación → Aceptada → Concluida; se puede rechazar antes de concluirla.
+
 Los datos se guardan en memoria: los cambios hechos con `POST`, `PUT` o `DELETE` se pierden al reiniciar el servidor.
+
+## Panel de administración
+
+Se entra por <http://localhost:5173/admin/ingresar> (hay un enlace "Acceso del personal" al pie del sitio). Cuentas de prueba:
+
+| Quién | Mail | Contraseña | Qué ve |
+| --- | --- | --- | --- |
+| Administración general | `admin@pinpun.com` | `pinpun2026` | Todas las sucursales y el menú |
+| Sucursal Almagro | `almagro@pinpun.com` | `almagro2026` | Pedidos, reservas y datos de Almagro |
+| Sucursal Villa Urquiza | `urquiza@pinpun.com` | `urquiza2026` | Pedidos, reservas y datos de Villa Urquiza |
+
+- **Pedidos y reservas:** se actualizan solos cada 20 segundos y avisan cuando llega algo nuevo. Cada botón lleva el pedido o la reserva al paso siguiente; cancelar o rechazar pide confirmación.
+- **Menú** (solo administración general): crear, editar y eliminar productos de la carta, que es la misma para todos los locales.
+- **Locales:** teléfono, horario, tipos de mesa (comensales por mesa y cantidad), si se pueden juntar mesas y máximo de personas por reserva. Con eso, el sitio solo acepta reservas dentro del horario y mientras haya lugar: si el local junta mesas, cuenta la suma de comensales; si no, cada grupo tiene que entrar en una sola mesa (un grupo de 5 no entra en un salón de mesas de 2 y 4).
+
+Al arrancar, la API carga algunos pedidos y reservas ficticios para que el panel no esté vacío (se omiten arrancando con `SIN_DATOS_DE_EJEMPLO=1`), y cada local trae mesas de ejemplo hasta que su sucursal cargue las reales. Las cuentas de prueba están en [Backend/src/repositories/usuarioRepository.js](Backend/src/repositories/usuarioRepository.js).
 
 ## Fotos y logo
 

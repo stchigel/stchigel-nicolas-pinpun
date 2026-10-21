@@ -13,6 +13,8 @@
 .campo select,
 .campo input[type='text'],
 .campo input[type='tel'],
+.campo input[type='password'],
+.campo input[type='search'],
 .campo input[type='date'],
 .campo input[type='time'],
 .campo textarea {
@@ -63,4 +65,68 @@
 .campo__error svg {
     flex-shrink: 0;
     margin-top: 0.05rem;
+}
+
+/* Opciones pegadas de a una por vez (radios), la elegida llena: modalidad, tipo de precio */
+.segmentos {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.segmento {
+    position: relative;
+}
+
+.segmento input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.segmento span {
+    display: block;
+    padding: 0.75rem 1rem;
+    background: var(--verde-hondo);
+    font-weight: 500;
+    text-align: center;
+    transition:
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease;
+}
+
+.segmento input:checked + span {
+    background: var(--hueso);
+    color: var(--verde);
+}
+
+.segmento input:focus-visible + span {
+    outline: 3px solid var(--dorado-claro);
+    outline-offset: 3px;
+}
+
+/* Casilla con su texto al lado */
+.casilla {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    cursor: pointer;
+}
+
+.casilla input {
+    flex-shrink: 0;
+    width: 1.35rem;
+    height: 1.35rem;
+    accent-color: var(--rojo);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .segmento input:not(:checked):hover + span {
+        background: var(--rojo-hondo);
+    }
 }
