@@ -12,7 +12,7 @@ router.get('/', localController.getAll);
 router.get('/:id', validateId, localController.getById);
 router.put('/:id', autenticar, exigirAdministracion, validateId, validateLocal, localController.update);
 
-/* Qué carta (menú) usa el local en el salón, el retiro y el delivery: lo decide la administración general */
+/* Qué carta (menú) usa el local en el salón y al pedir (delivery y retiro): lo decide la administración general */
 router.put('/:id/cartas', autenticar, exigirGeneral, validateId, validateAsignacionCartas, cartaController.asignarALocal);
 
 export default router;

@@ -111,7 +111,7 @@ Todas las rutas cuelgan de `/api`. Las respuestas tienen siempre la forma `{ "su
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
-| GET | `/api/productos` | Lista los platos de una carta: la general por defecto, o la de un local y canal (`?localId=1&canal=delivery`; canal: `salon`, `retiro` o `delivery`), o una en particular (`?cartaId=2`). También `?categoria=` y `?destacado=`. |
+| GET | `/api/productos` | Lista los platos de una carta: la original (la de Corrientes) por defecto, o la de un local y canal (`?localId=1&canal=delivery`; canal: `salon` o `delivery`, que también vale para el retiro), o una en particular (`?cartaId=2`). También `?categoria=` y `?destacado=`. |
 | GET | `/api/productos/:id` | Devuelve un producto. |
 | POST | `/api/productos` | Crea un producto en la carta indicada (`cartaId`) o, si no se dice, en la general. |
 | PUT | `/api/productos/:id` | Reemplaza un producto. |
@@ -121,7 +121,7 @@ Todas las rutas cuelgan de `/api`. Las respuestas tienen siempre la forma `{ "su
 | POST | `/api/cartas` | Crea una carta vacía o, con `copiarDeId`, una copia de otra con todos sus platos. |
 | PUT | `/api/cartas/:id` | Cambia el nombre de una carta. |
 | DELETE | `/api/cartas/:id` | Borra una carta con sus platos, si ningún local la usa y no es la última. |
-| PUT | `/api/locales/:id/cartas` | Elige qué carta usa un local: `{ "delivery": 2 }` (puede llevar `salon`, `retiro` y `delivery`). Solo la administración general. |
+| PUT | `/api/locales/:id/cartas` | Elige qué carta usa un local: `{ "delivery": 2 }` (puede llevar `salon` y `delivery`). Solo la administración general. |
 | GET | `/api/locales/:id` | Devuelve un local. |
 | PUT | `/api/locales/:id` | Cambia teléfono, horario, mesas, si se pueden juntar y máximo de personas por reserva. Requiere sesión (la sucursal, solo el suyo). |
 | POST | `/api/auth/login` | Inicia sesión: devuelve un token y los datos de quien entró. |
@@ -168,8 +168,39 @@ Todo se guarda en un archivo SQLite (`Backend/data/pinpun.db`, fuera de git): pe
 - **Copia de seguridad:** con el servidor apagado, alcanza con copiar `Backend/data/pinpun.db`.
 - **Cambios de estructura:** el esquema está versionado en [Backend/src/db/esquema.js](Backend/src/db/esquema.js). Para cambiarlo sin perder datos hay que **agregar** una migración al final de la lista (nunca editar una anterior): al arrancar, la API aplica las que falten.
 - **Qué no se guarda:** la posición en vivo del repartidor queda solo en memoria (ver "Seguimiento del pedido"), a propósito.
-- **Cartas por local y canal:** la carta (menú) es una entidad con nombre y cada local tiene asignada una por canal: salón, retiro y delivery. Hoy arranca una sola, "Carta general", que usan todos los locales en los tres canales. Para que una sucursal tenga la suya, o una distinta para el delivery, se crea otra carta (`POST /api/cartas`, que puede copiar una existente) y se asigna al local (`PUT /api/locales/:id/cartas`). Un pedido solo acepta platos de la carta que ese local usa para ese tipo de pedido, y cobra con sus precios. Todavía no hay pantallas para manejar varias cartas ni el sitio le pide al cliente que elija un local antes de ver la carta: hoy el sitio muestra la carta general.
+- **Cartas por local y canal:** la carta (menú) es una entidad con nombre y cada local tiene asignada una por canal: la del salón (lo que se ve antes de ir al local) y la de delivery (para pedir: el retiro usa la misma). Hoy arrancan tres: "Carta de Corrientes" (la del salón de Av. Corrientes 3954, que usan todos los demás locales), "Delivery Angelina" (el menú impreso que reparte Angelina, asignada solo a su delivery) y "Salón Angelina" (la del salón de ese local, solo comida); las dos de Angelina se cargan una sola vez, también en una base que ya existía. Angelina todavía no tiene horario cargado, así que no recibe pedidos hasta que se complete en el panel (Locales). Para que una sucursal tenga la suya, o una distinta para el delivery, se crea otra carta (`POST /api/cartas`, que puede copiar una existente) y se asigna al local (`PUT /api/locales/:id/cartas`). Un pedido solo acepta platos de la carta de delivery de ese local, y cobra con sus precios. Cómo lo usa el sitio está en "Sucursal y carta en el sitio". Todavía no hay pantallas en el panel para manejar varias cartas: por ahora se crean y asignan con la API.
 - Por ahora la API devuelve todos los pedidos de un local: con el tiempo la lista va a crecer y va a hacer falta paginarla o filtrar por fecha.
+
+## Sucursal y carta en el sitio
+
+Cada sucursal puede tener su propia carta (y una distinta para el salón), así que el sitio siempre sabe con cuál sucursal navega el visitante y a qué viene.
+
+- **Selector en la barra:** muestra la sucursal elegida y abre la lista de locales. Si nunca se eligió, es la de Corrientes (Almagro, la de @pinpuncorrientes). La elección se recuerda entre visitas en el navegador. También se puede elegir desde "Dónde encontrarnos".
+- **Al entrar a la carta (`/carta`):** se pregunta de qué sucursal y para qué: **Quiero pedir** (delivery o retiro, con la carta de delivery de esa sucursal) o **Voy a ir al local** (la carta del salón, solo para mirar). La respuesta vale mientras dure la pestaña; en una visita nueva se vuelve a preguntar, con la sucursal de la última vez ya tildada. Arriba de la carta queda un "Cambiar".
+- **Mirar antes de ir:** los precios se ven pero no se pueden sumar al pedido, no está el armador de mitad y mitad ni el botón "Agregar" de los más vendidos, y el cierre invita a reservar una mesa. Desde ahí se puede pasar a pedir con un toque.
+- **El pedido es de una carta:** cada plato sumado recuerda de qué carta es. Si se cambia a una sucursal que usa otra carta de delivery, el sitio avisa y pide confirmación antes de vaciar el pedido; si usa la misma, cambia sin preguntar. En el carrito solo se ofrecen las sucursales que tienen los platos del pedido, y arranca en la elegida.
+- **Reservas** arrancan en la sucursal elegida.
+- **Hasta que se cree otra carta,** todas las sucursales muestran la misma. Las cartas se crean y asignan con la API (ver "Base de datos"); todavía no hay pantalla en el panel.
+
+## Combos
+
+Un combo es un plato más de la carta (con su nombre, su categoría y su **propio precio**) que por dentro sabe de qué platos y en qué cantidad se compone. En la carta se ve igual que cualquier otro plato; en la API lleva `tipo: "combo"` y `componentes`: `[{ productoId, nombre, variante, cantidad, precio }]`, con lo que cuesta cada parte por separado.
+
+- **Se arman solos:** si el pedido junta las partes de un combo (un café con leche y tres medialunas sumados por separado), el carrito las reemplaza por el combo y avisa cuánto se ahorra, con un "Deshacer" (si se deshace, no se vuelve a armar en ese pedido). El orden en que se suman no importa y, si alcanza para dos combos, arma dos. El servidor aplica la misma regla al recibir el pedido, así que lo que ve el cliente es lo que se le cobra.
+- **Reglas:** solo se arma un combo que cuesta lo mismo o menos que sus partes por separado (nunca se cobra de más). Si dos combos comparten un componente, gana el que más ahorra. Un combo no se arma con otros combos ni con platos de otra carta, y si un componente tiene tamaños, el combo dice cuál.
+- **Desde el panel:** en Menú, "Tipo: Combo" muestra el editor de componentes (producto, tamaño y cantidad) y avisa cuánto sale por separado y cuánto se ahorra. No se puede borrar un plato que forma parte de un combo, ni volverlo combo, ni sacarle el tamaño que el combo usa.
+- **Por API:** `POST /api/productos` y `PUT /api/productos/:id` aceptan `tipo` y `componentes` (`GET /api/productos?tipo=combo` los lista). Copiar una carta copia sus combos, armados con los platos de la copia.
+- **Cuáles hay hoy:** "Café con leche con 3 medialunas" (Corrientes y las dos cartas de Angelina) y "Desayuno" (Angelina). Los que llevan algo que no es un plato de la carta (el pan y manteca, las facturas, la medialuna rellena del Good Morning) siguen siendo platos comunes. La lista está en [Backend/src/data/combos.js](Backend/src/data/combos.js).
+
+## Combos
+
+Un combo es un plato más de la carta (con su nombre, su categoría y su **propio precio**) que por dentro sabe de qué platos y en qué cantidad se compone. En la carta se ve igual que cualquier otro plato; en la API lleva `tipo: "combo"` y `componentes`: `[{ productoId, nombre, variante, cantidad, precio }]`, con lo que cuesta cada parte por separado.
+
+- **Se arman solos:** si el pedido junta las partes de un combo (un café con leche y tres medialunas sumados por separado), el carrito las reemplaza por el combo y avisa cuánto se ahorra, con un "Deshacer" (si se deshace, no se vuelve a armar en ese pedido). El orden en que se suman no importa y, si alcanza para dos combos, arma dos. El servidor aplica la misma regla al recibir el pedido, así que lo que ve el cliente es lo que se le cobra.
+- **Reglas:** solo se arma un combo que cuesta lo mismo o menos que sus partes por separado (nunca se cobra de más). Si dos combos comparten un componente, gana el que más ahorra. Un combo no se arma con otros combos ni con platos de otra carta, y si un componente tiene tamaños, el combo dice cuál.
+- **Desde el panel:** en Menú, "Tipo: Combo" muestra el editor de componentes (producto, tamaño y cantidad) y avisa cuánto sale por separado y cuánto se ahorra. No se puede borrar un plato que forma parte de un combo, ni volverlo combo, ni sacarle el tamaño que el combo usa.
+- **Por API:** `POST /api/productos` y `PUT /api/productos/:id` aceptan `tipo` y `componentes` (`GET /api/productos?tipo=combo` los lista). Copiar una carta copia sus combos, armados con los platos de la copia.
+- **Cuáles hay hoy:** "Café con leche con 3 medialunas" (Corrientes y las dos cartas de Angelina) y "Desayuno" (Angelina). Los que llevan algo que no es un plato de la carta (el pan y manteca, las facturas, la medialuna rellena del Good Morning) siguen siendo platos comunes. La lista está en [Backend/src/data/combos.js](Backend/src/data/combos.js).
 
 ## Panel de administración
 

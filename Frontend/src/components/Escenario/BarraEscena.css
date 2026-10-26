@@ -172,7 +172,7 @@
     background: rgb(0 0 0 / 0.025);
 }
 
-/* Botón de precio */
+/* Botón de precio (`precio--fijo`: solo el precio, cuando no se puede pedir) */
 .precio {
     display: inline-flex;
     align-items: center;
@@ -191,7 +191,7 @@
         transform var(--t-presion) var(--ease-out);
 }
 
-.precio:active {
+.precio:not(.precio--fijo):active {
     transform: scale(0.97);
 }
 
@@ -243,16 +243,16 @@
         background: var(--verde-hondo);
     }
 
-    .precio:hover {
+    .precio:not(.precio--fijo):hover {
         background: var(--rojo);
         color: var(--hueso);
     }
 
-    .precio:hover .precio__mas {
+    .precio:not(.precio--fijo):hover .precio__mas {
         stroke: var(--hueso);
     }
 
-    .precio:hover .precio__tamano {
+    .precio:not(.precio--fijo):hover .precio__tamano {
         color: var(--hueso-3);
     }
 }

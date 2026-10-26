@@ -1,0 +1,63 @@
+/* Aviso previo a vaciar el pedido: un papel de la carta sobre la página oscurecida */
+.confirmar {
+    width: min(28rem, calc(100vw - 2 * var(--margen)));
+    padding: 0;
+    border: 0;
+    background: var(--hueso);
+    color: var(--tinta);
+    box-shadow: 0 24px 56px -16px rgb(21 16 14 / 0.6); /* taste-skill-ignore: el aviso flota sobre la página */
+}
+
+.confirmar::backdrop {
+    background: rgb(21 16 14 / 0.55);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .confirmar[open] {
+        animation: confirmar-entrar var(--t-ui) var(--ease-out);
+    }
+}
+
+@keyframes confirmar-entrar {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem) scale(0.97);
+    }
+}
+
+.confirmar__interior {
+    display: grid;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+}
+
+.confirmar__rayas {
+    height: 0.625rem;
+    background: var(--rayas) repeat-x left center;
+    background-size: 28px 10px;
+}
+
+.confirmar__titulo,
+.confirmar__texto,
+.confirmar__acciones {
+    margin-inline: 1.5rem;
+}
+
+.confirmar__titulo {
+    margin-top: 0.5rem;
+    font-size: var(--t-subtitulo);
+    color: var(--verde);
+}
+
+.confirmar__texto {
+    line-height: 1.5;
+}
+
+.confirmar__acciones {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.confirmar .boton {
+    box-shadow: none;
+}

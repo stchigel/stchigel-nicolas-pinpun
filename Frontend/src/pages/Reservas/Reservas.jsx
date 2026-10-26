@@ -5,10 +5,9 @@ import Foto from '../../components/Foto/Foto.jsx';
 import Icono from '../../components/Icono/Icono.jsx';
 import PantallaAparte from '../../components/PantallaAparte/PantallaAparte.jsx';
 import TarjetaLocal from '../../components/TarjetaLocal/TarjetaLocal.jsx';
-import { useApi } from '../../hooks/useApi.js';
 import { useRevelar } from '../../hooks/useRevelar.js';
+import { useSucursal } from '../../hooks/useSucursal.js';
 import { useToast } from '../../hooks/useToast.js';
-import { getLocales } from '../../services/localService.js';
 import { crearReserva } from '../../services/reservaService.js';
 import { describirHorario, tieneHorario } from '../../utils/horario.js';
 import {
@@ -288,16 +287,17 @@ function FormularioReserva({ local, locales, cargando, error, onReintentar, onEl
 
 /*
  * Reservas: el mismo partido que el carrito. A la izquierda se lee (qué es, el local elegido y el salón);
+ * arranca en la sucursal elegida en el sitio;
  * a la derecha, sobre el verde, queda fijo el formulario.
  */
 function Reservas() {
-    const { datos, cargando, error, reintentar } = useApi(getLocales);
+    const { locales: datos, local: sucursal, cargando, error, reintentar } = useSucursal();
     const [localId, setLocalId] = useState('');
     const [pedida, setPedida] = useState(null);
     const ref = useRevelar();
 
     const locales = datos ?? [];
-    const local = locales.find((item) => String(item.id) === localId) ?? locales[0];
+    const local = locales.find((item) => String(item.id) === localId) ?? sucursal ?? locales[0];
 
     if (pedida) {
         const { local: elegido, fecha, minutos, cantidad } = pedida;

@@ -4,10 +4,9 @@ import Carrusel from '../../Carrusel/Carrusel.jsx';
 import TarjetaProducto from '../../TarjetaProducto/TarjetaProducto.jsx';
 import EstadoMensaje from '../../EstadoMensaje/EstadoMensaje.jsx';
 import Remate from '../../Fileteado/Remate.jsx';
-import { useApi } from '../../../hooks/useApi.js';
+import { useProductosDeSucursal } from '../../../hooks/useProductosDeSucursal.js';
 import { useRevelar } from '../../../hooks/useRevelar.js';
 import { useToast } from '../../../hooks/useToast.js';
-import { getProductosDestacados } from '../../../services/productoService.js';
 import './MasVendidos.css';
 
 function Esqueleto() {
@@ -20,9 +19,9 @@ function Esqueleto() {
     );
 }
 
-/* "Nuestros más vendidos": los platos vienen de la API y se muestran en el carrusel del boceto. */
+/* "Nuestros más vendidos": los platos vienen de la API (los de la carta de la sucursal elegida) y se muestran en el carrusel del boceto. */
 function MasVendidos() {
-    const { datos: productos, cargando, error, reintentar } = useApi(getProductosDestacados);
+    const { datos: productos, cargando, error, reintentar } = useProductosDeSucursal({ destacados: true });
     const notificar = useToast();
     const ref = useRevelar();
 

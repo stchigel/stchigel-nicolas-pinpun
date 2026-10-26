@@ -3,9 +3,8 @@ import CategoriaCarta from '../../components/Carta/CategoriaCarta.jsx';
 import IndiceCarta from '../../components/Carta/IndiceCarta.jsx';
 import EstadoMensaje from '../../components/EstadoMensaje/EstadoMensaje.jsx';
 import Remate from '../../components/Fileteado/Remate.jsx';
-import { useApi } from '../../hooks/useApi.js';
+import { useProductosDeSucursal } from '../../hooks/useProductosDeSucursal.js';
 import { useToast } from '../../hooks/useToast.js';
-import { getProductos } from '../../services/productoService.js';
 import { agruparCarta, INDICE_CARTA } from '../../utils/carta.js';
 import { ANIO_FUNDACION } from '../../utils/sitio.js';
 import './Menu.css';
@@ -30,7 +29,7 @@ function Esqueleto() {
  * renglones con "+" para sumar al pedido y un índice fijo para saltar entre secciones.
  */
 function Menu() {
-    const { datos: productos, cargando, error, reintentar } = useApi(getProductos);
+    const { datos: productos, cargando, error, reintentar } = useProductosDeSucursal();
     const notificar = useToast();
 
     useEffect(() => {

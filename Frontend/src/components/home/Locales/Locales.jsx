@@ -7,19 +7,15 @@ import MapaLocal from '../../MapaLocal/MapaLocal.jsx';
 import TarjetaLocal from '../../TarjetaLocal/TarjetaLocal.jsx';
 import { useApi } from '../../../hooks/useApi.js';
 import { useRevelar } from '../../../hooks/useRevelar.js';
+import { useSucursal } from '../../../hooks/useSucursal.js';
 import { useToast } from '../../../hooks/useToast.js';
 import { getLocales } from '../../../services/localService.js';
 import { obtenerUbicacion, ordenarPorDistancia } from '../../../utils/distancia.js';
 import { formatearDistancia } from '../../../utils/formato.js';
-import { estaAbierto, tieneHorario } from '../../../utils/horario.js';
+import { estaAbierto, textoEstado, tieneHorario } from '../../../utils/horario.js';
 import './Locales.css';
 
-function textoEstado(local, abierto) {
-    if (!tieneHorario(local)) return 'Horario a confirmar';
-    return abierto ? 'Abierto ahora' : 'Cerrado ahora';
-}
-
-function FilaLocal({ local, seleccionado, distanciaKm, esMasCercano, indice, onSeleccionar }) {
+function FilaLocal({ local, seleccionado, esMia, distanciaKm, esMasCercano, indice, onSeleccionar }) {
     const abierto = estaAbierto(local);
 
     return (
@@ -36,9 +32,10 @@ function FilaLocal({ local, seleccionado, distanciaKm, esMasCercano, indice, onS
                     {tieneHorario(local) && (
                         <span className="fila-local__punto" data-abierto={abierto || undefined} aria-hidden="true" />
                     )}
-                    {textoEstado(local, abierto)}
+                    {textoEstado(local)}
                     {distanciaKm !== undefined && <span> · {formatearDistancia(distanciaKm)}</span>}
                     {esMasCercano && <strong className="fila-local__cercano"> · El más cercano</strong>}
+                    {esMia && <strong className="fila-local__cercano"> · Tu sucursal</strong>}
                 </span>
             </button>
         </li>
@@ -52,6 +49,7 @@ function FilaLocal({ local, seleccionado, distanciaKm, esMasCercano, indice, onS
 function Locales() {
     const { datos: locales, cargando, error, reintentar } = useApi(getLocales);
     const notificar = useToast();
+    const { local: sucursal, elegir } = useSucursal();
     const ref = useRevelar();
     const [seleccionadoId, setSeleccionadoId] = useState(null);
     const [distancias, setDistancias] = useState(null);
@@ -133,6 +131,7 @@ function Locales() {
                                 local={item}
                                 indice={indice}
                                 seleccionado={item.id === local.id}
+                                esMia={item.id === sucursal?.id}
                                 distanciaKm={distanciaDe(item.id)}
                                 esMasCercano={item.id === masCercanoId}
                                 onSeleccionar={setSeleccionadoId}
@@ -144,7 +143,15 @@ function Locales() {
                         <MapaLocal key={local.id} local={local} className="locales__iframe" />
                     </div>
 
-                    <TarjetaLocal key={local.id} local={local} className="locales__tarjeta" />
+                    <TarjetaLocal key={local.id} local={local} className="locales__tarjeta">
+                        {local.id === sucursal?.id ? (
+                            <p className="locales__tu-sucursal">Es tu sucursal: la carta y los pedidos son de acá.</p>
+                        ) : (
+                            <Boton variante="verde" className="tarjeta-local__accion" onClick={() => elegir({ localId: local.id })}>
+                                Elegir como mi sucursal
+                            </Boton>
+                        )}
+                    </TarjetaLocal>
                 </div>
             )}
         </section>

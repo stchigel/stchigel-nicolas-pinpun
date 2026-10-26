@@ -7,15 +7,16 @@ import { CANALES } from '../services/cartaService.js';
 import { isPositiveInteger } from '../utils/validators.js';
 
 /*
- * Filtros opcionales: ?categoria=Pizzas y ?destacado=true|false.
- * La carta se elige con ?cartaId=2 o con ?localId=1&canal=delivery (canal: salon, retiro o delivery; por defecto salon);
- * sin nada, es la carta general.
+ * Filtros opcionales: ?categoria=Pizzas, ?destacado=true|false y ?tipo=simple|combo.
+ * La carta se elige con ?cartaId=2 o con ?localId=1&canal=delivery (canal: salon o delivery, que también vale para el retiro; por defecto salon);
+ * sin nada, es la carta original (la de Corrientes).
  */
-const leerFiltros = ({ categoria, destacado, cartaId, localId, canal }) => {
+const leerFiltros = ({ categoria, destacado, cartaId, localId, canal, tipo }) => {
     if (destacado !== undefined && destacado !== 'true' && destacado !== 'false') {
         throw new BadRequestError(Messages.INVALID_FILTRO_DESTACADO);
     }
 
+    if (tipo !== undefined && tipo !== 'simple' && tipo !== 'combo') throw new BadRequestError(Messages.INVALID_FILTRO_TIPO);
     if (cartaId !== undefined && !isPositiveInteger(cartaId)) throw new BadRequestError(Messages.INVALID_CARTA_ID);
     if (localId !== undefined && !isPositiveInteger(localId)) throw new BadRequestError(Messages.INVALID_LOCAL_ID);
     if (canal !== undefined && !CANALES.includes(canal)) throw new BadRequestError(Messages.INVALID_CANAL);
@@ -25,7 +26,8 @@ const leerFiltros = ({ categoria, destacado, cartaId, localId, canal }) => {
         destacado: destacado === undefined ? undefined : destacado === 'true',
         cartaId: cartaId === undefined ? undefined : Number(cartaId),
         localId: localId === undefined ? undefined : Number(localId),
-        canal
+        canal,
+        tipo
     };
 };
 

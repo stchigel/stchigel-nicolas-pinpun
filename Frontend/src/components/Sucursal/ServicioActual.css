@@ -1,0 +1,42 @@
+/* Línea de contexto de la carta: "PARA PEDIR · ALMAGRO · Cambiar" */
+.servicio-actual {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+}
+
+.servicio-actual__motivo {
+    font-size: var(--t-chico);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+}
+
+.servicio-actual__local {
+    font-family: var(--fuente-display);
+    font-size: var(--t-destacado);
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--verde);
+}
+
+.servicio-actual__cambiar {
+    padding: 0.6rem 0;
+    border: 0;
+    background: transparent;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--rojo);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition: color var(--t-hover) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .servicio-actual__cambiar:hover {
+        color: var(--rojo);
+    }
+}

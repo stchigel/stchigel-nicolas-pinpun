@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePedido } from '../../hooks/usePedido.js';
+import { useSucursal } from '../../hooks/useSucursal.js';
 import { useToast } from '../../hooks/useToast.js';
 import { formatearPrecio } from '../../utils/formato.js';
 import { nombreEnPedido } from '../../utils/carta.js';
@@ -9,9 +10,11 @@ const DURACION_SUMADO_MS = 900;
 /*
  * El precio es el botón: tocarlo suma ese plato (en ese tamaño) al pedido.
  * `tamano` se muestra al lado del precio solo cuando no hay un título de columna que lo diga.
+ * Si se está mirando la carta antes de ir al local, no se pide nada: el precio es solo un precio.
  */
 function BotonPrecio({ producto, variante = null, mostrarTamano = false }) {
     const { agregar } = usePedido();
+    const { puedePedir } = useSucursal();
     const notificar = useToast();
     const [sumado, setSumado] = useState(false);
     const temporizador = useRef(null);
@@ -28,6 +31,19 @@ function BotonPrecio({ producto, variante = null, mostrarTamano = false }) {
         clearTimeout(temporizador.current);
         temporizador.current = setTimeout(() => setSumado(false), DURACION_SUMADO_MS);
     };
+
+    if (!puedePedir) {
+        return (
+            <span className="precio precio--fijo">
+                {variante && (
+                    <span className="precio__tamano" data-visible={mostrarTamano || undefined}>
+                        {variante.nombre}
+                    </span>
+                )}
+                <span className="precio__monto">{formatearPrecio(precio)}</span>
+            </span>
+        );
+    }
 
     return (
         <button

@@ -5,11 +5,10 @@ import Campo from '../../components/Campo/Campo.jsx';
 import Cantidad from '../../components/Carrito/Cantidad.jsx';
 import Icono from '../../components/Icono/Icono.jsx';
 import PantallaAparte from '../../components/PantallaAparte/PantallaAparte.jsx';
-import { useApi } from '../../hooks/useApi.js';
 import { usePedido } from '../../hooks/usePedido.js';
 import { useRevelar } from '../../hooks/useRevelar.js';
+import { useSucursal } from '../../hooks/useSucursal.js';
 import { useToast } from '../../hooks/useToast.js';
-import { getLocales } from '../../services/localService.js';
 import { crearPedido } from '../../services/pedidoService.js';
 import { detalleItem } from '../../utils/carta.js';
 import { formatearPrecio } from '../../utils/formato.js';
@@ -121,22 +120,23 @@ function validar({ tipo, nombre, telefono, direccion }) {
 }
 
 /*
- * La comanda: lo único que falta decidir para que el pedido salga (cómo y desde qué local).
+ * La comanda: lo único que falta decidir para que el pedido salga (cómo y desde qué local, que arranca
+ * en la sucursal elegida).
  * Va sobre el verde del salón, como el mitad y mitad de la carta.
  */
 function Comanda({ onConfirmado }) {
     const { items, cantidadTotal, total } = usePedido();
     const notificar = useToast();
-    const { datos: locales, cargando, error, reintentar } = useApi(getLocales);
+    const { locales, local: sucursal, cargando, error, reintentar, elegir, aptosParaElPedido } = useSucursal();
     const [tipo, setTipo] = useState('retiro');
-    const [localId, setLocalId] = useState('');
     const [campos, setCampos] = useState({ nombre: '', telefono: '', direccion: '' });
     const [errores, setErrores] = useState({});
     const [enviando, setEnviando] = useState(false);
 
-    const lista = locales ?? [];
-    const porDefecto = lista.find((local) => estaAbierto(local)) ?? lista[0];
-    const local = lista.find((item) => String(item.id) === localId) ?? porDefecto;
+    /* Se pide en la sucursal elegida; solo se ofrecen otras si tienen la carta de lo que ya hay en el pedido */
+    const lista = aptosParaElPedido(locales ?? []);
+    const local = lista.find((item) => item.id === sucursal?.id) ?? lista[0];
+    const sinLocalAdecuado = !cargando && !error && lista.length === 0;
     const cerrado = Boolean(local) && tieneHorario(local) && !estaAbierto(local);
 
     const cambiarCampo = (evento) => {
@@ -205,7 +205,7 @@ function Comanda({ onConfirmado }) {
                         id="campo-local"
                         name="local"
                         value={local ? String(local.id) : ''}
-                        onChange={(evento) => setLocalId(evento.target.value)}
+                        onChange={(evento) => elegir({ localId: Number(evento.target.value) })}
                         disabled={cargando || Boolean(error) || lista.length === 0}
                     >
                         {cargando && <option value="">Cargando locales…</option>}
@@ -224,6 +224,12 @@ function Comanda({ onConfirmado }) {
                                 Reintentar
                             </Boton>
                         </div>
+                    )}
+
+                    {sinLocalAdecuado && (
+                        <p className="comanda__aviso-cierre" role="status">
+                            Ninguna sucursal tiene los platos de tu pedido. Vacialo y volvé a armarlo desde la carta.
+                        </p>
                     )}
 
                     {local && (

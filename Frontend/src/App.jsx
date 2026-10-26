@@ -6,6 +6,7 @@ import LayoutPublico from './components/LayoutPublico/LayoutPublico.jsx';
 import ScrollAlHash from './components/ScrollAlHash/ScrollAlHash.jsx';
 import ToastProvider from './components/Toast/ToastProvider.jsx';
 import PedidoProvider from './components/Pedido/PedidoProvider.jsx';
+import SucursalProvider from './components/Sucursal/SucursalProvider.jsx';
 import Home from './pages/Home/Home.jsx';
 import Menu from './pages/Menu/Menu.jsx';
 import CartaEscenario from './pages/CartaEscenario/CartaEscenario.jsx';
@@ -23,7 +24,7 @@ import Reparto from './pages/Reparto/Reparto.jsx';
 import Pendiente from './pages/Pendiente/Pendiente.jsx';
 
 /*
- * Estructura general: notificaciones, sesión y pedido en curso envuelven tres mundos con su propio marco:
+ * Estructura general: notificaciones, sesión, pedido en curso y sucursal elegida envuelven tres mundos con su propio marco:
  * el sitio (barra, contenido y pie), el panel de administración (barra lateral y contenido)
  * y el portal de reparto (una sola columna para el repartidor).
  * La carta del sitio es /carta; /menu quedó como alternativa.
@@ -33,53 +34,55 @@ function App() {
         <ToastProvider>
             <AuthProvider>
                 <PedidoProvider>
-                    <ScrollAlHash />
-                    <Routes>
-                        <Route element={<LayoutPublico />}>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/menu" element={<Menu />} />
-                            <Route path="/carta" element={<CartaEscenario />} />
-                            <Route path="/reservas" element={<Reservas />} />
-                            <Route path="/carrito" element={<Carrito />} />
-                            <Route path="/seguimiento/:codigo" element={<Seguimiento />} />
-                            <Route path="*" element={<Pendiente />} />
-                        </Route>
+                    <SucursalProvider>
+                        <ScrollAlHash />
+                        <Routes>
+                            <Route element={<LayoutPublico />}>
+                                <Route path="/" element={<Home />} />
+                                <Route path="/menu" element={<Menu />} />
+                                <Route path="/carta" element={<CartaEscenario />} />
+                                <Route path="/reservas" element={<Reservas />} />
+                                <Route path="/carrito" element={<Carrito />} />
+                                <Route path="/seguimiento/:codigo" element={<Seguimiento />} />
+                                <Route path="*" element={<Pendiente />} />
+                            </Route>
 
-                        <Route path="/admin/ingresar" element={<AdminIngreso />} />
-                        <Route
-                            path="/admin"
-                            element={
-                                <RutaProtegida roles={['general', 'sucursal']} alRechazar="inicio">
-                                    <LayoutAdmin />
-                                </RutaProtegida>
-                            }
-                        >
-                            <Route index element={<Navigate to="pedidos" replace />} />
-                            <Route path="pedidos" element={<AdminPedidos />} />
-                            <Route path="reservas" element={<AdminReservas />} />
+                            <Route path="/admin/ingresar" element={<AdminIngreso />} />
                             <Route
-                                path="menu"
+                                path="/admin"
                                 element={
-                                    <RutaProtegida roles={['general']}>
-                                        <AdminMenu />
+                                    <RutaProtegida roles={['general', 'sucursal']} alRechazar="inicio">
+                                        <LayoutAdmin />
                                     </RutaProtegida>
                                 }
-                            />
-                            <Route path="repartidores" element={<AdminRepartidores />} />
-                            <Route path="locales" element={<AdminLocales />} />
-                        </Route>
+                            >
+                                <Route index element={<Navigate to="pedidos" replace />} />
+                                <Route path="pedidos" element={<AdminPedidos />} />
+                                <Route path="reservas" element={<AdminReservas />} />
+                                <Route
+                                    path="menu"
+                                    element={
+                                        <RutaProtegida roles={['general']}>
+                                            <AdminMenu />
+                                        </RutaProtegida>
+                                    }
+                                />
+                                <Route path="repartidores" element={<AdminRepartidores />} />
+                                <Route path="locales" element={<AdminLocales />} />
+                            </Route>
 
-                        <Route
-                            path="/reparto"
-                            element={
-                                <RutaProtegida roles={['repartidor']} alRechazar="inicio">
-                                    <LayoutReparto />
-                                </RutaProtegida>
-                            }
-                        >
-                            <Route index element={<Reparto />} />
-                        </Route>
-                    </Routes>
+                            <Route
+                                path="/reparto"
+                                element={
+                                    <RutaProtegida roles={['repartidor']} alRechazar="inicio">
+                                        <LayoutReparto />
+                                    </RutaProtegida>
+                                }
+                            >
+                                <Route index element={<Reparto />} />
+                            </Route>
+                        </Routes>
+                    </SucursalProvider>
                 </PedidoProvider>
             </AuthProvider>
         </ToastProvider>

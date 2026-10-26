@@ -26,6 +26,7 @@
     }
 
     .js [data-revelar='persiana'] {
+        overflow: clip; /* lo que se agranda antes de abrirse no ensancha la página */
         clip-path: inset(0 0 100% 0);
         transition: clip-path 1100ms var(--ease-in-out);
         transition-delay: calc(var(--i, 0) * 90ms + 100ms);

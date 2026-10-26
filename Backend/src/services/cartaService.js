@@ -3,7 +3,8 @@ import localService from './localService.js';
 import { ConflictError, NotFoundError } from '../exceptions/AppError.js';
 import { Messages } from '../enums/Messages.js';
 
-export const CANALES = ['salon', 'retiro', 'delivery'];
+/* Qué carta se ve en el local (salón) y cuál al pedir (delivery y retiro comparten la suya) */
+export const CANALES = ['salon', 'delivery'];
 
 const getAll = () => cartaRepository.findAll();
 
@@ -23,7 +24,7 @@ const verificarNombreDisponible = (nombre, idActual = null) => {
  * La carta que corresponde a un pedido de datos de la API:
  * - `cartaId`: esa carta (para editarla desde el panel);
  * - `localId` (con `canal`, por defecto el salón): la que usa ese local en ese canal;
- * - nada: la carta general, la primera que se creó (lo que muestra el sitio mientras no sepa de qué local es).
+ * - nada: la carta original (la de Av. Corrientes 3954), la primera que se creó (lo que muestra el sitio mientras no sepa de qué local es).
  */
 const resolver = ({ cartaId, localId, canal = 'salon' }) => {
     if (cartaId !== undefined) return getById(cartaId);

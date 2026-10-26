@@ -22,6 +22,12 @@ export function estaAbierto(local, fecha = new Date()) {
     return ahora >= apertura || ahora < cierre;
 }
 
+/* Cómo está el local ahora, en pocas palabras */
+export function textoEstado(local) {
+    if (!tieneHorario(local)) return 'Horario a confirmar';
+    return estaAbierto(local) ? 'Abierto ahora' : 'Cerrado ahora';
+}
+
 export function describirHorario(local, fecha = new Date()) {
     if (!tieneHorario(local)) return 'Horario a confirmar';
 

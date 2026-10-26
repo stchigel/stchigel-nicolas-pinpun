@@ -1,0 +1,258 @@
+/*
+ * Pregunta previa a la carta: sucursal y para qué. Es una hoja de la carta impresa sobre el papel del sitio:
+ * lo elegido se pinta de rojo con el filete dorado, igual que el local seleccionado en "Dónde encontrarnos".
+ */
+.servicio {
+    padding-block: calc(var(--sobresale-logo) + clamp(1.5rem, 4vw, 3rem)) var(--separacion-secciones);
+}
+
+.servicio__interior {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.servicio__encabezado {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+}
+
+.servicio__remate {
+    width: 9rem;
+    margin-inline: 0;
+}
+
+.servicio__titulo {
+    font-size: var(--t-titulo);
+    color: var(--tinta);
+}
+
+.servicio__bajada {
+    max-width: 52ch;
+    font-size: var(--t-destacado);
+    line-height: 1.45;
+}
+
+.servicio__grupo {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.servicio__pregunta {
+    margin-bottom: 0.25rem;
+    padding: 0;
+    font-family: var(--fuente-display);
+    font-size: var(--t-subtitulo);
+    font-weight: 400;
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: var(--verde);
+}
+
+/* Opciones: la casilla ocupa todo el cuadro, así que se toca en cualquier parte */
+.servicio__sucursal,
+.servicio__opcion {
+    position: relative;
+    display: block;
+}
+
+.servicio__sucursal input,
+.servicio__opcion input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.servicio__sucursales,
+.servicio__esqueleto {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.servicio__sucursal-cuerpo,
+.servicio__opcion-cuerpo {
+    display: grid;
+    align-content: start;
+    gap: 0.3rem;
+    height: 100%;
+    padding: 1rem 1.25rem 1.1rem;
+    background: var(--hueso-2);
+    transition:
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
+}
+
+.servicio__sucursal:active .servicio__sucursal-cuerpo,
+.servicio__opcion:active .servicio__opcion-cuerpo {
+    transform: scale(0.985);
+}
+
+.servicio__sucursal input:checked + .servicio__sucursal-cuerpo,
+.servicio__opcion input:checked + .servicio__opcion-cuerpo {
+    background: var(--rojo);
+    color: var(--hueso);
+    box-shadow:
+        inset 0 0 0 0.375rem var(--rojo),
+        inset 0 0 0 0.5rem var(--dorado-claro);
+}
+
+.servicio__sucursal input:focus-visible + .servicio__sucursal-cuerpo,
+.servicio__opcion input:focus-visible + .servicio__opcion-cuerpo {
+    outline: 3px solid var(--verde);
+    outline-offset: 3px;
+}
+
+.servicio__sucursal-nombre,
+.servicio__opcion-titulo {
+    font-family: var(--fuente-display);
+    font-size: var(--t-subtitulo);
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.servicio__sucursal-direccion {
+    font-size: var(--t-chico);
+}
+
+.servicio__sucursal-estado {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
+}
+
+.servicio__sucursal input:checked + .servicio__sucursal-cuerpo .servicio__sucursal-estado {
+    color: var(--hueso-2);
+}
+
+.servicio__punto {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--tinta-suave);
+}
+
+.servicio__punto[data-abierto] {
+    background: var(--verde);
+}
+
+.servicio__sucursal input:checked + .servicio__sucursal-cuerpo .servicio__punto[data-abierto] {
+    background: var(--hueso);
+}
+
+.servicio__opciones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.servicio__opcion-cuerpo {
+    gap: 0.5rem;
+    padding-block: 1.25rem 1.4rem;
+}
+
+.servicio__opcion-texto {
+    max-width: 34ch;
+    line-height: 1.45;
+}
+
+.servicio__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* Botones planos, como en el resto de la carta */
+.servicio .boton--rojo {
+    box-shadow: none;
+}
+
+.servicio__hueco {
+    min-height: 6.5rem;
+    background: var(--hueso-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .servicio__sucursal input:not(:checked):hover + .servicio__sucursal-cuerpo,
+    .servicio__opcion input:not(:checked):hover + .servicio__opcion-cuerpo {
+        background: var(--hueso-3);
+    }
+}
+
+/* Pantallas anchas: las sucursales a la izquierda y, a la derecha, para qué y el botón, así entra todo sin bajar */
+@media (min-width: 64.0625rem) {
+    .servicio__interior {
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        grid-template-rows: auto auto 1fr;
+        grid-template-areas:
+            'encabezado encabezado'
+            'sucursal motivo'
+            'sucursal acciones';
+        column-gap: clamp(2rem, 4vw, 4rem);
+        align-items: start;
+    }
+
+    .servicio__encabezado {
+        grid-area: encabezado;
+    }
+
+    .servicio__grupo--sucursal {
+        grid-area: sucursal;
+    }
+
+    .servicio__grupo--motivo {
+        grid-area: motivo;
+    }
+
+    .servicio__acciones {
+        grid-area: acciones;
+    }
+
+    .servicio__sucursales,
+    .servicio__esqueleto {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .servicio__opciones {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 64rem) {
+    .servicio__sucursales,
+    .servicio__esqueleto {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 36rem) {
+    .servicio__opciones {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* En el teléfono las sucursales van de a dos y más chicas, para no tener que bajar tanto */
+    .servicio__sucursal-cuerpo {
+        padding: 0.8rem 0.9rem 0.9rem;
+    }
+
+    .servicio__sucursal-nombre {
+        font-size: 1.375rem;
+    }
+
+    .servicio__sucursal-direccion {
+        font-size: 0.8125rem;
+    }
+
+    .servicio__acciones .boton {
+        flex: 1 1 100%;
+    }
+}

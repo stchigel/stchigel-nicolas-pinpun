@@ -4,8 +4,8 @@ import { describirHorario } from '../../utils/horario.js';
 import { urlComoLlegar, urlInstagram, urlTelefono } from '../../utils/sitio.js';
 import './TarjetaLocal.css';
 
-/* Datos de contacto de un local: la tarjeta que flota sobre el mapa en el boceto. */
-function TarjetaLocal({ local, className = '' }) {
+/* Datos de contacto de un local: la tarjeta que flota sobre el mapa en el boceto. `children` suma acciones antes de "Cómo llegar". */
+function TarjetaLocal({ local, className = '', children }) {
     const { nombre, direccion, instagram, numero } = local;
 
     return (
@@ -40,6 +40,8 @@ function TarjetaLocal({ local, className = '' }) {
                     </li>
                 )}
             </ul>
+
+            {children}
 
             <Boton href={urlComoLlegar(local)} target="_blank" rel="noreferrer" className="tarjeta-local__accion">
                 Cómo llegar

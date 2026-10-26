@@ -1,0 +1,233 @@
+/*
+ * Sucursal elegida, en la barra: un botón con su nombre y debajo un papel de la carta (con su franja de rayas rojas)
+ * que lista los locales. Nace en el botón y entra con calma; sale rápido, como el resumen del carrito.
+ */
+.sucursal {
+    position: relative;
+    min-width: 0;
+}
+
+.sucursal__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    max-width: 12rem;
+    padding: 0 0.5rem 0 0.25rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    transition:
+        color var(--t-hover) ease,
+        transform var(--t-presion) var(--ease-out);
+}
+
+.sucursal__chip:active {
+    transform: scale(0.97);
+}
+
+.sucursal__chip[data-abierto] {
+    color: var(--dorado-claro);
+}
+
+.sucursal__chip > svg:first-child {
+    flex-shrink: 0;
+}
+
+.sucursal__nombre {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: underline;
+    text-decoration-color: rgb(243 241 235 / 0.4);
+    text-underline-offset: 0.3em;
+}
+
+.sucursal__flecha {
+    flex-shrink: 0;
+    transition: transform var(--t-ui) var(--ease-out);
+}
+
+.sucursal__chip[aria-expanded='true'] .sucursal__flecha {
+    transform: rotate(180deg);
+}
+
+/* Lugar reservado mientras llegan los locales */
+.sucursal__chip--hueco {
+    width: 8rem;
+    max-width: 100%;
+}
+
+.sucursal__panel {
+    position: absolute;
+    z-index: 3;
+    top: calc(50% + var(--alto-navbar) / 2 + 0.625rem);
+    right: -0.5rem;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    width: min(24rem, calc(100vw - 2 * var(--margen)));
+    max-height: min(36rem, calc(100svh - var(--alto-navbar) - 1.5rem));
+    background: var(--hueso);
+    color: var(--tinta);
+    box-shadow: 0 20px 44px -14px rgb(21 16 14 / 0.55); /* taste-skill-ignore: el panel flota sobre la página */
+    transform-origin: calc(100% - 1.5rem) 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.375rem) scale(0.96);
+    transition:
+        opacity 120ms ease-out,
+        transform 120ms ease-out,
+        visibility 0s linear 120ms;
+}
+
+.sucursal__panel[data-abierto] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+        opacity var(--t-ui) var(--ease-out),
+        transform var(--t-ui) var(--ease-out),
+        visibility 0s;
+}
+
+.navbar .sucursal__panel :focus-visible {
+    outline-color: var(--verde);
+}
+
+.sucursal__rayas {
+    height: 0.625rem;
+    background: var(--rayas) repeat-x left center;
+    background-size: 28px 10px;
+}
+
+.sucursal__cabecera {
+    display: grid;
+    gap: 0.15rem;
+    padding: 1rem 1.25rem 0.75rem;
+}
+
+.sucursal__titulo {
+    font-size: var(--t-subtitulo);
+    color: var(--verde);
+}
+
+.sucursal__bajada {
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
+}
+
+.sucursal__lista {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--rojo) var(--hueso-2);
+}
+
+.sucursal__opcion {
+    display: grid;
+    gap: 0.1rem;
+    width: 100%;
+    padding: 0.7rem 1.25rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    transition:
+        background-color var(--t-hover) ease,
+        color var(--t-hover) ease;
+}
+
+.sucursal__lista li:nth-child(odd) .sucursal__opcion:not([aria-pressed='true']) {
+    background: var(--hueso-2);
+}
+
+.sucursal__opcion[aria-pressed='true'] {
+    background: var(--rojo);
+    color: var(--hueso);
+}
+
+.sucursal__opcion-nombre {
+    font-family: var(--fuente-display);
+    font-size: 1.375rem;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+.sucursal__opcion-direccion {
+    font-size: var(--t-chico);
+}
+
+.sucursal__opcion-estado {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--t-chico);
+    color: var(--tinta-suave);
+}
+
+.sucursal__opcion[aria-pressed='true'] .sucursal__opcion-estado {
+    color: var(--hueso-2);
+}
+
+.sucursal__punto {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--tinta-suave);
+}
+
+.sucursal__punto[data-abierto] {
+    background: var(--verde);
+}
+
+.sucursal__opcion[aria-pressed='true'] .sucursal__punto[data-abierto] {
+    background: var(--hueso);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .sucursal__chip:hover {
+        color: var(--dorado-claro);
+    }
+
+    .sucursal__chip:hover .sucursal__nombre {
+        text-decoration-color: currentColor;
+    }
+
+    .sucursal__opcion[aria-pressed='false']:hover {
+        background: var(--hueso-3);
+    }
+}
+
+@media (max-width: 52rem) {
+    .sucursal__chip {
+        max-width: min(8rem, 100%);
+        font-size: var(--t-chico);
+    }
+
+    /* En el teléfono el panel cuelga de la barra entera, como el resumen del carrito */
+    .sucursal {
+        position: static;
+    }
+
+    .sucursal__panel {
+        top: calc(100% + 0.625rem);
+        right: var(--margen);
+        left: var(--margen);
+        width: auto;
+        transform-origin: 50% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sucursal__panel,
+    .sucursal__panel[data-abierto] {
+        transform: none;
+    }
+
+    .sucursal__flecha {
+        transition: none;
+    }
+}

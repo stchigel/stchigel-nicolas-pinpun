@@ -18,6 +18,7 @@ import {
 } from '../enums/Estados.js';
 import { Messages } from '../enums/Messages.js';
 import { estaAbierto } from '../utils/horario.js';
+import { formarCombos } from '../utils/combos.js';
 import { exigirLocal, localDelListado } from '../utils/permisos.js';
 
 /* Precio de un producto en una variante; null si esa variante no existe */
@@ -30,7 +31,7 @@ const precioDe = (producto, variante) => {
 /*
  * El precio y el nombre se toman de la carta, no de lo que mande el navegador: el total lo calcula el servidor.
  * La mitad y mitad ("mitad:3-7") cobra la más cara de las dos, como en el mostrador.
- * Solo se aceptan platos de la carta que ese local usa para ese tipo de pedido (retiro o delivery).
+ * Solo se aceptan platos de la carta que ese local usa para pedir: el retiro y el delivery comparten la del delivery.
  */
 const resolverItem = ({ productoId, variante, cantidad }, cartaId) => {
     const mitad = /^mitad:(\d+)-(\d+)$/.exec(String(productoId));
@@ -97,10 +98,24 @@ const create = ({ localId, tipo, cliente, direccion, items }) => {
     const local = localService.getById(localId);
     if (!estaAbierto(local)) throw new ConflictError(Messages.LOCAL_CERRADO);
 
-    const carta = cartaRepository.deLocal(localId, tipo);
+    const carta = cartaRepository.deLocal(localId, 'delivery');
     if (!carta) throw new ConflictError(Messages.LOCAL_SIN_CARTA);
 
-    const resueltos = items.map((item) => resolverItem(item, carta.id));
+    /* Si el pedido trae por separado lo que compone un combo de la carta, se cobra como combo */
+    const combos = productoRepository.findAll({ cartaId: carta.id, tipo: 'combo' });
+    const { items: resueltos } = formarCombos(
+        items.map((item) => resolverItem(item, carta.id)),
+        combos,
+        (combo, cantidad) => ({
+            productoId: combo.id,
+            nombre: combo.nombre,
+            categoria: combo.categoria,
+            subcategoria: combo.subcategoria,
+            variante: '',
+            precio: combo.precio,
+            cantidad
+        })
+    );
     const total = resueltos.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
     const estado = ESTADOS_PEDIDO[tipo][0];
 

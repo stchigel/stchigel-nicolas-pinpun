@@ -67,6 +67,50 @@
     gap: 0.5rem;
 }
 
+/* Un componente de combo: producto, tamaño (si lo tiene), cantidad y quitar */
+.componentes__fila {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.9fr) 4.25rem auto;
+    gap: 0.5rem;
+}
+
+.componentes__fila select,
+.componentes__fila input {
+    width: 100%;
+    min-width: 0;
+    min-height: 3.25rem;
+    padding: 0.6rem 0.8rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hueso);
+    color: var(--tinta);
+}
+
+.componentes__resumen {
+    font-size: var(--t-chico);
+    line-height: 1.4;
+    color: var(--hueso-2);
+}
+
+.componentes__resumen[data-conviene] {
+    color: var(--dorado-claro);
+}
+
+.producto__combo {
+    background: var(--verde);
+    color: var(--hueso);
+}
+
+@media (max-width: 40rem) {
+    .componentes__fila {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 4.25rem auto;
+    }
+
+    .componentes__fila > :first-child {
+        grid-column: 1 / -1;
+    }
+}
+
 .tamanos__fila input {
     width: 100%;
     min-height: 3.25rem;

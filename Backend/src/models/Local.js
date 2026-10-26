@@ -6,7 +6,7 @@
  * - `juntarMesas` dice si, para un grupo grande, se pueden juntar mesas; si no, cada grupo entra en una sola mesa.
  * - `maximoPorReserva` es lo que de verdad se acepta: el tope, sin pasar lo que el salón puede sentar
  *   (todos los comensales si junta mesas, la mesa más grande si no).
- * - `cartas` dice qué carta (menú) usa en cada canal: { salon, retiro, delivery } con el id de la carta.
+ * - `cartas` dice qué carta (menú) usa en cada canal: { salon, delivery } con el id de la carta.
  */
 class Local {
     constructor(id, nombre, direccion, numero, instagram, latitud, longitud, horarioApertura, horarioCierre, mesas = [], reservaMaxPersonas = 12, juntarMesas = true, cartas = {}) {

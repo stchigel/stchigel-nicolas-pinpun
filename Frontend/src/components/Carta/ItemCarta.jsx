@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from 'react';
 import Icono from '../Icono/Icono.jsx';
 import { usePedido } from '../../hooks/usePedido.js';
+import { useSucursal } from '../../hooks/useSucursal.js';
 import { useToast } from '../../hooks/useToast.js';
 import { formatearPrecio } from '../../utils/formato.js';
 import { nombreEnPedido } from '../../utils/carta.js';
@@ -13,6 +14,7 @@ import { nombreEnPedido } from '../../utils/carta.js';
  */
 function ItemCarta({ producto, columnas = [] }) {
     const { agregar } = usePedido();
+    const { puedePedir } = useSucursal();
     const notificar = useToast();
     const [eligiendo, setEligiendo] = useState(false);
     const botonRef = useRef(null);
@@ -44,17 +46,21 @@ function ItemCarta({ producto, columnas = [] }) {
             style={modo === 'columnas' ? { '--precios': columnas.length } : undefined}
             onKeyDown={alPresionarTecla}
         >
-            <button
-                ref={botonRef}
-                type="button"
-                className="item-carta__agregar"
-                onClick={alTocarMas}
-                aria-label={tieneVariantes ? `Elegir tamaño de ${nombre}` : `Sumar ${nombre} al pedido`}
-                aria-expanded={tieneVariantes ? eligiendo : undefined}
-                aria-controls={tieneVariantes ? idEleccion : undefined}
-            >
-                <Icono nombre="mas" tamano={24} />
-            </button>
+            {puedePedir ? (
+                <button
+                    ref={botonRef}
+                    type="button"
+                    className="item-carta__agregar"
+                    onClick={alTocarMas}
+                    aria-label={tieneVariantes ? `Elegir tamaño de ${nombre}` : `Sumar ${nombre} al pedido`}
+                    aria-expanded={tieneVariantes ? eligiendo : undefined}
+                    aria-controls={tieneVariantes ? idEleccion : undefined}
+                >
+                    <Icono nombre="mas" tamano={24} />
+                </button>
+            ) : (
+                <span className="item-carta__agregar" aria-hidden="true" />
+            )}
 
             <p className="item-carta__nombre">
                 <span>{nombre}</span>

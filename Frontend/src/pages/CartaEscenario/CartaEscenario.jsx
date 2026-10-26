@@ -4,11 +4,13 @@ import EscenaFija from '../../components/Escenario/EscenaFija.jsx';
 import MitadYMitad from '../../components/Escenario/MitadYMitad.jsx';
 import Boton from '../../components/Boton/Boton.jsx';
 import EstadoMensaje from '../../components/EstadoMensaje/EstadoMensaje.jsx';
-import { useApi } from '../../hooks/useApi.js';
+import ElegirServicio from '../../components/Sucursal/ElegirServicio.jsx';
+import ServicioActual from '../../components/Sucursal/ServicioActual.jsx';
+import { useProductosDeSucursal } from '../../hooks/useProductosDeSucursal.js';
+import { useSucursal } from '../../hooks/useSucursal.js';
 import { useRevelar } from '../../hooks/useRevelar.js';
 import { usePedido } from '../../hooks/usePedido.js';
 import { useToast } from '../../hooks/useToast.js';
-import { getProductos } from '../../services/productoService.js';
 import { ATAJOS_ESCENAS, ESCENA_PORTADA, ESCENAS, armarEscenas } from '../../utils/escenasCarta.js';
 import { formatearPrecio } from '../../utils/formato.js';
 import { nombreEnPedido } from '../../utils/carta.js';
@@ -37,6 +39,7 @@ const esFaina = (producto) => producto.nombre.normalize('NFD').replace(/[̀-ͯ]/
 
 function Cierre({ productos }) {
     const { items, cantidadTotal, agregar } = usePedido();
+    const { local, puedePedir, elegir } = useSucursal();
     const notificar = useToast();
     const total = items.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
     const foto = obtenerFoto('faina');
@@ -64,28 +67,45 @@ function Cierre({ productos }) {
             )}
             <div className="cierre__texto">
                 <h2 id="cierre-titulo" className="cierre__titulo" data-revelar="subir">
-                    {cantidadTotal > 0 ? '¿Algo más arriba de la muzza?' : 'La fainá va arriba de la muzza'}
+                    {!puedePedir
+                        ? '¿Te quedaste con ganas?'
+                        : cantidadTotal > 0
+                          ? '¿Algo más arriba de la muzza?'
+                          : 'La fainá va arriba de la muzza'}
                 </h2>
                 <p className="cierre__bajada" data-revelar="subir" style={{ '--i': 1 }}>
-                    {cantidadTotal > 0
-                        ? `Llevás ${cantidadTotal} ${cantidadTotal === 1 ? 'producto' : 'productos'} por ${formatearPrecio(total)}.`
-                        : 'Todavía no sumaste nada. Tocá cualquier precio de la carta y aparece en tu pedido.'}
+                    {!puedePedir
+                        ? `Reservá tu mesa en ${local?.nombre ?? 'el local'} y la pizza te espera calentita. Si preferís, pedí y te la llevamos.`
+                        : cantidadTotal > 0
+                          ? `Llevás ${cantidadTotal} ${cantidadTotal === 1 ? 'producto' : 'productos'} por ${formatearPrecio(total)}.`
+                          : 'Todavía no sumaste nada. Tocá cualquier precio de la carta y aparece en tu pedido.'}
                 </p>
                 <div className="cierre__acciones" data-revelar="subir" style={{ '--i': 2 }}>
-                    {faina && (
+                    {!puedePedir && (
+                        <>
+                            <Boton a="/reservas" variante="rojo">
+                                Reservar una mesa
+                            </Boton>
+                            <Boton variante="hueso" onClick={() => elegir({ modo: 'pedir' })}>
+                                Mejor pido
+                            </Boton>
+                        </>
+                    )}
+                    {puedePedir && faina && (
                         <Boton variante="rojo" onClick={sumarFaina}>
                             Agregar fainá{varianteFaina ? `, ${formatearPrecio(varianteFaina.precio)}` : ''}
                         </Boton>
                     )}
-                    {cantidadTotal > 0 ? (
-                        <Boton a="/carrito" variante="verde">
-                            Ver mi pedido
-                        </Boton>
-                    ) : (
-                        <Boton href="#carta" variante="hueso">
-                            Volver a la carta
-                        </Boton>
-                    )}
+                    {puedePedir &&
+                        (cantidadTotal > 0 ? (
+                            <Boton a="/carrito" variante="verde">
+                                Ver mi pedido
+                            </Boton>
+                        ) : (
+                            <Boton href="#carta" variante="hueso">
+                                Volver a la carta
+                            </Boton>
+                        ))}
                 </div>
             </div>
         </section>
@@ -97,8 +117,9 @@ function Cierre({ productos }) {
  * a la derecha queda fija una foto del local que acompaña lo que se está leyendo.
  * La mitad y mitad rompe el partido a todo el ancho, y la última foto cierra con el pedido.
  */
-function CartaEscenario() {
-    const { datos: productos, cargando, error, reintentar } = useApi(getProductos);
+function CartaDeLaSucursal() {
+    const { datos: productos, cargando, error, reintentar } = useProductosDeSucursal();
+    const { local, puedePedir, elegir } = useSucursal();
     const notificar = useToast();
     /* Todas las barras arrancan abiertas: se guardan las que el visitante cierra */
     const [cerradas, setCerradas] = useState(() => new Set());
@@ -197,14 +218,28 @@ function CartaEscenario() {
                 <div className="escenario__lectura">
                     <header ref={portadaRef} className="escenario__portada" data-escena={ESCENA_PORTADA.id}>
                         <div className="escenario__rayas" aria-hidden="true" />
+                        <ServicioActual />
                         <h1 className="escenario__titular">Pizza al molde, desde {ANIO_FUNDACION}</h1>
                         <p className="escenario__bajada">
-                            La carta completa de Av. Corrientes 3954. Tocá cualquier precio y se suma a tu pedido.
+                            {puedePedir
+                                ? `La carta completa de ${local?.direccion ?? 'Pin Pun'}. Tocá cualquier precio y se suma a tu pedido.`
+                                : `La carta del salón de ${local?.direccion ?? 'Pin Pun'}. Mirala tranquila antes de ir.`}
                         </p>
                         <div className="escenario__acciones">
-                            <Boton href="#mitad" variante="rojo">
-                                Armar una mitad y mitad
-                            </Boton>
+                            {puedePedir ? (
+                                <Boton href="#mitad" variante="rojo">
+                                    Armar una mitad y mitad
+                                </Boton>
+                            ) : (
+                                <>
+                                    <Boton a="/reservas" variante="rojo">
+                                        Reservar una mesa
+                                    </Boton>
+                                    <Boton variante="hueso" onClick={() => elegir({ modo: 'pedir' })}>
+                                        Quiero pedir
+                                    </Boton>
+                                </>
+                            )}
                             {atajos.length > 0 && (
                                 <nav aria-label="Atajos de la carta">
                                     <ul className="escenario__atajos">
@@ -232,11 +267,18 @@ function CartaEscenario() {
                 <EscenaFija escena={escena} fotos={FOTOS_ESCENA} />
             </div>
 
-            {productos && <MitadYMitad productos={productos} />}
+            {productos && puedePedir && <MitadYMitad productos={productos} />}
 
             <Cierre productos={productos} />
         </div>
     );
+}
+
+/* Antes de la carta se pregunta de qué sucursal y para qué; después se muestra la que corresponde */
+function CartaEscenario() {
+    const { mostrarSelector } = useSucursal();
+
+    return mostrarSelector ? <ElegirServicio /> : <CartaDeLaSucursal />;
 }
 
 export default CartaEscenario;

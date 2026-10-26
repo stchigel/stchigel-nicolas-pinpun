@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import Logo from '../Logo/Logo.jsx';
 import Icono from '../Icono/Icono.jsx';
 import CarritoEmergente from '../Carrito/CarritoEmergente.jsx';
+import SelectorSucursal from '../Sucursal/SelectorSucursal.jsx';
 import { usePedido } from '../../hooks/usePedido.js';
 import { ENLACES_DERECHA, ENLACES_IZQUIERDA } from '../../utils/sitio.js';
 import './Navbar.css';
@@ -23,7 +24,7 @@ function ListaEnlaces({ enlaces, className, onNavegar }) {
 
 /*
  * Barra principal, como en el boceto: dos enlaces a cada lado del logo
- * y el carrito a la derecha. En pantallas chicas los enlaces pasan a un panel desplegable.
+ * y a la derecha la sucursal elegida y el carrito. En pantallas chicas los enlaces pasan a un panel desplegable.
  * El carrito abre un resumen del pedido que cuelga de la barra; en la página del carrito
  * ese resumen sobra, así que ahí es un enlace común.
  */
@@ -107,6 +108,7 @@ function Navbar() {
 
                 <div className="navbar__derecha">
                     <ListaEnlaces enlaces={ENLACES_DERECHA} className="navbar__grupo" />
+                    <SelectorSucursal />
                     {enCarrito ? (
                         <Link to="/carrito" className="navbar__carrito" aria-label={etiquetaCarrito} aria-current="page">
                             {contenidoCarrito}

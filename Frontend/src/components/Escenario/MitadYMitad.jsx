@@ -8,7 +8,8 @@ import { formatearPrecio } from '../../utils/formato.js';
 import { pizzasEnTamano, precioEnTamano } from '../../utils/escenasCarta.js';
 import './MitadYMitad.css';
 
-const TAMANOS = ['Grande', 'Chica'];
+/* Los tamaños en que se puede partir una pizza: la carta de cada sucursal usa los suyos (Chica o Mediana) */
+const TAMANOS_POSIBLES = ['Grande', 'Mediana', 'Chica'];
 const PREFERIDAS = ['Muzzarella', 'Napolitana'];
 
 const elegir = (lista, id, respaldo) => lista.find((pizza) => String(pizza.id) === id) ?? respaldo ?? lista[0];
@@ -22,11 +23,14 @@ function MitadYMitad({ productos }) {
     const notificar = useToast();
     const idTitulo = useId();
     const ref = useRevelar();
-    const [tamano, setTamano] = useState(TAMANOS[0]);
+    const [tamanoElegido, setTamano] = useState(TAMANOS_POSIBLES[0]);
     const [ids, setIds] = useState([null, null]);
 
+    const tamanos = TAMANOS_POSIBLES.filter((opcion) => pizzasEnTamano(productos, opcion).length > 0);
+    if (tamanos.length === 0) return null;
+
+    const tamano = tamanos.includes(tamanoElegido) ? tamanoElegido : tamanos[0];
     const disponibles = pizzasEnTamano(productos, tamano);
-    if (disponibles.length === 0) return null;
 
     const preferida = (nombre) => disponibles.find((pizza) => pizza.nombre === nombre);
     const primera = elegir(disponibles, ids[0], preferida(PREFERIDAS[0]));
@@ -61,7 +65,7 @@ function MitadYMitad({ productos }) {
 
         const [a, b] = [primera.id, segunda.id].sort();
         const nombre = `Mitad ${primera.nombre} y mitad ${segunda.nombre}`;
-        agregar({ id: `mitad:${a}-${b}`, nombre, categoria: 'Pizzas', subcategoria: '', precio }, variante);
+        agregar({ id: `mitad:${a}-${b}`, cartaId: primera.cartaId, nombre, categoria: 'Pizzas', subcategoria: '', precio }, variante);
         notificar.exito(`Sumaste ${nombre} (${tamano}) al pedido.`);
     };
 
@@ -86,7 +90,7 @@ function MitadYMitad({ productos }) {
 
                     <fieldset className="mitad__tamanos" data-revelar="subir" style={{ '--i': 2 }}>
                         <legend className="visualmente-oculto">Tamaño</legend>
-                        {TAMANOS.map((opcion) => (
+                        {tamanos.map((opcion) => (
                             <label key={opcion} className="mitad__tamano">
                                 <input
                                     type="radio"

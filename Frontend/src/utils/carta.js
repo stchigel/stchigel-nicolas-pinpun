@@ -1,3 +1,5 @@
+import { describirComponentes } from './combos.js';
+
 /*
  * Cómo se arma la carta en pantalla a partir de los productos de la API.
  * Como en el boceto, cada sección junta dos columnas (una principal y una de acompañamiento).
@@ -94,8 +96,11 @@ export const nombreEnPedido = (producto, variante) => {
     return detalle ? `${producto.nombre} (${detalle})` : producto.nombre;
 };
 
-/* Lo que distingue a un renglón del pedido dentro de su categoría: "Fugazzeta · Grande" */
-export const detalleItem = (item) => [item.subcategoria, item.variante].filter(Boolean).join(' · ');
+/* Lo que distingue a un renglón del pedido dentro de su categoría ("Fugazzeta · Grande") o, en un combo, de qué se compone */
+export const detalleItem = (item) =>
+    item.componentes?.length > 0
+        ? describirComponentes(item.componentes)
+        : [item.subcategoria, item.variante].filter(Boolean).join(' · ');
 
 /* El mismo nombre que ve el visitante al sumar el plato ("Muzzarella (Grande)"), para avisos y etiquetas */
 export const nombreItem = (item) => nombreEnPedido(item, item.variante ? { nombre: item.variante } : null);

@@ -10,6 +10,7 @@ import { useApi } from '../../hooks/useApi.js';
 import { useToast } from '../../hooks/useToast.js';
 import { createProducto, deleteProducto, getProductos, updateProducto } from '../../services/productoService.js';
 import { desplazarA, esPantallaAngosta } from '../../utils/desplazar.js';
+import { describirComponentes } from '../../utils/combos.js';
 import { formatearPrecio } from '../../utils/formato.js';
 import './AdminMenu.css';
 
@@ -20,7 +21,13 @@ const sinTildes = (texto) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLo
 const resumenDePrecios = (producto) =>
     producto.variantes.length > 0
         ? producto.variantes.map((variante) => `${variante.nombre} ${formatearPrecio(variante.precio)}`).join(' · ')
-        : formatearPrecio(producto.precio);
+        : producto.tipo === 'combo'
+          ? `${formatearPrecio(producto.precio)} · ${describirComponentes(producto.componentes)}`
+          : formatearPrecio(producto.precio);
+
+const COMPONENTE_VACIO = { productoId: '', variante: '', cantidad: '1' };
+
+const esCantidad = (texto) => /^\d+$/.test(texto.trim()) && Number(texto) >= 1 && Number(texto) <= 99;
 
 const esPrecio = (texto) => texto.trim() !== '' && Number.isFinite(Number(texto)) && Number(texto) > 0;
 
@@ -31,6 +38,15 @@ const aFormulario = (producto) => ({
     descripcion: producto?.descripcion ?? '',
     imagen: producto?.imagen ?? '',
     destacado: producto?.destacado ?? false,
+    tipo: producto?.tipo ?? 'simple',
+    componentes:
+        producto?.tipo === 'combo'
+            ? producto.componentes.map((componente) => ({
+                  productoId: String(componente.productoId),
+                  variante: componente.variante,
+                  cantidad: String(componente.cantidad)
+              }))
+            : [{ ...COMPONENTE_VACIO }],
     modo: producto?.variantes.length > 0 ? 'tamanos' : 'unico',
     precio: producto && producto.variantes.length === 0 ? String(producto.precio) : '',
     tamanos:
@@ -39,10 +55,24 @@ const aFormulario = (producto) => ({
             : [{ nombre: '', precio: '' }]
 });
 
-function validar(formulario) {
+function validar(formulario, platos) {
     const errores = {};
     if (formulario.nombre.trim() === '') errores.nombre = 'Escribí el nombre del producto.';
     if (formulario.categoria.trim() === '') errores.categoria = 'Elegí o escribí la categoría.';
+
+    if (formulario.tipo === 'combo') {
+        const claves = formulario.componentes.map((componente) => `${componente.productoId}|${componente.variante}`);
+        const incompleto = formulario.componentes.some((componente) => {
+            const plato = platos.find((item) => String(item.id) === componente.productoId);
+            return !plato || (plato.variantes.length > 0 && componente.variante === '') || !esCantidad(componente.cantidad);
+        });
+
+        if (formulario.componentes.length === 0 || incompleto) {
+            errores.componentes = 'Cada componente necesita un producto (con su tamaño, si lo tiene) y una cantidad entre 1 y 99.';
+        } else if (new Set(claves).size !== claves.length) {
+            errores.componentes = 'Un mismo producto no puede estar dos veces: sumale cantidad.';
+        }
+    }
 
     if (formulario.modo === 'unico') {
         if (!esPrecio(formulario.precio)) errores.precio = 'Escribí un precio mayor a 0.';
@@ -65,13 +95,24 @@ const aProducto = (formulario) => ({
     descripcion: formulario.descripcion.trim(),
     imagen: formulario.imagen.trim(),
     destacado: formulario.destacado,
-    ...(formulario.modo === 'unico'
-        ? { precio: Number(formulario.precio), variantes: [] }
-        : { variantes: formulario.tamanos.map((tamano) => ({ nombre: tamano.nombre.trim(), precio: Number(tamano.precio) })) })
+    tipo: formulario.tipo,
+    ...(formulario.tipo === 'combo'
+        ? {
+              precio: Number(formulario.precio),
+              variantes: [],
+              componentes: formulario.componentes.map((componente) => ({
+                  productoId: Number(componente.productoId),
+                  variante: componente.variante,
+                  cantidad: Number(componente.cantidad)
+              }))
+          }
+        : formulario.modo === 'unico'
+          ? { precio: Number(formulario.precio), variantes: [] }
+          : { variantes: formulario.tamanos.map((tamano) => ({ nombre: tamano.nombre.trim(), precio: Number(tamano.precio) })) })
 });
 
 /* Formulario de un producto: el mismo para crear y para editar, sobre el panel verde */
-function EditorProducto({ producto, categorias, subcategorias, onGuardado, onEliminado, onCerrar }) {
+function EditorProducto({ producto, productos, categorias, subcategorias, onGuardado, onEliminado, onCerrar }) {
     const notificar = useToast();
     const idCategorias = useId();
     const idSubcategorias = useId();
@@ -100,15 +141,47 @@ function EditorProducto({ producto, categorias, subcategorias, onGuardado, onEli
     const quitarTamano = (indice) =>
         setFormulario((actual) => ({ ...actual, tamanos: actual.tamanos.filter((_, i) => i !== indice) }));
 
+    /* Un combo se arma con platos comunes de la misma carta, nunca con otros combos ni consigo mismo */
+    const platos = useMemo(() => productos.filter((item) => item.tipo !== 'combo' && item.id !== producto?.id), [productos, producto]);
+    const platosPorCategoria = useMemo(() => {
+        const grupos = new Map();
+        platos.forEach((plato) => grupos.set(plato.categoria, [...(grupos.get(plato.categoria) ?? []), plato]));
+        return [...grupos];
+    }, [platos]);
+
+    const cambiarComponente = (indice, campo, valor) => {
+        setFormulario((actual) => ({
+            ...actual,
+            componentes: actual.componentes.map((componente, i) =>
+                i === indice ? { ...componente, [campo]: valor, ...(campo === 'productoId' ? { variante: '' } : {}) } : componente
+            )
+        }));
+        if (errores.componentes) setErrores((actuales) => ({ ...actuales, componentes: undefined }));
+    };
+
+    const agregarComponente = () =>
+        setFormulario((actual) => ({ ...actual, componentes: [...actual.componentes, { ...COMPONENTE_VACIO }] }));
+
+    const quitarComponente = (indice) =>
+        setFormulario((actual) => ({ ...actual, componentes: actual.componentes.filter((_, i) => i !== indice) }));
+
+    /* Lo que costarían las partes por separado, para ver si el combo conviene */
+    const separado = formulario.componentes.reduce((suma, componente) => {
+        const plato = platos.find((item) => String(item.id) === componente.productoId);
+        const precioUnidad = plato ? (plato.variantes.find((v) => v.nombre === componente.variante)?.precio ?? (plato.variantes.length === 0 ? plato.precio : 0)) : 0;
+        return suma + precioUnidad * (esCantidad(componente.cantidad) ? Number(componente.cantidad) : 0);
+    }, 0);
+    const precioCombo = esPrecio(formulario.precio) ? Number(formulario.precio) : null;
+
     const guardar = async (evento) => {
         evento.preventDefault();
         const formularioHtml = evento.currentTarget;
-        const nuevos = validar(formulario);
+        const nuevos = validar(formulario, platos);
         setErrores(nuevos);
 
         const primero = Object.keys(nuevos)[0];
         if (primero) {
-            (formularioHtml.elements[primero] ?? formularioHtml.querySelector('[name="tamano-nombre"]'))?.focus();
+            (formularioHtml.elements[primero] ?? formularioHtml.querySelector('[name="tamano-nombre"], [name="componente-producto"]'))?.focus();
             return;
         }
 
@@ -174,13 +247,118 @@ function EditorProducto({ producto, categorias, subcategorias, onGuardado, onEli
             </Campo>
 
             <div className="campo">
+                <p className="campo__etiqueta" id="etiqueta-tipo-producto">
+                    Tipo
+                </p>
+                <fieldset className="segmentos" aria-labelledby="etiqueta-tipo-producto">
+                    {[
+                        { id: 'simple', etiqueta: 'Plato' },
+                        { id: 'combo', etiqueta: 'Combo' }
+                    ].map(({ id, etiqueta }) => (
+                        <label key={id} className="segmento">
+                            <input
+                                type="radio"
+                                name="tipo"
+                                value={id}
+                                checked={formulario.tipo === id}
+                                disabled={id === 'combo' && producto?.tipo === 'simple' && productos.some((item) => item.componentes?.some((componente) => componente.productoId === producto.id))}
+                                onChange={() => setFormulario((actual) => ({ ...actual, tipo: id, ...(id === 'combo' ? { modo: 'unico' } : {}) }))}
+                            />
+                            <span>{etiqueta}</span>
+                        </label>
+                    ))}
+                </fieldset>
+            </div>
+
+            {formulario.tipo === 'combo' && (
+                <div className="campo" data-error={errores.componentes ? true : undefined}>
+                    <p className="campo__etiqueta">De qué se compone</p>
+                    <ul className="tamanos">
+                        {formulario.componentes.map((componente, indice) => {
+                            const plato = platos.find((item) => String(item.id) === componente.productoId);
+                            return (
+                                <li key={indice} className="componentes__fila">
+                                    <select
+                                        name="componente-producto"
+                                        aria-label={`Producto del componente ${indice + 1}`}
+                                        value={componente.productoId}
+                                        onChange={(evento) => cambiarComponente(indice, 'productoId', evento.target.value)}
+                                    >
+                                        <option value="">Elegí un producto</option>
+                                        {platosPorCategoria.map(([nombreCategoria, lista]) => (
+                                            <optgroup key={nombreCategoria} label={nombreCategoria}>
+                                                {lista.map((item) => (
+                                                    <option key={item.id} value={item.id}>
+                                                        {item.subcategoria ? `${item.nombre} (${item.subcategoria})` : item.nombre}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
+                                        ))}
+                                    </select>
+                                    {plato?.variantes.length > 0 ? (
+                                        <select
+                                            aria-label={`Tamaño del componente ${indice + 1}`}
+                                            value={componente.variante}
+                                            onChange={(evento) => cambiarComponente(indice, 'variante', evento.target.value)}
+                                        >
+                                            <option value="">Tamaño</option>
+                                            {plato.variantes.map((variante) => (
+                                                <option key={variante.nombre} value={variante.nombre}>
+                                                    {variante.nombre}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <span aria-hidden="true" />
+                                    )}
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        aria-label={`Cantidad del componente ${indice + 1}`}
+                                        value={componente.cantidad}
+                                        onChange={(evento) => cambiarComponente(indice, 'cantidad', evento.target.value)}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="tamanos__quitar"
+                                        aria-label={`Quitar el componente ${indice + 1}`}
+                                        disabled={formulario.componentes.length === 1}
+                                        onClick={() => quitarComponente(indice)}
+                                    >
+                                        <Icono nombre="cerrar" tamano={18} />
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                    {errores.componentes && (
+                        <p className="campo__error">
+                            <Icono nombre="error" tamano={18} />
+                            {errores.componentes}
+                        </p>
+                    )}
+                    <button type="button" className="admin__texto-boton" onClick={agregarComponente}>
+                        <Icono nombre="sumar" tamano={18} />
+                        Agregar otro componente
+                    </button>
+                    {separado > 0 && precioCombo !== null && (
+                        <p className="componentes__resumen" data-conviene={precioCombo <= separado || undefined}>
+                            {precioCombo <= separado
+                                ? `Por separado salen ${formatearPrecio(separado)}: con el combo se ahorran ${formatearPrecio(separado - precioCombo)}. Si alguien pide las partes sueltas, el pedido arma el combo solo.`
+                                : `Por separado salen ${formatearPrecio(separado)}, menos que el combo: el pedido no lo va a armar solo.`}
+                        </p>
+                    )}
+                </div>
+            )}
+
+            <div className="campo">
                 <p className="campo__etiqueta" id="etiqueta-tipo-precio">
                     Precio
                 </p>
                 <fieldset className="segmentos" aria-labelledby="etiqueta-tipo-precio">
                     {[
                         { id: 'unico', etiqueta: 'Un solo precio' },
-                        { id: 'tamanos', etiqueta: 'Por tamaño' }
+                        ...(formulario.tipo === 'combo' ? [] : [{ id: 'tamanos', etiqueta: 'Por tamaño' }])
                     ].map(({ id, etiqueta }) => (
                         <label key={id} className="segmento">
                             <input type="radio" name="modo" value={id} checked={formulario.modo === id} onChange={() => cambiar('modo', id)} />
@@ -335,7 +513,7 @@ function AdminMenu() {
 
     return (
         <>
-            <EncabezadoAdmin titulo="Menú" bajada="La carta es la misma para todos los locales: lo que cambies acá se ve en el sitio enseguida.">
+            <EncabezadoAdmin titulo="Menú" bajada="Esta es la carta de Corrientes, la que usan todos los locales menos Angelina. Lo que cambies se ve en el sitio enseguida. Un combo es un plato con precio propio que se arma con otros platos.">
                 <Boton variante="rojo" onClick={() => setSeleccion(NUEVO)}>
                     <Icono nombre="sumar" tamano={18} />
                     Nuevo producto
@@ -390,6 +568,7 @@ function AdminMenu() {
                                                         {producto.nombre}
                                                         {producto.subcategoria && <span className="producto__sub"> · {producto.subcategoria}</span>}
                                                         {producto.destacado && <span className="producto__destacado">Más vendido</span>}
+                                                        {producto.tipo === 'combo' && <span className="producto__destacado producto__combo">Combo</span>}
                                                     </span>
                                                     <span className="producto__precios">{resumenDePrecios(producto)}</span>
                                                 </p>
@@ -426,6 +605,7 @@ function AdminMenu() {
                                 <EditorProducto
                                     key={seleccion}
                                     producto={seleccionado ?? null}
+                                    productos={productos}
                                     categorias={categorias}
                                     subcategorias={subcategorias}
                                     onGuardado={alGuardar}

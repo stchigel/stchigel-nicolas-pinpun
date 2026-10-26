@@ -3,7 +3,7 @@ import { Messages } from '../enums/Messages.js';
 import { isPlainObject, isNonEmptyString, isPositiveInteger } from '../utils/validators.js';
 
 const MAXIMO_NOMBRE = 60;
-const CANALES = ['salon', 'retiro', 'delivery'];
+const CANALES = ['salon', 'delivery'];
 
 const nombreValido = (nombre) => isNonEmptyString(nombre) && nombre.trim().length <= MAXIMO_NOMBRE;
 
@@ -27,7 +27,7 @@ export const validateNombreCarta = (req, res, next) => {
     next();
 };
 
-/* Qué carta usa un local: { salon, retiro, delivery }, con al menos un canal y cada uno con el id de una carta */
+/* Qué carta usa un local: { salon, delivery }, con al menos un canal y cada uno con el id de una carta */
 export const validateAsignacionCartas = (req, res, next) => {
     if (!isPlainObject(req.body)) throw new BadRequestError(Messages.INVALID_ASIGNACION_CARTAS);
 

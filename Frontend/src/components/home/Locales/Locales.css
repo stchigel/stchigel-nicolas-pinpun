@@ -200,3 +200,11 @@
         animation: none;
     }
 }
+
+/* Aviso en la tarjeta del local cuando ya es la sucursal elegida */
+.locales__tu-sucursal {
+    font-size: var(--t-chico);
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--verde);
+}

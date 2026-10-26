@@ -5,7 +5,7 @@ import { db, transaccion } from './conexion.js';
  * Para cambiar la estructura de una base que ya tiene datos hay que AGREGAR una migración al final de la lista
  * (nunca editar una anterior): al arrancar, la API aplica las que falten.
  *
- * Las cartas (menús) son entidades con nombre y cada local tiene asignada una por canal (salón, retiro, delivery).
+ * Las cartas (menús) son entidades con nombre y cada local tiene asignada una por canal (salón y delivery; el retiro usa la del delivery).
  * Así sirve tanto una carta única para todos como una por sucursal, o una de salón y otra de delivery:
  * es crear cartas y asignarlas, sin cambiar la estructura.
  */
@@ -153,6 +153,33 @@ const MIGRACIONES = [
         clave TEXT PRIMARY KEY,
         valor TEXT NOT NULL
     );
+    `,
+
+    /* 2: el retiro usa la carta del delivery, así que ya no se guarda una carta aparte para ese canal */
+    `
+    DELETE FROM local_cartas WHERE canal = 'retiro';
+    `,
+
+    /* 3: la carta original es la del salón de Av. Corrientes 3954, no una "general" */
+    `
+    UPDATE cartas SET nombre = 'Carta de Corrientes'
+    WHERE nombre = 'Carta general' AND NOT EXISTS (SELECT 1 FROM cartas WHERE nombre = 'Carta de Corrientes');
+    `,
+
+    /* 4: combos. Un combo es un plato más de la carta (con su precio) que además sabe de qué platos y en qué cantidad se compone */
+    `
+    ALTER TABLE productos ADD COLUMN tipo TEXT NOT NULL DEFAULT 'simple' CHECK (tipo IN ('simple', 'combo'));
+
+    -- variante vacía = el plato sin tamaños. Los dos lados borran en cascada porque se borra la carta entera;
+    -- que no se borre un plato que forma parte de un combo lo cuida el servicio.
+    CREATE TABLE combo_componentes (
+        combo_id INTEGER NOT NULL REFERENCES productos(id) ON DELETE CASCADE,
+        componente_id INTEGER NOT NULL REFERENCES productos(id) ON DELETE CASCADE,
+        variante TEXT NOT NULL DEFAULT '',
+        cantidad INTEGER NOT NULL CHECK (cantidad >= 1),
+        PRIMARY KEY (combo_id, componente_id, variante)
+    );
+    CREATE INDEX idx_combo_componentes_componente ON combo_componentes (componente_id);
     `
 ];
 

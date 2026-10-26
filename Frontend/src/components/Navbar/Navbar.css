@@ -217,8 +217,10 @@
         transform-origin: 0 0;
     }
 
+    /* Con el nombre de la sucursal en la barra, esta columna es la que cede cuando no entra todo */
     .navbar__derecha {
         gap: 0.5rem;
+        min-width: 0;
     }
 
     .navbar__alternar {
