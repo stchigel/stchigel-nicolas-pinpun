@@ -1,4 +1,11 @@
+/*
+ * La portada ocupa siempre toda la pantalla (menos la barra) y su contenido crece con ella: no se frena en el ancho máximo
+ * del sitio. El nombre llena el ancho y crece con él; la unidad del texto, la cinta y los botones sube con la pantalla;
+ * y la foto se estira para ocupar el alto que sobra, así nunca queda rojo vacío arriba.
+ * Si la ventana es tan baja que el contenido no entra, la portada crece hasta lo que mide y se scrollea.
+ */
 .hero {
+    --unidad: clamp(1rem, 0.05rem + 0.9vw, 3.4rem);
     display: flex;
     flex-direction: column;
     min-height: calc(100svh - var(--alto-navbar));
@@ -6,12 +13,16 @@
     color: var(--hueso);
 }
 
+.hero .contenedor {
+    max-width: none;
+}
+
 .hero__cuerpo {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--margen);
-    align-items: end;
+    align-items: stretch;
     padding-top: clamp(1rem, 2vw, 1.5rem);
 }
 
@@ -19,19 +30,21 @@
     position: relative;
     z-index: 1;
     grid-column: 1 / 6;
+    align-self: center;
     display: grid;
     justify-items: start;
-    gap: 1.25rem;
+    gap: 1.25em;
+    font-size: var(--unidad);
 }
 
 .hero__cinta {
-    width: min(100%, 19rem);
-    margin-left: -0.5rem;
+    width: min(100%, 19em);
+    margin-left: -0.5em;
 }
 
 .hero__bajada {
-    max-width: 30rem;
-    font-size: var(--t-destacado);
+    max-width: 24em;
+    font-size: 1.3em;
     line-height: 1.45;
 }
 
@@ -39,12 +52,19 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 1rem 1.75rem;
-    margin-top: 0.25rem;
+    gap: 1em 1.75em;
+    margin-top: 0.25em;
+}
+
+/* Los botones de la portada crecen con su unidad */
+.hero .boton {
+    min-height: 3.5em;
+    padding: 0.75em 1.75em;
+    font-size: 1em;
 }
 
 .hero__enlace {
-    padding-block: 0.5rem;
+    padding-block: 0.5em;
     font-weight: 500;
     text-decoration: underline;
     text-decoration-color: rgb(243 241 235 / 0.5);
@@ -62,8 +82,20 @@
     overflow: hidden;
 }
 
+/* La foto se estira para ocupar todo el alto que le deja el resto de la portada */
+.hero__marco {
+    display: grid;
+}
+
 .hero__foto {
-    aspect-ratio: 5 / 2;
+    align-self: stretch;
+    min-height: 14rem;
+}
+
+/* El nombre llena el ancho, pero en una pantalla muy ancha y baja no pasa de la mitad del alto: así la portada sigue entrando entera */
+.hero__nombre .logo-texto__imagen {
+    max-height: calc((100svh - var(--alto-navbar)) * 0.55);
+    object-fit: contain;
 }
 
 .hero__nombre {
@@ -99,6 +131,7 @@
     }
 
     .hero__foto {
+        align-self: auto;
         aspect-ratio: 4 / 3;
     }
 }
