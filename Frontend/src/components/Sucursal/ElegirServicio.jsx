@@ -11,12 +11,12 @@ const SERVICIOS = [
     {
         id: 'pedir',
         titulo: 'Quiero pedir',
-        descripcion: (nombre) => `Delivery o retiro. Armás el pedido con la carta de ${nombre} y se suma todo al carrito.`
+        descripcion: () => 'Delivery o retiro'
     },
     {
         id: 'ver',
-        titulo: 'Voy a ir al local',
-        descripcion: (nombre) => `Mirás la carta del salón de ${nombre} antes de ir, sin armar un pedido. Si querés, después reservás mesa.`
+        titulo: 'Voy al local',
+        descripcion: () => 'Carta del salón'
     }
 ];
 
@@ -123,7 +123,7 @@ function ElegirServicio() {
                                 />
                                 <span className="servicio__opcion-cuerpo">
                                     <span className="servicio__opcion-titulo">{opcion.titulo}</span>
-                                    <span className="servicio__opcion-texto">{opcion.descripcion(seleccion?.nombre ?? 'la sucursal')}</span>
+                                    <span className="servicio__opcion-texto">{opcion.descripcion()}</span>
                                 </span>
                             </label>
                         ))}
